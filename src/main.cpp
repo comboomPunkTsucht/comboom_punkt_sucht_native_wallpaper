@@ -1,6 +1,5 @@
 // std c++23
 #include <iostream>
-#include <print>
 #include <QApplication>
 #include <QLabel>
 #include <QMainWindow>
