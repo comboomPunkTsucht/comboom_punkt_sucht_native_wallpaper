@@ -13,12 +13,14 @@ A basic C++23 Qt6 application with CMake and tsoding/flag.h for command-line arg
 ### Ubuntu/Debian
 
 Install dependencies:
+
 ```bash
 sudo apt-get update
 sudo apt-get install build-essential cmake qt6-base-dev
 ```
 
 Build the project:
+
 ```bash
 mkdir build
 cd build
@@ -29,6 +31,7 @@ cmake --build .
 ### Running
 
 After building, run the application:
+
 ```bash
 ./build/bin/comboom_punkt_sucht_native_wallpaper
 ```
@@ -37,14 +40,17 @@ After building, run the application:
 
 The application supports the following command-line flags (powered by tsoding/flag.h):
 
-- `-version`: Show version information
-- `-title <string>`: Set window title (default: "Comboom Punkt Sucht Native Wallpaper")
-- `-width <int>`: Set window width (default: 800)
-- `-height <int>`: Set window height (default: 600)
+- `-V`/`--version`: Show version information
+- `-h`/`--help`: Show Help Information
+- `--title <string>`: Set Main title (default: "Comboom Punkt Sucht Native Wallpaper")
+- `--sub_title <string>`: Set the Sub title
+- `--width <int>`: Set window width (default: 1280)
+- `--height <int>`: Set window height (default: 720)
 
 Example:
+
 ```bash
-./build/bin/comboom_punkt_sucht_native_wallpaper -title "My Custom Title" -width 1024 -height 768
+./build/bin/comboom_punkt_sucht_native_wallpaper --title "My Custom Title" --width 1024 --height 768
 ```
 
 ## Features

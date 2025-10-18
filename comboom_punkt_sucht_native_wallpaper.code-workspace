@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"C_Cpp.default.cppStandard": "c++23",
+		"C_Cpp.clang_format_fallbackStyle": "LLVM",
+		"C_Cpp_Runner.cppStandard": "c++23"
+	}
+}
