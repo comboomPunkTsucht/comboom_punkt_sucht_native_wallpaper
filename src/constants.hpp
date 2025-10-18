@@ -19,13 +19,19 @@ namespace CBPS {
   constexpr const int MIN_WINDOW_WIDTH  = 1280;
   constexpr const int MIN_WINDOW_HEIGHT = 720;
 
+  //DEFAULTS
+  constexpr const int DEFAULT_WINDOW_WIDTH  = 1920;
+  constexpr const int DEFAULT_WINDOW_HEIGHT = 1080;
+  constexpr const char *DEFAULT_TITLE       = "mcpeaps_HD";
+  constexpr const char *DEFAULT_SUB_TITLE   = "comboom.sucht";
+
   #ifdef CBPS_CONSTANTS_IMPLEMENTATION
 
-  void print_app_version( FILE *stream = stdout ) {
+  inline void print_app_version( FILE *stream = stdout ) {
     std::fprintf( stream, "%s v%s\n", APP_NAME, APP_VERSION );
   }
 
-  void print_app_info( FILE *stream = stdout ) {
+  inline void print_app_info( FILE *stream = stdout ) {
     print_app_version();
     std::fprintf( stream, "%s\n", APP_DESCRIPTION );
     std::fprintf( stream, "Author: %s\n", APP_AUTHOR );

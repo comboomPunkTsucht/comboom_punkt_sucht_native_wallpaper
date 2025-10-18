@@ -19,7 +19,7 @@
 namespace CBPS {
   void print_usage( FILE *stream = stdout ) {
     std::fprintf( stream, "Usage: %s [Options]\n", flag_program_name() );
-    CBPS::print_app_info( stdout );
+    print_app_info( stdout );
     std::printf( "\nOptions:\n" );
     flag_print_options( stdout );
   }
@@ -34,28 +34,20 @@ int main( int argc, char *argv[] ) {
   bool show_V_version = false;
   bool show_help = false;
   bool show_h_help = false;
-  char *title = (char *)"Comboom Punkt Sucht Native Wallpaper";
-  char *sub_title = (char *)"";
-  uint64_t window_width = 1280;
-  uint64_t window_height = 720;
+  char *title = (char *)CBPS::DEFAULT_TITLE;
+  char *sub_title = (char *)CBPS::DEFAULT_SUB_TITLE;
+  uint64_t window_width = CBPS::DEFAULT_WINDOW_WIDTH;
+  uint64_t window_height = CBPS::DEFAULT_WINDOW_HEIGHT;
 
 
   flag_bool_var( &show_version, "-version", false, "Show version information" );
   flag_bool_var( &show_V_version, "V", false, "Show version information (short)" );
   flag_bool_var( &show_help, "-help", false, "Show help information" );
   flag_bool_var( &show_h_help, "h", false, "Show help information (short)" );
-  flag_str_var(
-    &title,
-    "-title",
-    "Comboom Punkt Sucht Native Wallpaper",
-    "Set window title" );
-    flag_str_var(
-      &sub_title,
-      "-sub_title",
-      "Comboom Punkt Sucht Native Wallpaper - Sub Title",
-      "Set window sub title" );
-    flag_uint64_var( &window_width, "-width", 1280, "Set window width" );
-    flag_uint64_var( &window_height, "-height", 720, "Set window height" );
+  flag_str_var( &title, "-title", CBPS::DEFAULT_TITLE, "Set window title" );
+  flag_str_var( &sub_title, "-sub_title", CBPS::DEFAULT_SUB_TITLE, "Set window sub title" );
+  flag_uint64_var( &window_width, "-width", CBPS::DEFAULT_WINDOW_WIDTH, "Set window width" );
+  flag_uint64_var( &window_height, "-height", CBPS::DEFAULT_WINDOW_HEIGHT, "Set window height" );
 
   if ( !flag_parse( argc, argv ) ) {
     flag_print_error( stderr );
