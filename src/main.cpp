@@ -1,14 +1,9 @@
 // std c++23
 #include <iostream>
-#include <QApplication>
-#include <QLabel>
-#include <QMainWindow>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QWidget>
+#include "../thirdparty/raylib/src/raylib.h"
 
 #define FLAG_IMPLEMENTATION
-#include "../thirdparty/flag.h"
+#include "../thirdparty/flag.h/flag.h"
 #define CBPS_CONSTANTS_IMPLEMENTATION
 #include "./constants.hpp"
 #define NORD_COLORS_IMPLEMENTATION
@@ -26,6 +21,22 @@ namespace CBPS {
 }
 
 #endif // CBPS_CONSTANTS_IMPLEMENTATION
+
+#ifdef NORD_COLORS_IMPLEMENTATION
+
+namespace Nord {
+  Color index_to_Color( NordColor color ) {
+
+    return Color{
+      .r = static_cast< unsigned char >( ( index_to_uint32( color ) >> 24 ) & 0xFF ),
+      .g = static_cast< unsigned char >( ( index_to_uint32( color ) >> 16 ) & 0xFF ),
+      .b = static_cast< unsigned char >( ( index_to_uint32( color ) >> 8 ) & 0xFF ),
+      .a = static_cast< unsigned char >( index_to_uint32( color ) & 0xFF )
+    };
+  }
+} // namespace Nord
+
+#endif // NORD_COLORS_IMPLEMENTATION
 
 
 int main( int argc, char *argv[] ) {
@@ -65,61 +76,27 @@ int main( int argc, char *argv[] ) {
     return 0;
   }
 
-  // Create Qt6 application
-  QApplication app( argc, argv );
+  // Initialize raylib window
+  SetConfigFlags( /*FLAG_WINDOW_UNDECORATED |*/ FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MOUSE_PASSTHROUGH | FLAG_WINDOW_HIGHDPI | FLAG_MSAA_4X_HINT | FLAG_INTERLACED_HINT | FLAG_VSYNC_HINT | FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_MAXIMIZED | FLAG_WINDOW_UNFOCUSED );
+  InitWindow( window_width, window_height, CBPS::APP_NAME );
+  SetWindowMinSize( CBPS::MIN_WINDOW_WIDTH, CBPS::MIN_WINDOW_HEIGHT );
+  SetTargetFPS(60);
+  while ( !WindowShouldClose() ) {
+    if ( IsWindowResized() ) {
+          window_width  = GetScreenWidth();
+          window_height = GetScreenHeight();
+          SetWindowSize( window_width, window_height );
+        }
+    BeginDrawing();
+    ClearBackground( index_to_Color(Nord::NORD0) );
 
-  // Create main window
-  QMainWindow  mainWindow;
-  mainWindow.setWindowTitle( QString::fromUtf8( CBPS::APP_NAME ) );
-  mainWindow.resize(
-    static_cast< int >( window_width ), static_cast< int >( window_height ) );
+    DrawText( title, 10, 10, 20, index_to_Color(Nord::NORD5) );
+    DrawText( sub_title, 10, 40, 15, index_to_Color(Nord::NORD5) );
 
-  // Create central widget with layout
-  QWidget     *centralWidget = new QWidget( &mainWindow );
-  QVBoxLayout *layout        = new QVBoxLayout( centralWidget );
+    EndDrawing();
+  }
 
-  centralWidget->setStyleSheet(
-    QString("background-color: %1;").arg(Nord::index_to_hexstr(Nord::NORD0)));
+  CloseWindow();
 
-  // Add welcome label
-  QLabel      *welcomeLabel =
-    new QLabel( "Welcome to Comboom Punkt Sucht!", centralWidget );
-  welcomeLabel->setStyleSheet(
-    QString("font-size: 24px; font-weight: bold; margin: 20px; color: %1;").arg(Nord::index_to_hexstr(Nord::NORD4)));
-  welcomeLabel->setAlignment( Qt::AlignCenter );
-  layout->addWidget( welcomeLabel );
-
-  // Add info label
-  QLabel *infoLabel = new QLabel(
-    "This is a basic C++23 Qt6 application with CMake", centralWidget );
-  infoLabel->setAlignment( Qt::AlignCenter );
-  layout->addWidget( infoLabel );
-
-  // Add flag info label
-  QLabel *flagLabel = new QLabel(
-    QString("Using tsoding/flag.h for argument parsing\nWindow size: %1x%2").arg(QString::number(window_width)).arg(QString::number(window_height)),
-    centralWidget );
-  flagLabel->setAlignment( Qt::AlignCenter );
-  flagLabel->setStyleSheet( QString("margin: 10px; color: %1;").arg(Nord::index_to_hexstr(Nord::NORD8)));
-  layout->addWidget( flagLabel );
-
-  // Add stretch to push content to top
-  layout->addStretch( );
-
-  // Add quit button
-  QPushButton *quitButton = new QPushButton( "Quit", centralWidget );
-  quitButton->setMaximumWidth( 200 );
-  layout->addWidget( quitButton, 0, Qt::AlignCenter );
-
-  QObject::connect(
-    quitButton, &QPushButton::clicked, &app, &QApplication::quit );
-
-  // Set central widget
-  mainWindow.setCentralWidget( centralWidget );
-
-  // Show the window
-  mainWindow.show( );
-
-  // Run the application event loop
-  return app.exec( );
+  return 0;
 }

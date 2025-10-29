@@ -57,3 +57,5 @@ cmake-build-*/
 *.swp
 *.swo
 *~
+/nob
+/nob.old

@@ -13,22 +13,22 @@ namespace Nord {
 
 
   typedef enum {
-    NORD0 = 0x2E3440,
-    NORD1 = 0x3B4252,
-    NORD2 = 0x434C5E,
-    NORD3 = 0x4C566A,
-    NORD4 = 0xD8DEE9,
-    NORD5 = 0xE5E9F0,
-    NORD6 = 0xECEFF4,
-    NORD7 = 0x8FBCBB,
-    NORD8 = 0x88C0D0,
-    NORD9 = 0x81A1C1,
-    NORD10 = 0x5E81AC,
-    NORD11 = 0xBF616A,
-    NORD12 = 0xD08770,
-    NORD13 = 0xEBCB8B,
-    NORD14 = 0xA3BE8C,
-    NORD15 = 0xB48EAD,
+    NORD0 = 0x2E3440ff,
+    NORD1 = 0x3B4252ff,
+    NORD2 = 0x434C5Eff,
+    NORD3 = 0x4C566Aff,
+    NORD4 = 0xD8DEE9ff,
+    NORD5 = 0xE5E9F0ff,
+    NORD6 = 0xECEFF4ff,
+    NORD7 = 0x8FBCBBff,
+    NORD8 = 0x88C0D0ff,
+    NORD9 = 0x81A1C1ff,
+    NORD10 = 0x5E81ACff,
+    NORD11 = 0xBF616Aff,
+    NORD12 = 0xD08770ff,
+    NORD13 = 0xEBCB8Bff,
+    NORD14 = 0xA3BE8Cff,
+    NORD15 = 0xB48EADff,
   } NordColor;
 
   #ifdef NORD_COLORS_IMPLEMENTATION

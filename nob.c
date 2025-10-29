@@ -17,22 +17,30 @@ MY_Flags_args ARGS = {0};
 
 char *BUILD_DIR = "./build";
 char *SRC_DIR = "./src";
+char *THIRDPARTY_DIR = "./thirdparty";
 char *BUILD_MAIN;
 
 void cmd_cc() {
 #ifdef _WIN32
-  cmd_append(&cmd, "clang");
+  cmd_append(&cmd, "clang++");
 #else
-  cmd_append(&cmd, "cc");
+  cmd_append(&cmd, "g++");
 #endif
 
-  cmd_append(&cmd, "-std=c11", "-Wall", "-Wextra", "-Wpedantic", "-Werror");
+  cmd_append(&cmd, "-std=c++23", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-lm");
 }
 
 void usage(FILE *stream) {
-  fprintf(stream, "Usage: ./example [OPTIONS] [--] [ARGS]\n");
+  fprintf(stream, "Usage: ./%s [OPTIONS]\n", flag_program_name());
   fprintf(stream, "OPTIONS:\n");
   flag_print_options(stream);
+}
+
+void build_raylib() {
+  cmd_append(&cmd, "make", "-C",  temp_sprintf("%s/raylib/src", THIRDPARTY_DIR), "PLATFORM=PLATFORM_DESKTOP_GLFW", "RAYLIB_LIBTYPE=STATIC", temp_sprintf("RAYLIB_RELEASE_PATH=../../../%s", BUILD_DIR));
+  if (!cmd_run(&cmd))
+    exit(1);
+  cmd.count = 0;
 }
 
 int main(int argc, char **argv) {
@@ -42,25 +50,26 @@ int main(int argc, char **argv) {
   NOB_GO_REBUILD_URSELF(argc, argv);
 
   bool help = false;
-  bool hhelp = false;
 
-  bool run_build = false;
-  bool rrun_build = false;
+  bool debug = false;
+
+  bool run = false;
 
   bool build = false;
-  bool bbuild = false;
 
   bool clean = false;
 
   flag_bool_var(&help, "-help", false, "Print this help");
-  flag_bool_var(&hhelp, "h", false, "Print this help");
-  flag_bool_var(&rrun_build, "r", false, "Run build");
-  flag_bool_var(&run_build, "-run", false, "Run build");
-  flag_bool_var(&bbuild, "b", false, "Build");
+  flag_bool_var(&help, "h", false, "Print this help");
+  flag_bool_var(&run, "r", false, "Run build");
+  flag_bool_var(&run, "-run", false, "Run build");
+  flag_bool_var(&build, "b", false, "Build");
   flag_bool_var(&build, "-build", false, "Build");
+  flag_bool_var(&debug, "d", false, "enable debug mode");
+  flag_bool_var(&debug, "-debug", false, "enable debug mode");
   flag_bool_var(&clean, "-clean", false, "Clean build directory");
 
-  BUILD_MAIN = nob_temp_sprintf("%s/main", BUILD_DIR);
+  BUILD_MAIN = nob_temp_sprintf("%s/cbps-lwp", BUILD_DIR);
 
   if (!flag_parse(ARGS.count, ARGS.items)) {
     usage(stderr);
@@ -71,25 +80,44 @@ int main(int argc, char **argv) {
   argc = flag_rest_argc();
   argv = flag_rest_argv();
 
-  if (help || hhelp) {
+  if (help) {
     usage(stdout);
     exit(0);
   }
-  if (build || bbuild) {
+  if (build) {
 
     if (!nob_mkdir_if_not_exists(BUILD_DIR))
       return 1;
 
+    build_raylib();
+
     cmd_cc();
     cmd_append(&cmd, "-o", BUILD_MAIN);
     cmd_append(&cmd, temp_sprintf("-I%s", SRC_DIR));
-    cmd_append(&cmd, temp_sprintf("%s/main.c", SRC_DIR));
+    cmd_append(&cmd, temp_sprintf("-L%s/", BUILD_DIR));
+    cmd_append(&cmd, "-I", temp_sprintf("%s/raylib/src", THIRDPARTY_DIR));
+    cmd_append(&cmd, "-I", temp_sprintf("%s/raylib/src/external", THIRDPARTY_DIR));
+    cmd_append(&cmd, "-L/opt/homebrew/opt/glfw/lib", "-I/opt/homebrew/opt/glfw/include");
+    if (debug) {
+      cmd_append(&cmd, "-ggdb", "-O0");
+    } else {
+      cmd_append(&cmd, "-O3");
+    }
+    cmd_append(&cmd, temp_sprintf("%s/main.cpp", SRC_DIR));
+    cmd_append(&cmd, "-lraylib", "-lglfw");
+#ifdef __APPLE__
+    cmd_append(&cmd, "-framework", "CoreFoundation");
+    cmd_append(&cmd, "-framework", "IOKit");
+    cmd_append(&cmd, "-framework", "AppKit");
+    cmd_append(&cmd, "-framework", "CoreGraphics");
+    cmd_append(&cmd, "-framework", "OpenGL");
+#endif
     if (!cmd_run(&cmd))
       return 1;
     cmd.count = 0;
   }
 
-  if (run_build || rrun_build) {
+  if (run) {
     cmd_append(&cmd, BUILD_MAIN);
     if (!cmd_run(&cmd))
       return 1;

@@ -16,16 +16,13 @@ Install dependencies:
 
 ```bash
 sudo apt-get update
-sudo apt-get install build-essential cmake qt6-base-dev
+sudo apt-get install build-essential
 ```
 
 Build the project:
 
 ```bash
-mkdir build
-cd build
-cmake ..
-cmake --build .
+make all
 ```
 
 ### Running
@@ -33,7 +30,7 @@ cmake --build .
 After building, run the application:
 
 ```bash
-./build/bin/comboom_punkt_sucht_native_wallpaper
+./build/cbps-lwp
 ```
 
 ### Command-line Options
@@ -50,7 +47,7 @@ The application supports the following command-line flags (powered by tsoding/fl
 Example:
 
 ```bash
-./build/bin/comboom_punkt_sucht_native_wallpaper --title "My Custom Title" --width 1024 --height 768
+./build/cbps-lwp --title "My Custom Title" --width 1024 --height 768
 ```
 
 ## Features
