@@ -77,16 +77,11 @@ int main( int argc, char *argv[] ) {
   }
 
   // Initialize raylib window
-  SetConfigFlags( /*FLAG_WINDOW_UNDECORATED |*/ FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MOUSE_PASSTHROUGH | FLAG_WINDOW_HIGHDPI | FLAG_MSAA_4X_HINT | FLAG_INTERLACED_HINT | FLAG_VSYNC_HINT | FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_MAXIMIZED | FLAG_WINDOW_UNFOCUSED );
+  SetConfigFlags( /*FLAG_WINDOW_UNDECORATED |*/ FLAG_WINDOW_RESIZABLE /*| FLAG_WINDOW_MOUSE_PASSTHROUGH */ | FLAG_WINDOW_HIGHDPI | FLAG_MSAA_4X_HINT | FLAG_INTERLACED_HINT | FLAG_VSYNC_HINT | FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_MAXIMIZED | FLAG_WINDOW_UNFOCUSED );
   InitWindow( window_width, window_height, CBPS::APP_NAME );
   SetWindowMinSize( CBPS::MIN_WINDOW_WIDTH, CBPS::MIN_WINDOW_HEIGHT );
   SetTargetFPS(60);
   while ( !WindowShouldClose() ) {
-    if ( IsWindowResized() ) {
-          window_width  = GetScreenWidth();
-          window_height = GetScreenHeight();
-          SetWindowSize( window_width, window_height );
-        }
     BeginDrawing();
     ClearBackground( index_to_Color(Nord::NORD0) );
 
