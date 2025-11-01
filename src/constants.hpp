@@ -25,6 +25,8 @@ namespace CBPS {
   constexpr const char *DEFAULT_TITLE       = "mcpeaps_HD";
   constexpr const char *DEFAULT_SUB_TITLE   = "comboom.sucht";
 
+  constexpr const int COUNT_CIRCLE_POINTS = 400;
+
   #ifdef CBPS_CONSTANTS_IMPLEMENTATION
 
   inline void print_app_version( FILE *stream = stdout ) {
