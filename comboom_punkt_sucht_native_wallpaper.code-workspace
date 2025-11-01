@@ -7,6 +7,60 @@
 	"settings": {
 		"C_Cpp.default.cppStandard": "c++23",
 		"C_Cpp.clang_format_fallbackStyle": "LLVM",
-		"C_Cpp_Runner.cppStandard": "c++23"
+		"C_Cpp_Runner.cppStandard": "c++23",
+		"c-cpp-flylint.clang.includePaths": [
+			"${workspaceFolder}/src/**",
+			"${workspaceFolder}/thirdparty/**"
+		],
+		"C_Cpp.default.includePath": [
+			"${workspaceFolder}/src/**",
+			"${workspaceFolder}/thirdparty/**"
+		],
+		"c-cpp-flylint.includePaths": [
+			"${workspaceFolder}/src/**",
+			"${workspaceFolder}/thirdparty/**"
+		],
+		"c-cpp-flylint.cppcheck.includePaths": [
+			"${workspaceFolder}/src/**",
+			"${workspaceFolder}/thirdparty/**"
+		],
+		"c-cpp-flylint.clang.cppStandard": "c++23",
+		"c-cpp-flylint.cppcheck.cppStandard": "c++23",
+		"c-cpp-flylint.clang.cppStandard": "c++23",
+		"C_Cpp_Runner.includePaths": [
+			"${workspaceFolder}/src/**",
+			"${workspaceFolder}/thirdparty/**"
+		],
+		"dotnet.defaultSolution": "disable",
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"type": "lldb",
+				"request": "launch",
+				"name": "BUILD_DEBUG",
+				"program": "${workspaceFolder}/nob",
+				"args": ["-b", "-d"],
+				"cwd": "${workspaceFolder}"
+			},
+			{
+				"type": "lldb",
+				"request": "launch",
+				"name": "BUILD_RELEASE",
+				"program": "${workspaceFolder}/nob",
+				"args": ["-b"],
+				"cwd": "${workspaceFolder}"
+			},
+			{
+				"type": "lldb",
+				"request": "launch",
+				"name": "Launch",
+				"program": "${workspaceFolder}/build/cbps-lwp",
+				"args": [],
+				"cwd": "${workspaceFolder}"
+			}
+
+		]
 	}
 }
