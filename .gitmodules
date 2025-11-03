@@ -10,3 +10,6 @@
 [submodule "thirdparty/raygui"]
 	path = thirdparty/raygui
 	url = https://github.com/raysan5/raygui.git
+[submodule "thirdparty/tools/ttf2c"]
+	path = thirdparty/tools/ttf2c
+	url = https://github.com/insane-person/ttf2c.git

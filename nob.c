@@ -90,9 +90,15 @@ int main( int argc, char **argv ) {
   }
   if ( build ) {
 
-    if ( !nob_mkdir_if_not_exists( BUILD_DIR ) ) {
+    if ( !mkdir_if_not_exists( BUILD_DIR ) ) {
       return 1;
     }
+
+      if ( !copy_directory_recursively( "assets", temp_sprintf( "%s/assets", BUILD_DIR ) ) ) {
+          nob_log(ERROR, "Failed to copy assets directory.\n");
+          return 1;
+      }
+
 
     build_raylib( );
 
