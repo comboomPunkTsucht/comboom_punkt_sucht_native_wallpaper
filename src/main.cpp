@@ -271,11 +271,19 @@ std::string toLowerStr(const char *s) {
 	  if (titleFont.baseSize != titleFontSize) {
           UnloadFont(titleFont);
 		  titleFont = LoadFontEx( CBPS::FONT_PATH, titleFontSize, NULL, CBPS::GLYPHS_COUNT );
+          if (!IsFontValid(titleFont)) {
+              fprintf(stderr ,"Failed to load font!\n");
+              return 1;
+          }
       }
 
 	  if (subFont.baseSize != subFontSize) {
           UnloadFont(subFont);
           subFont = LoadFontEx( CBPS::FONT_PATH, subFontSize, NULL, CBPS::GLYPHS_COUNT );
+          if (!IsFontValid(subFont)) {
+              fprintf(stderr ,"Failed to load font!\n");
+              return 1;
+          }
       }
 
       // Measure title and subtitle using loaded fonts
