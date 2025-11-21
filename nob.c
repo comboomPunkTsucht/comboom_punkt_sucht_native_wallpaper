@@ -20,6 +20,10 @@ char         *SRC_DIR        = "./src";
 char         *THIRDPARTY_DIR = "./thirdparty";
 char         *BUILD_MAIN;
 
+char         *WEB_DIR = "./.web";
+char         *WEB_SRC = "./web_src";
+char         *WEB_TOOLS_DIR = "./build_web_tools";
+
 void          cmd_cc( ) {
 #ifdef _WIN32
   cmd_append( &cmd, "clang++" );
@@ -80,9 +84,7 @@ void setup_emscripten(const char *web_tools_dir) {
 }
 
 void build_web() {
-  char *WEB_DIR = "./.web";
-  char *WEB_SRC = "./web_src";
-  char *WEB_TOOLS_DIR = "./build_web_tools";
+
 
   setup_emscripten(WEB_TOOLS_DIR);
 
@@ -279,9 +281,9 @@ int main( int argc, char **argv ) {
 
   if ( clean ) {
 #ifdef _WIN32
-    cmd_append( &cmd, "rmdir", "/s", "/q", BUILD_DIR );
+    cmd_append( &cmd, "rmdir", "/s", "/q", BUILD_DIR, WEB_DIR, WEB_TOOLS_DIR );
 #else
-    cmd_append( &cmd, "rm", "-rf", BUILD_DIR );
+    cmd_append( &cmd, "rm", "-rf", BUILD_DIR, WEB_DIR, WEB_TOOLS_DIR );
 #endif
     if ( !cmd_run( &cmd ) ) {
       return 1;
