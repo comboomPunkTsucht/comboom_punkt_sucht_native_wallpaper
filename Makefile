@@ -13,7 +13,7 @@ ifeq ($(OS),Windows_NT)
 		CC = clang
 endif
 
-.PHONY: all run build_rel build_debug  nob clean
+.PHONY: all run build_rel build_debug  nob clean web
 
 all: run
 
@@ -28,17 +28,21 @@ run: $(RUN_TARGET)
 	cd $(WORKDIR) && ./nob -r
 
 # Just build with nob
-build_debug: nob
-		cd $(WORKDIR) && ./nob -b -d
+build_debug: nob $(WORKDIR)/src/main.cpp $(WORKDIR)/src/constants.hpp $(WORKDIR)/src/desktop_wallpaper.hpp $(WORKDIR)/src/nord.hpp $(WORKDIR)/flag.h
+	cd $(WORKDIR) && ./nob -b -d
 
 # Just build with nob
-build_rel: nob $(WORKDIR)/src/main.cpp $(WORKDIR)/src/constants.hpp $(WORKDIR)/src/nord.hpp $(WORKDIR)/thirdparty/flag.h
-		cd $(WORKDIR) && ./nob -b
+build_rel: nob $(WORKDIR)/src/main.cpp $(WORKDIR)/src/constants.hpp $(WORKDIR)/src/desktop_wallpaper.hpp $(WORKDIR)/src/nord.hpp $(WORKDIR)/flag.h
+	cd $(WORKDIR) && ./nob -b
+
+# web
+web: nob $(WORKDIR)/src/main.cpp $(WORKDIR)/src/constants.hpp $(WORKDIR)/src/nord.hpp
+	cd $(WORKDIR) && ./nob -w
 
 # Build the nob tool
 nob: $(WORKDIR)/nob.c $(WORKDIR)/nob.h $(WORKDIR)/flag.h
-		$(CC) -o $(WORKDIR)/nob $(WORKDIR)/nob.c
+	$(CC) -o $(WORKDIR)/nob $(WORKDIR)/nob.c
 
 # Clean build artifacts
 clean: nob
-		cd $(WORKDIR) && ./nob --clean && rm -f ./nob.old
+	cd $(WORKDIR) && ./nob --clean && rm -f ./nob.old

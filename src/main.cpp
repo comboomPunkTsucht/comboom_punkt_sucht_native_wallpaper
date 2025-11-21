@@ -1,5 +1,5 @@
 #include <iostream>
-  #include <chrono>
+#include <chrono>
 #include <cmath>
 #include <algorithm>
 #include <string>
@@ -7,12 +7,17 @@
 
   #include "../thirdparty/raylib/src/raylib.h"
 
+  #ifndef PLATFORM_WEB
   #define FLAG_IMPLEMENTATION
   #include "../thirdparty/flag.h/flag.h"
+  #endif
   #define CBPS_CONSTANTS_IMPLEMENTATION
   #include "./constants.hpp"
   #define NORD_COLORS_IMPLEMENTATION
   #include "./nord.hpp"
+  #ifndef PLATFORM_WEB
+  #include "./desktop_wallpaper.hpp"
+  #endif
 
   #ifdef NORD_COLORS_IMPLEMENTATION
 
@@ -35,13 +40,13 @@
   namespace CBPS {
 
     typedef struct {
-    float base_x;
-    float base_y; // unveränderliche Ankerposition im Raum
-    float ox;     // geglätteter Parallax-/Wackel-Offset (x)
-    float oy;     // geglätteter Parallax-/Wackel-Offset (y)
-    float vx;     // kleine Wackelgeschwindigkeit x
-    float vy;     // kleine Wackelgeschwindigkeit y
-    float parallax; // 0.2 .. 1.0, kleiner = weiter weg (weniger Bewegung)
+    float x;           // aktuelle Position x
+    float y;           // aktuelle Position y
+    float translateX;  // Mouse-Offset x (smooth)
+    float translateY;  // Mouse-Offset y (smooth)
+    float dx;          // konstante Drift-Geschwindigkeit x
+    float dy;          // konstante Drift-Geschwindigkeit y
+    float magnetism;   // 0.1 .. 4.1, Anziehung zur Maus
     int   radius;
     Color color;
   } CirclePoint;
@@ -52,101 +57,115 @@
 
 namespace CBPS {
 
+  Vector2 get_random_pos() {
+    int x, y;
+    do {
+
+      x = GetRandomValue(-1, 1);
+      y = GetRandomValue(-1, 1);
+
+    } while((x == 0) && (y == 0)); // Wiederhole solange BEIDE 0 sind
+
+    x *= GetRandomValue(1, CBPS::MAX_RANDOM_FAKTOR);
+    y *= GetRandomValue(1, CBPS::MAX_RANDOM_FAKTOR);
+
+    return (Vector2){
+      .x = x * 1.0f,
+      .y = y * 1.0f
+    };
+  }
+
  void init_circle_points( int width, int height ) {
     for ( int i = 0; i < COUNT_CIRCLE_POINTS; i++ ) {
-      float px = static_cast<float>( GetRandomValue(0, (int)width) );
-      float py = static_cast<float>( GetRandomValue(0, (int)height) );
-      circle_points[i].base_x = px;
-      circle_points[i].base_y = py;
-      circle_points[i].ox = 0.0f;
-      circle_points[i].oy = 0.0f;
-      circle_points[i].vx = GetRandomValue(-10, 10) / 100.0f; // very small jitter
-      circle_points[i].vy = GetRandomValue(-10, 10) / 100.0f;
-      circle_points[i].parallax = GetRandomValue(20, 100) / 100.0f; // 0.20 .. 1.00
-      circle_points[i].radius = GetRandomValue(3, 6);
+      // Position: irgendwo auf der Canvas
+      circle_points[i].x = static_cast<float>( GetRandomValue(0, width) );
+      circle_points[i].y = static_cast<float>( GetRandomValue(0, height) );
+
+      // Mouse-Offset startet bei 0
+      circle_points[i].translateX = 0.0f;
+      circle_points[i].translateY = 0.0f;
+
+      // Konstante Drift: (random - 0.5) * 0.2 → -0.1 bis +0.1
+      circle_points[i].dx = (GetRandomValue(0, 100) / 100.0f - 0.5f) * 0.2f;
+      circle_points[i].dy = (GetRandomValue(0, 100) / 100.0f - 0.5f) * 0.2f;
+
+      // Magnetism: 0.1 + random * 4.0 → 0.1 bis 4.1
+      circle_points[i].magnetism = 0.1f + (GetRandomValue(0, 400) / 100.0f);
+
+      // Größe: 5 bis 8 (größer für bessere Sichtbarkeit)
+      circle_points[i].radius = GetRandomValue(3, 5);
+
+      // Farbe: Nord11 (rot) oder Nord14 (grün)
       circle_points[i].color = (GetRandomValue(0, 1) == 0)
           ? Nord::index_to_Color( Nord::NORD11 )
           : Nord::index_to_Color( Nord::NORD14 );
-	circle_points[i].color.a = GetRandomValue(0x33, 0xCC); // etwas transparent
+      // Alpha: 150 bis 230 (0.6 bis 0.9 in 0-255) - deutlich sichtbarer
+      circle_points[i].color.a = GetRandomValue(150, 230);
     }
   }
 
-  void draw_circle_points() {
-    // DrawRectangle(0, 0, GetRenderWidth(), GetRenderHeight(), index_to_Color( Nord::NORD0 ) );
+  void draw_circle_points(Shader *shader = nullptr) {
+    if (shader != nullptr && shader->id != 0) {
+      BeginShaderMode(*shader);
+    }
+
     for ( int i = 0; i < COUNT_CIRCLE_POINTS; i++ ) {
-      float draw_x = circle_points[i].base_x + circle_points[i].ox;
-      float draw_y = circle_points[i].base_y + circle_points[i].oy;
+      // Draw position = base position + mouse offset
+      float draw_x = circle_points[i].x + circle_points[i].translateX;
+      float draw_y = circle_points[i].y + circle_points[i].translateY;
       DrawCircleV( { draw_x, draw_y },
                    static_cast<float>(circle_points[i].radius),
                    circle_points[i].color );
     }
+
+    if (shader != nullptr && shader->id != 0) {
+      EndShaderMode();
+    }
   }
 
   void update_circle_points(int width, int height, int /*unused*/ = 0) {
-    const float dt = GetFrameTime();
-    const float fps_norm = static_cast<float>( GetFPS()); // für framerate-unabhängige Bewegung
-    const float jitter_strength = 0.03f;   // wie stark das zufällige Wackeln ist
-    const float mouse_influence = 1.0f;    // skaliert Mauswirkung
-    const float stiffness = 0.12f;         // wie schnell ox/oy zum Ziel konvergiert
-    const float damping = 0.92f;           // für vx/vy Dämpfung
-    const float max_offset_ratio = 0.04f;  // Anteil von min(width,height) als max pixel-offset
-    const float max_jitter_speed = 0.8f;
+    // TypeScript parameters: staticity = 50, ease = 20
+    const float staticity = 50.0f;
+    const float ease = 20.0f;
 
+    // Mouse position relativ zur Fenstermitte (wie in TypeScript)
     Vector2 mouse = GetMousePosition();
-    float mx = 0.0f, my = 0.0f;
-    if (width > 0 && height > 0) {
-      mx = ((mouse.x / (float)width) - 0.5f) * 2.0f; // -1..1
-      my = ((mouse.y / (float)height) - 0.5f) * 2.0f; // -1..1
-    }
-
-    float max_dim = static_cast<float>(std::min(width, height));
-    float max_offset_px = max_dim * max_offset_ratio;
+    float mx = mouse.x - (width / 2.0f);   // mouse.x - w/2
+    float my = mouse.y - (height / 2.0f);  // mouse.y - h/2
 
     for (int i = 0; i < COUNT_CIRCLE_POINTS; ++i) {
-      // Zieloffset basierend auf Maus, gewichtbar durch Parallax:
-      // Punkte mit kleinerer parallax bewegen sich weniger (weit weg).
-      float influence = (1.0f - circle_points[i].parallax) * mouse_influence;
-      float target_ox = mx * max_offset_px * influence;
-      float target_oy = my * max_offset_px * influence;
+      // 1. Konstante Drift (wie TypeScript: circle.x += circle.dx)
+      circle_points[i].x += circle_points[i].dx;
+      circle_points[i].y += circle_points[i].dy;
 
-      // Kleine zufällige Wackelbeschleunigung
-      float ax = (GetRandomValue(-5, 5) / 5.0f) * jitter_strength * dt * fps_norm;
-      float ay = (GetRandomValue(-5, 5) / 5.0f) * jitter_strength * dt * fps_norm;
+      // 2. Mouse influence mit magnetism (wie TypeScript)
+      // translateX += (mouse.x / (staticity / magnetism) - translateX) / ease
+      float mouse_factor_x = mx / (staticity / circle_points[i].magnetism);
+      float mouse_factor_y = my / (staticity / circle_points[i].magnetism);
 
-      circle_points[i].vx += ax;
-      circle_points[i].vy += ay;
+      circle_points[i].translateX += (mouse_factor_x - circle_points[i].translateX) / ease;
+      circle_points[i].translateY += (mouse_factor_y - circle_points[i].translateY) / ease;
 
-      // Dämpfung für Jitter
-      circle_points[i].vx *= damping;
-      circle_points[i].vy *= damping;
+      // 3. Check if particle is out of bounds (wie TypeScript)
+      float final_x = circle_points[i].x + circle_points[i].translateX;
+      float final_y = circle_points[i].y + circle_points[i].translateY;
+      float radius = static_cast<float>(circle_points[i].radius);
 
-      // Begrenze Jitter-Geschwindigkeit
-      float jspeed = std::sqrt(circle_points[i].vx * circle_points[i].vx +
-                               circle_points[i].vy * circle_points[i].vy);
-      if (jspeed > max_jitter_speed && jspeed > 0.0f) {
-        float s = max_jitter_speed / jspeed;
-        circle_points[i].vx *= s;
-        circle_points[i].vy *= s;
+      if (final_x < -radius || final_x > width + radius ||
+          final_y < -radius || final_y > height + radius) {
+        // Reinitialize particle (wie TypeScript: neue Position und Werte)
+        circle_points[i].x = static_cast<float>( GetRandomValue(0, width) );
+        circle_points[i].y = static_cast<float>( GetRandomValue(0, height) );
+        circle_points[i].translateX = 0.0f;
+        circle_points[i].translateY = 0.0f;
+        circle_points[i].dx = (GetRandomValue(0, 100) / 100.0f - 0.5f) * 0.2f;
+        circle_points[i].dy = (GetRandomValue(0, 100) / 100.0f - 0.5f) * 0.2f;
+        circle_points[i].magnetism = 0.1f + (GetRandomValue(0, 400) / 100.0f);
       }
-
-      // Ox/oy nähert sich dem Zieloffset; zusätzlich wird Jitter addiert
-      circle_points[i].ox += (target_ox - circle_points[i].ox) * stiffness;
-      circle_points[i].oy += (target_oy - circle_points[i].oy) * stiffness;
-
-      circle_points[i].ox += circle_points[i].vx;
-      circle_points[i].oy += circle_points[i].vy;
-
-      // Sicherstellen, dass gezeichnete Position nicht außerhalb des Fensters wandert
-      float draw_x = circle_points[i].base_x + circle_points[i].ox;
-      float draw_y = circle_points[i].base_y + circle_points[i].oy;
-      draw_x = std::clamp(draw_x, 0.0f, static_cast<float>(width));
-      draw_y = std::clamp(draw_y, 0.0f, static_cast<float>(height));
-
-      // Wenn clamp gezogen wurde, passe ox/oy so an, dass base + ox/oy == geclampte Position
-      circle_points[i].ox = draw_x - circle_points[i].base_x;
-      circle_points[i].oy = draw_y - circle_points[i].base_y;
     }
   }
+
+  #ifndef PLATFORM_WEB
 
 void print_usage( FILE *stream = stdout ) {
     std::fprintf( stream, "Usage: %s [Options]\n", flag_program_name( ) );
@@ -154,6 +173,8 @@ void print_usage( FILE *stream = stdout ) {
     std::printf( "\nOptions:\n" );
     flag_print_options( stdout );
   }
+
+  #endif
 
 
  // Helper: safer lowercase conversion for C-strings
@@ -174,40 +195,37 @@ std::string toLowerStr(const char *s) {
     bool     show_V_version = false;
     bool     show_help      = false;
     bool     show_h_help    = false;
+    #ifdef PLATFORM_WEB
+    bool     wallpaper_mode = false;  // NEW: Wallpaper mode flag
+    #endif
     char    *title          = ( char * ) CBPS::DEFAULT_TITLE;
     char    *sub_title      = ( char * ) CBPS::DEFAULT_SUB_TITLE;
     uint64_t window_width   = CBPS::DEFAULT_WINDOW_WIDTH;
     uint64_t window_height  = CBPS::DEFAULT_WINDOW_HEIGHT;
 
+    #ifndef PLATFORM_WEB
     flag_bool_var( &show_version, "-version", false, "Show version information" );
-    flag_bool_var(
-      &show_V_version, "V", false, "Show version information (short)" );
+    flag_bool_var( &show_V_version, "v", false, "Show version information" );
     flag_bool_var( &show_help, "-help", false, "Show help information" );
-    flag_bool_var( &show_h_help, "h", false, "Show help information (short)" );
-    flag_str_var( &title, "-title", CBPS::DEFAULT_TITLE, "Set window title" );
-    flag_str_var(
-      &sub_title, "-sub_title", CBPS::DEFAULT_SUB_TITLE, "Set window sub title" );
-    flag_uint64_var(
-      &window_width, "-width", CBPS::DEFAULT_WINDOW_WIDTH, "Set window width" );
-    flag_uint64_var(
-      &window_height, "-height", CBPS::DEFAULT_WINDOW_HEIGHT,
-      "Set window height" );
+    flag_bool_var( &show_h_help, "h", false, "Show help information" );
+    flag_str_var( &title, "title", CBPS::DEFAULT_TITLE, "Set the window title" );
+    flag_str_var( &sub_title, "subtitle", CBPS::DEFAULT_SUB_TITLE, "Set the window subtitle" );
+    flag_uint64_var( &window_width, "width", CBPS::DEFAULT_WINDOW_WIDTH, "Set the window width" );
+    flag_uint64_var( &window_height, "height", CBPS::DEFAULT_WINDOW_HEIGHT, "Set the window height" );
+    // flag_bool_var( &wallpaper_mode, "wallpaper", false, "Run as desktop wallpaper" ); // Removed as per user request
 
-    if ( !flag_parse( argc, argv ) ) {
-      flag_print_error( stderr );
-      CBPS::print_usage( stderr );
-      return 1;
-    }
+    flag_parse( argc, argv );
 
     if ( show_version || show_V_version ) {
-      CBPS::print_app_version( );
+      printf( "Version: %s\n", CBPS::APP_VERSION );
       return 0;
     }
 
     if ( show_help || show_h_help ) {
-      CBPS::print_usage( stdout );
+      flag_print_options( stdout );
       return 0;
     }
+    #endif
 
     // Seed einmalig hier, bevor Punkte initialisiert werden
     {
@@ -219,8 +237,50 @@ std::string toLowerStr(const char *s) {
     CBPS::init_circle_points( window_width, window_height );
 
     // Initialize raylib window
-    SetConfigFlags( FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_HIGHDPI | FLAG_MSAA_4X_HINT | FLAG_INTERLACED_HINT | FLAG_VSYNC_HINT | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_MAXIMIZED | FLAG_WINDOW_UNFOCUSED );
+    // For wallpaper mode: no decorations, not maximized (will be positioned/sized later)
+    SetConfigFlags( FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_HIGHDPI | FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_UNFOCUSED | FLAG_WINDOW_UNDECORATED );
     InitWindow( window_width, window_height, CBPS::APP_NAME );
+
+    // Set window as desktop wallpaper (platform-specific)
+    #ifndef PLATFORM_WEB
+    #if defined(__APPLE__)
+        // macOS: Get native window handle from raylib
+        void* nativeWindow = GetWindowHandle();
+
+        // Get ACTUAL monitor dimensions (not window dimensions)
+        int currentMonitor = GetCurrentMonitor();
+        int screenWidth = GetMonitorWidth(currentMonitor);
+        int screenHeight = GetMonitorHeight(currentMonitor);
+
+        // macOS Menubar height is dynamic (especially with Notch on newer Macs)
+        int menuBarHeight = DesktopWallpaper::GetMenuBarHeight();
+        int windowY = menuBarHeight;
+        int windowHeight = screenHeight - menuBarHeight;
+
+        // Set window to full screen size (accounting for menubar) and position below menubar
+        SetWindowPosition(0, windowY);
+        SetWindowSize(screenWidth, windowHeight);
+
+        // Now set as wallpaper
+        DesktopWallpaper::SetAsWallpaper(nativeWindow);
+
+        printf("macOS: Window positioned at 0,%d with size %dx%d (below menubar)\n",
+               windowY, screenWidth, windowHeight);
+    #elif defined(_WIN32)
+        // Windows: Get HWND
+        HWND hwnd = GetWindowHandle();
+        DesktopWallpaper::SetAsWallpaper(hwnd);
+    #elif defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
+        // Linux/BSD: Get X11 Display and Window
+        // Note: Raylib uses GLFW which uses X11 - we need to get those handles
+        // This requires accessing GLFW internals or X11 directly
+        // For now, commented out - requires additional GLFW/X11 integration
+        // Display* display = glfwGetX11Display();
+        // Window window = glfwGetX11Window(glfwGetCurrentContext());
+        // DesktopWallpaper::SetAsWallpaper(display, window);
+    #endif
+    #endif
+
     SetWindowMinSize( CBPS::MIN_WINDOW_WIDTH, CBPS::MIN_WINDOW_HEIGHT );
     SetTargetFPS( GetMonitorRefreshRate( GetCurrentMonitor() ) >= 60 ? GetMonitorRefreshRate( GetCurrentMonitor() ) : 60 );
 
@@ -252,15 +312,34 @@ std::string toLowerStr(const char *s) {
     return 1;
 	}
 
+	// Load shaders for performance
+	Shader particleShader = LoadShader("./assets/shaders/particle.vs", "./assets/shaders/particle.fs");
+	Shader gradientShader = LoadShader("./assets/shaders/gradient.vs", "./assets/shaders/gradient.fs");
+
+	if (particleShader.id == 0) {
+		fprintf(stderr, "Warning: Failed to load particle shader, using default rendering\n");
+	}
+	if (gradientShader.id == 0) {
+		fprintf(stderr, "Warning: Failed to load gradient shader, using default rendering\n");
+	}
+
+	// Get shader uniform locations
+	int gradientColorALoc = GetShaderLocation(gradientShader, "colorA");
+	int gradientColorBLoc = GetShaderLocation(gradientShader, "colorB");
+
     while ( !WindowShouldClose( ) ) {
       if ( IsWindowResized( ) ) {
         window_width = GetRenderWidth( );
         window_height = GetRenderHeight( );
         CBPS::init_circle_points( window_width, window_height );
       }
+
+      // Update particle positions BEFORE drawing
+      CBPS::update_circle_points( window_width, window_height );
+
       BeginDrawing( );
       ClearBackground( Nord::index_to_Color( Nord::NORD0 ) );
-      CBPS::draw_circle_points( );
+      CBPS::draw_circle_points( particleShader.id != 0 ? &particleShader : nullptr );
 
       // --- Draw centered title / subtitle and decorative lines (inspired by __root.tsx) ---
 
@@ -307,14 +386,30 @@ std::string toLowerStr(const char *s) {
       Color colA = Nord::index_to_Color( Nord::NORD0 );
       Color colB = Nord::index_to_Color( Nord::NORD6 );
 
-      // Draw top line as A -> B -> A by drawing two halves
-      int halfWidth = (int)(lineWidth * 0.5f);
-      int leftX = (int)lineLeft;
-      DrawRectangleGradientH(leftX, (int)(titleY - 28.0f), halfWidth, (int)lineThickness, colA, colB);
-      DrawRectangleGradientH(leftX + halfWidth, (int)(titleY - 28.0f), (int)lineWidth - halfWidth, (int)lineThickness, colB, colA);
-      // Draw bottom line as A -> B -> A
-      DrawRectangleGradientH(leftX, (int)(titleY + titleMeasure.y + 8.0f), halfWidth, (int)lineThickness, colA, colB);
-      DrawRectangleGradientH(leftX + halfWidth, (int)(titleY + titleMeasure.y + 8.0f), (int)lineWidth - halfWidth, (int)lineThickness, colB, colA);
+      // Draw top line as A -> B -> A using shader if available
+      if (gradientShader.id != 0) {
+        // Set shader uniform values
+        float colorAFloat[4] = {colA.r/255.0f, colA.g/255.0f, colA.b/255.0f, colA.a/255.0f};
+        float colorBFloat[4] = {colB.r/255.0f, colB.g/255.0f, colB.b/255.0f, colB.a/255.0f};
+        SetShaderValue(gradientShader, gradientColorALoc, colorAFloat, SHADER_UNIFORM_VEC4);
+        SetShaderValue(gradientShader, gradientColorBLoc, colorBFloat, SHADER_UNIFORM_VEC4);
+
+        BeginShaderMode(gradientShader);
+        // Draw top line
+        DrawRectangle((int)lineLeft, (int)(titleY - 28.0f), (int)lineWidth, (int)lineThickness, WHITE);
+        // Draw bottom line
+        DrawRectangle((int)lineLeft, (int)(titleY + titleMeasure.y + 8.0f), (int)lineWidth, (int)lineThickness, WHITE);
+        EndShaderMode();
+      } else {
+        // Fallback: Draw top line as A -> B -> A by drawing two halves
+        int halfWidth = (int)(lineWidth * 0.5f);
+        int leftX = (int)lineLeft;
+        DrawRectangleGradientH(leftX, (int)(titleY - 28.0f), halfWidth, (int)lineThickness, colA, colB);
+        DrawRectangleGradientH(leftX + halfWidth, (int)(titleY - 28.0f), (int)lineWidth - halfWidth, (int)lineThickness, colB, colA);
+        // Draw bottom line as A -> B -> A
+        DrawRectangleGradientH(leftX, (int)(titleY + titleMeasure.y + 8.0f), halfWidth, (int)lineThickness, colA, colB);
+        DrawRectangleGradientH(leftX + halfWidth, (int)(titleY + titleMeasure.y + 8.0f), (int)lineWidth - halfWidth, (int)lineThickness, colB, colA);
+      }
 
       // Draw title centered
       DrawTextEx( titleFont, title, { titleX, titleY }, (float)titleFontSize, 1.0f, Nord::index_to_Color( Nord::NORD6 ) );
@@ -359,8 +454,6 @@ std::string toLowerStr(const char *s) {
 	  //printf( "FPS: %d\n", GetFPS() );
 
       EndDrawing( );
-
-      CBPS::update_circle_points( window_width, window_height );
     }
 
     // Free loaded fonts and textures
@@ -371,6 +464,10 @@ std::string toLowerStr(const char *s) {
     if ( bdLoaded ) UnloadTexture( bdTex );
     if ( knudLoaded ) UnloadTexture( knudTex );
     if ( fabelLoaded ) UnloadTexture( fabelTex );
+
+    // Unload shaders
+    if (particleShader.id != 0) UnloadShader(particleShader);
+    if (gradientShader.id != 0) UnloadShader(gradientShader);
 
     CloseWindow( );
 

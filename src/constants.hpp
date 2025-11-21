@@ -27,8 +27,10 @@ namespace CBPS {
 
   constexpr const int COUNT_CIRCLE_POINTS = 400;
 
-constexpr const int GLYPHS_COUNT = 4186*32; // 4186 chars should be enough
-constexpr const char *FONT_PATH = "./assets/CaskaydiaCoveNerdFontPropo-Regular.ttf";   // extra glyphs for safety
+  constexpr const int GLYPHS_COUNT = 4186*32; // 4186 chars should be enough
+  constexpr const char *FONT_PATH = "./assets/CaskaydiaCoveNerdFontPropo-Regular.ttf";   // extra glyphs for safety
+
+  constexpr int MAX_RANDOM_FAKTOR = 5;
 
   #ifdef CBPS_CONSTANTS_IMPLEMENTATION
 
