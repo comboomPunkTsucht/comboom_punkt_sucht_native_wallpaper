@@ -19,6 +19,10 @@
   #include "./desktop_wallpaper.hpp"
   #endif
 
+  #ifdef PLATFORM_WEB
+  #include <emscripten/emscripten.h>
+  #endif
+
   #ifdef NORD_COLORS_IMPLEMENTATION
 
   namespace Nord {
@@ -227,19 +231,53 @@ std::string toLowerStr(const char *s) {
     }
     #endif
 
-    #if 0
+    #ifdef PLATFORM_WEB
     // Read title and subtitle from URL query parameters
     // We use emscripten_run_script_string to execute JS and get the string result
-    #include <emscripten/emscripten.h>
+    // IMPORTANT: emscripten_run_script_string returns a temporary string that may be
+    // overwritten, so we need to use strdup to create a permanent copy!
+
+    // Debug: Log the URL and search params
+    emscripten_run_script("console.log('CBPS: Current URL:', window.location.href);");
+    emscripten_run_script("console.log('CBPS: Search params:', window.location.search);");
 
     char* web_title = emscripten_run_script_string("(new URLSearchParams(window.location.search)).get('h1') || ''");
+
     if (web_title && *web_title) {
-        title = web_title;
+        printf("CBPS: Setting title from URL parameter 'h1' to: %s\n", web_title);
+        title = strdup(web_title);  // Create a permanent copy!
+    } else {
+        printf("CBPS: No h1 parameter found, using default title: %s\n", title);
     }
 
     char* web_subtitle = emscripten_run_script_string("(new URLSearchParams(window.location.search)).get('h2') || ''");
     if (web_subtitle && *web_subtitle) {
-        sub_title = web_subtitle;
+        printf("CBPS: Setting subtitle from URL parameter 'h2' to: %s\n", web_subtitle);
+        sub_title = strdup(web_subtitle);  // Create a permanent copy!
+    } else {
+        printf("CBPS: No h2 parameter found, using default subtitle: %s\n", sub_title);
+    }
+
+    char* web_height_str = emscripten_run_script_string("(new URLSearchParams(window.location.search)).get('height') || ''");
+    if (web_height_str && *web_height_str) {
+        int height_value = atoi(web_height_str);
+        if (height_value > 0) {
+            printf("CBPS: Setting height from URL parameter to: %d\n", height_value);
+            window_height = static_cast<uint64_t>(height_value);
+        }
+    } else {
+        printf("CBPS: No height parameter found, using default: %llu\n", window_height);
+    }
+
+    char* web_width_str = emscripten_run_script_string("(new URLSearchParams(window.location.search)).get('width') || ''");
+    if (web_width_str && *web_width_str) {
+        int width_value = atoi(web_width_str);
+        if (width_value > 0) {
+            printf("CBPS: Setting width from URL parameter to: %d\n", width_value);
+            window_width = static_cast<uint64_t>(width_value);
+        }
+    } else {
+        printf("CBPS: No width parameter found, using default: %llu\n", window_width);
     }
     #endif
 
@@ -428,6 +466,14 @@ std::string toLowerStr(const char *s) {
       }
 
       // Draw title centered
+      #ifdef PLATFORM_WEB
+      static int frameCount = 0;
+      if (frameCount < 5) {  // Only log first 5 frames to avoid spam
+          printf("CBPS: Rendering title='%s' at position (%.1f, %.1f) with fontSize=%d\n",
+                 title, titleX, titleY, titleFontSize);
+          frameCount++;
+      }
+      #endif
       DrawTextEx( titleFont, title, { titleX, titleY }, (float)titleFontSize, 1.0f, Nord::index_to_Color( Nord::NORD6 ) );
 
       // If sub_title equals "comboom.sucht", draw the cbps logo instead of the text (centered)
