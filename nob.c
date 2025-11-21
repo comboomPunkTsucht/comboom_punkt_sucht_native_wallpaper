@@ -152,7 +152,7 @@ void build_web() {
   // Regenerate env cmd string to be safe against temp_sprintf buffer rotation
   emsdk_env_cmd = temp_sprintf("source %s/emsdk/emsdk_env.sh && ", WEB_TOOLS_DIR);
 
-  char *build_cmd = temp_sprintf("%s emcc -o %s/index.html %s/main.cpp -I%s -I%s/raylib/src -I%s/raylib/src/external -L%s -lraylib.web -s USE_GLFW=3 -s ASYNCIFY -s TOTAL_MEMORY=67108864 -DPLATFORM_WEB --shell-file %s/shell.html --preload-file %s/assets@assets -O3",
+  char *build_cmd = temp_sprintf("%s emcc -o %s/index.html %s/main.cpp -I%s -I%s/raylib/src -I%s/raylib/src/external -L%s -lraylib.web -s USE_GLFW=3 -s ASYNCIFY -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=134217728 -DPLATFORM_WEB --shell-file %s/shell.html --preload-file %s/assets@assets -O3",
     emsdk_env_cmd,
     WEB_DIR,
     SRC_DIR,

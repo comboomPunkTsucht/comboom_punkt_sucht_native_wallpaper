@@ -30,53 +30,12 @@
             image-rendering: pixelated;
             -ms-interpolation-mode: nearest-neighbor;
         }
-
-        #status {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #d8dee9;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        #progress {
-            margin-top: 20px;
-            width: 200px;
-            height: 4px;
-            background-color: #3b4252;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        #progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #bf616a, #a3be8c);
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        .hide {
-            display: none !important;
-        }
     </style>
 </head>
 <body>
-    <div id="status">
-        <div>Loading CBPS Wallpaper...</div>
-        <div id="progress">
-            <div id="progress-bar"></div>
-        </div>
-    </div>
-
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
 
     <script type='text/javascript'>
-        var statusElement = document.getElementById('status');
-        var progressBar = document.getElementById('progress-bar');
-
         var Module = {
             preRun: [],
             postRun: [],
@@ -97,17 +56,6 @@
             setStatus: function(text) {
                 if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
                 if (text === Module.setStatus.last.text) return;
-                var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-                var now = Date.now();
-                if (m && now - Module.setStatus.last.time < 30) return;
-                Module.setStatus.last.time = now;
-                Module.setStatus.last.text = text;
-                if (m) {
-                    text = m[1];
-                    progressBar.style.width = (parseInt(m[2])*100/parseInt(m[4])) + '%';
-                } else {
-                    progressBar.style.width = '0%';
-                }
                 console.log('Status:', text);
             },
             totalDependencies: 0,
@@ -121,9 +69,6 @@
 
         window.onerror = function() {
             Module.setStatus('Exception thrown, see JavaScript console');
-            statusElement.style.display = 'block';
-            progressBar.style.width = '100%';
-            progressBar.style.backgroundColor = '#bf616a';
         };
     </script>
     {{{ SCRIPT }}}

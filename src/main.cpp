@@ -227,6 +227,22 @@ std::string toLowerStr(const char *s) {
     }
     #endif
 
+    #if 0
+    // Read title and subtitle from URL query parameters
+    // We use emscripten_run_script_string to execute JS and get the string result
+    #include <emscripten/emscripten.h>
+
+    char* web_title = emscripten_run_script_string("(new URLSearchParams(window.location.search)).get('h1') || ''");
+    if (web_title && *web_title) {
+        title = web_title;
+    }
+
+    char* web_subtitle = emscripten_run_script_string("(new URLSearchParams(window.location.search)).get('h2') || ''");
+    if (web_subtitle && *web_subtitle) {
+        sub_title = web_subtitle;
+    }
+    #endif
+
     // Seed einmalig hier, bevor Punkte initialisiert werden
     {
       auto now = std::chrono::system_clock::now();
