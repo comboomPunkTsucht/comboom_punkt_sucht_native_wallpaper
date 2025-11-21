@@ -349,7 +349,7 @@ std::string toLowerStr(const char *s) {
     cbpsTex = LoadTexture( "./assets/images/cbps_logo.png" ); cbpsLoaded = (cbpsTex.id != 0);
     mahdTex = LoadTexture( "./assets/images/mahd_logo.png" ); mahdLoaded = (mahdTex.id != 0);
     bdTex = LoadTexture( "./assets/images/bd_logo.png" ); bdLoaded = (bdTex.id != 0);
-    knudTex = LoadTexture( "./assets/images/knudelzwerck_logo.png" ); knudLoaded = (knudTex.id != 0);
+    knudTex = LoadTexture( "./assets/images/knuddelzwerck_logo.png" ); knudLoaded = (knudTex.id != 0);
     fabelTex = LoadTexture( "./assets/images/fabelke_logo.png" ); fabelLoaded = (fabelTex.id != 0);
 
 
