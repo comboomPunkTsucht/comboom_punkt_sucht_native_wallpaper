@@ -28,14 +28,15 @@
   namespace Nord {
     Color index_to_Color( NordColor color ) {
 
-      return Color{
+      return GetColor(color);
+      /*return Color{
         .r = static_cast< unsigned char >(
           ( index_to_uint32( color ) >> 24 ) & 0xFF ),
         .g = static_cast< unsigned char >(
           ( index_to_uint32( color ) >> 16 ) & 0xFF ),
         .b = static_cast< unsigned char >(
           ( index_to_uint32( color ) >> 8 ) & 0xFF ),
-        .a = static_cast< unsigned char >( index_to_uint32( color ) & 0xFF ) };
+        .a = static_cast< unsigned char >( index_to_uint32( color ) & 0xFF ) }; */
     }
   }  // namespace Nord
 
