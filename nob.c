@@ -207,7 +207,11 @@ int main( int argc, char **argv ) {
   flag_bool_var( &web, "w", false, "Build for web (WASM)" );
   flag_bool_var( &web, "-web", false, "Build for web (WASM)" );
 
+  #ifdef _WIN32
+  BUILD_MAIN = nob_temp_sprintf( "%s/cbps-lwp.exe", BUILD_DIR );
+  #else
   BUILD_MAIN = nob_temp_sprintf( "%s/cbps-lwp", BUILD_DIR );
+  #endif
 
   if ( !flag_parse( ARGS.count, ARGS.items ) ) {
     usage( stderr );
