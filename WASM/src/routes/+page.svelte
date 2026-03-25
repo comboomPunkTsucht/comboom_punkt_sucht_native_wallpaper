@@ -292,13 +292,13 @@
 
 <div class="fixed inset-0 z-10 pointer-events-none flex flex-col items-center justify-center space-y-6 select-none">
 
-  <div class="h-0.75 w-[85%] max-w-5xl bg-linear-to-r from-[#2e3440] via-[#eceff4] to-[#2e3440]"></div>
+  <div class="w-[85%] max-w-5xl shrink-0 rounded-full" style="height: 3px; background: linear-gradient(to right, #2e3440, #eceff4, #2e3440);"></div>
 
   <h1 class="text-[#eceff4] font-sans font-bold tracking-wider text-center text-7xl">
     {h1}
   </h1>
 
-  <div class="h-0.75 w-[85%] max-w-5xl bg-linear-to-r from-[#2e3440] via-[#eceff4] to-[#2e3440]"></div>
+  <div class="w-[85%] max-w-5xl shrink-0 rounded-full" style="height: 3px; background: linear-gradient(to right, #2e3440, #eceff4, #2e3440);"></div>
 
   {#if h2.toLowerCase() === "comboom.sucht"}
     <img
