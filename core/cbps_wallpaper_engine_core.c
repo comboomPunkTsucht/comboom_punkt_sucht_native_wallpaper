@@ -68,7 +68,7 @@ CBPSWallpaperEngine* cbps_engine_create(
     engine->particles[i].magnetism = 0.1f + ((r_fn( ) % 400) / 100.0f);
 
     // Größe: 5 bis 8 (größer für bessere Sichtbarkeit)
-    engine->particles[i].radius = (r_fn( ) % 4) + 5;
+    engine->particles[i].radius = (r_fn( ) % 3) + 3;
 
     // Farbe: Nord11 (rot) oder Nord14 (grün)
     engine->particles[i].color = (r_fn( ) % 2 == 0)
