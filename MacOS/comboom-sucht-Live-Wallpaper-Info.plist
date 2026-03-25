@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>fonts/CaskaydiaCoveNerdFont-Bold.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFont-BoldItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFont-ExtraLight.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFont-ExtraLightItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFont-Italic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFont-Light.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFont-LightItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFont-Regular.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFont-SemiBold.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFont-SemiBoldItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFont-SemiLight.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFont-SemiLightItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontMono-Bold.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontMono-BoldItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontMono-ExtraLight.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontMono-ExtraLightItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontMono-Italic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontMono-Light.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontMono-LightItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontMono-Regular.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontMono-SemiBold.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontMono-SemiBoldItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontMono-SemiLight.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontMono-SemiLightItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-Bold.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-BoldItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-ExtraLight.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-ExtraLightItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-Italic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-Light.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-LightItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-Regular 2.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-Regular.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-SemiBold.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-SemiBoldItalic.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-SemiLight.ttf</string>
+		<string>fonts/CaskaydiaCoveNerdFontPropo-SemiLightItalic.ttf</string>
+	</array>
+</dict>
+</plist>

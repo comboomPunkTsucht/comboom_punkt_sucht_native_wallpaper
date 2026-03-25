@@ -1,0 +1,491 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 100;
+	objects = {
+
+/* Begin PBXFileReference section */
+		91C0F9262F74069B000F4D89 /* CaskaydiaCoveNerdFont-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFont-Bold.ttf"; sourceTree = "<group>"; };
+		91C0F9272F74069B000F4D89 /* CaskaydiaCoveNerdFont-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFont-BoldItalic.ttf"; sourceTree = "<group>"; };
+		91C0F9282F74069B000F4D89 /* CaskaydiaCoveNerdFont-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFont-ExtraLight.ttf"; sourceTree = "<group>"; };
+		91C0F9292F74069B000F4D89 /* CaskaydiaCoveNerdFont-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFont-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		91C0F92A2F74069B000F4D89 /* CaskaydiaCoveNerdFont-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFont-Italic.ttf"; sourceTree = "<group>"; };
+		91C0F92B2F74069B000F4D89 /* CaskaydiaCoveNerdFont-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFont-Light.ttf"; sourceTree = "<group>"; };
+		91C0F92C2F74069B000F4D89 /* CaskaydiaCoveNerdFont-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFont-LightItalic.ttf"; sourceTree = "<group>"; };
+		91C0F92D2F74069B000F4D89 /* CaskaydiaCoveNerdFont-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFont-Regular.ttf"; sourceTree = "<group>"; };
+		91C0F92E2F74069B000F4D89 /* CaskaydiaCoveNerdFont-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFont-SemiBold.ttf"; sourceTree = "<group>"; };
+		91C0F92F2F74069B000F4D89 /* CaskaydiaCoveNerdFont-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFont-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		91C0F9302F74069B000F4D89 /* CaskaydiaCoveNerdFont-SemiLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFont-SemiLight.ttf"; sourceTree = "<group>"; };
+		91C0F9312F74069B000F4D89 /* CaskaydiaCoveNerdFont-SemiLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFont-SemiLightItalic.ttf"; sourceTree = "<group>"; };
+		91C0F9322F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontMono-Bold.ttf"; sourceTree = "<group>"; };
+		91C0F9332F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontMono-BoldItalic.ttf"; sourceTree = "<group>"; };
+		91C0F9342F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontMono-ExtraLight.ttf"; sourceTree = "<group>"; };
+		91C0F9352F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontMono-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		91C0F9362F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontMono-Italic.ttf"; sourceTree = "<group>"; };
+		91C0F9372F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontMono-Light.ttf"; sourceTree = "<group>"; };
+		91C0F9382F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontMono-LightItalic.ttf"; sourceTree = "<group>"; };
+		91C0F9392F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontMono-Regular.ttf"; sourceTree = "<group>"; };
+		91C0F93A2F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontMono-SemiBold.ttf"; sourceTree = "<group>"; };
+		91C0F93B2F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontMono-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		91C0F93C2F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-SemiLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontMono-SemiLight.ttf"; sourceTree = "<group>"; };
+		91C0F93D2F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-SemiLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontMono-SemiLightItalic.ttf"; sourceTree = "<group>"; };
+		91C0F93E2F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-Bold.ttf"; sourceTree = "<group>"; };
+		91C0F93F2F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-BoldItalic.ttf"; sourceTree = "<group>"; };
+		91C0F9402F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-ExtraLight.ttf"; sourceTree = "<group>"; };
+		91C0F9412F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		91C0F9422F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-Italic.ttf"; sourceTree = "<group>"; };
+		91C0F9432F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-Light.ttf"; sourceTree = "<group>"; };
+		91C0F9442F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-LightItalic.ttf"; sourceTree = "<group>"; };
+		91C0F9452F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-Regular.ttf"; sourceTree = "<group>"; };
+		91C0F9462F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-Regular 2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-Regular 2.ttf"; sourceTree = "<group>"; };
+		91C0F9472F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-SemiBold.ttf"; sourceTree = "<group>"; };
+		91C0F9482F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		91C0F9492F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-SemiLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-SemiLight.ttf"; sourceTree = "<group>"; };
+		91C0F94A2F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-SemiLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaskaydiaCoveNerdFontPropo-SemiLightItalic.ttf"; sourceTree = "<group>"; };
+		91CB03832F73D91500E8BCDF /* comboom.sucht Live Wallpaper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "comboom.sucht Live Wallpaper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		91E7680A2F73E80600446EFB /* libcbps_we_core_mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcbps_we_core_mac.a; path = ../build/libcbps_we_core_mac.a; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		91E768042F73E5BB00446EFB /* Exceptions for "comboom.sucht Live Wallpaper" folder in "comboom.sucht Live Wallpaper" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				core,
+			);
+			target = 91CB03822F73D91500E8BCDF /* comboom.sucht Live Wallpaper */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		91CB03852F73D91500E8BCDF /* comboom.sucht Live Wallpaper */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				91E768042F73E5BB00446EFB /* Exceptions for "comboom.sucht Live Wallpaper" folder in "comboom.sucht Live Wallpaper" target */,
+			);
+			path = "comboom.sucht Live Wallpaper";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		91CB03802F73D91500E8BCDF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		91C0F94B2F74069B000F4D89 /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				91C0F9262F74069B000F4D89 /* CaskaydiaCoveNerdFont-Bold.ttf */,
+				91C0F9272F74069B000F4D89 /* CaskaydiaCoveNerdFont-BoldItalic.ttf */,
+				91C0F9282F74069B000F4D89 /* CaskaydiaCoveNerdFont-ExtraLight.ttf */,
+				91C0F9292F74069B000F4D89 /* CaskaydiaCoveNerdFont-ExtraLightItalic.ttf */,
+				91C0F92A2F74069B000F4D89 /* CaskaydiaCoveNerdFont-Italic.ttf */,
+				91C0F92B2F74069B000F4D89 /* CaskaydiaCoveNerdFont-Light.ttf */,
+				91C0F92C2F74069B000F4D89 /* CaskaydiaCoveNerdFont-LightItalic.ttf */,
+				91C0F92D2F74069B000F4D89 /* CaskaydiaCoveNerdFont-Regular.ttf */,
+				91C0F92E2F74069B000F4D89 /* CaskaydiaCoveNerdFont-SemiBold.ttf */,
+				91C0F92F2F74069B000F4D89 /* CaskaydiaCoveNerdFont-SemiBoldItalic.ttf */,
+				91C0F9302F74069B000F4D89 /* CaskaydiaCoveNerdFont-SemiLight.ttf */,
+				91C0F9312F74069B000F4D89 /* CaskaydiaCoveNerdFont-SemiLightItalic.ttf */,
+				91C0F9322F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-Bold.ttf */,
+				91C0F9332F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-BoldItalic.ttf */,
+				91C0F9342F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-ExtraLight.ttf */,
+				91C0F9352F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-ExtraLightItalic.ttf */,
+				91C0F9362F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-Italic.ttf */,
+				91C0F9372F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-Light.ttf */,
+				91C0F9382F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-LightItalic.ttf */,
+				91C0F9392F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-Regular.ttf */,
+				91C0F93A2F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-SemiBold.ttf */,
+				91C0F93B2F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-SemiBoldItalic.ttf */,
+				91C0F93C2F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-SemiLight.ttf */,
+				91C0F93D2F74069B000F4D89 /* CaskaydiaCoveNerdFontMono-SemiLightItalic.ttf */,
+				91C0F93E2F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-Bold.ttf */,
+				91C0F93F2F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-BoldItalic.ttf */,
+				91C0F9402F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-ExtraLight.ttf */,
+				91C0F9412F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-ExtraLightItalic.ttf */,
+				91C0F9422F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-Italic.ttf */,
+				91C0F9432F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-Light.ttf */,
+				91C0F9442F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-LightItalic.ttf */,
+				91C0F9452F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-Regular.ttf */,
+				91C0F9462F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-Regular 2.ttf */,
+				91C0F9472F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-SemiBold.ttf */,
+				91C0F9482F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-SemiBoldItalic.ttf */,
+				91C0F9492F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-SemiLight.ttf */,
+				91C0F94A2F74069B000F4D89 /* CaskaydiaCoveNerdFontPropo-SemiLightItalic.ttf */,
+			);
+			name = fonts;
+			path = "comboom.sucht Live Wallpaper/fonts";
+			sourceTree = "<group>";
+		};
+		91CB037A2F73D91500E8BCDF = {
+			isa = PBXGroup;
+			children = (
+				91CB03852F73D91500E8BCDF /* comboom.sucht Live Wallpaper */,
+				91E768012F73E57200446EFB /* Frameworks */,
+				91CB03842F73D91500E8BCDF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		91CB03842F73D91500E8BCDF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				91CB03832F73D91500E8BCDF /* comboom.sucht Live Wallpaper.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		91E768012F73E57200446EFB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				91C0F94B2F74069B000F4D89 /* fonts */,
+				91E7680A2F73E80600446EFB /* libcbps_we_core_mac.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		91CB03822F73D91500E8BCDF /* comboom.sucht Live Wallpaper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 91CB038E2F73D91800E8BCDF /* Build configuration list for PBXNativeTarget "comboom.sucht Live Wallpaper" */;
+			buildPhases = (
+				91CB037F2F73D91500E8BCDF /* Sources */,
+				91CB03802F73D91500E8BCDF /* Frameworks */,
+				91CB03812F73D91500E8BCDF /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				91CB03852F73D91500E8BCDF /* comboom.sucht Live Wallpaper */,
+			);
+			name = "comboom.sucht Live Wallpaper";
+			productName = "comboom.sucht Live Wallpaper";
+			productReference = 91CB03832F73D91500E8BCDF /* comboom.sucht Live Wallpaper.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		91CB037B2F73D91500E8BCDF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2640;
+				LastUpgradeCheck = 2640;
+				TargetAttributes = {
+					91CB03822F73D91500E8BCDF = {
+						CreatedOnToolsVersion = 26.4;
+					};
+				};
+			};
+			buildConfigurationList = 91CB037E2F73D91500E8BCDF /* Build configuration list for PBXProject "comboom.sucht Live Wallpaper" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 91CB037A2F73D91500E8BCDF;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 100;
+			productRefGroup = 91CB03842F73D91500E8BCDF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				91CB03822F73D91500E8BCDF /* comboom.sucht Live Wallpaper */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		91CB03812F73D91500E8BCDF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		91CB037F2F73D91500E8BCDF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		91CB038C2F73D91800E8BCDF /* Debug configuration for PBXProject "comboom.sucht Live Wallpaper" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 3KUZ76Z8W3;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "comboom.sucht Live Wallpaper/Bridging-Header.h";
+				SWIFT_OBJC_INTEROP_MODE = objcxx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		91CB038D2F73D91800E8BCDF /* Release configuration for PBXProject "comboom.sucht Live Wallpaper" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 3KUZ76Z8W3;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "comboom.sucht Live Wallpaper/Bridging-Header.h";
+				SWIFT_OBJC_INTEROP_MODE = objcxx;
+			};
+			name = Release;
+		};
+		91CB038F2F73D91800E8BCDF /* Debug configuration for PBXNativeTarget "comboom.sucht Live Wallpaper" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Appicon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "comboom-sucht-Live-Wallpaper-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "comboom.sucht Live Wallpaper";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
+					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
+					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
+					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.comboom.sucht.comboom-sucht-Live-Wallpaper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = YES;
+				RUNTIME_EXCEPTION_ALLOW_JIT = YES;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "comboom.sucht Live Wallpaper/Bridging-Header.h";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		91CB03902F73D91800E8BCDF /* Release configuration for PBXNativeTarget "comboom.sucht Live Wallpaper" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Appicon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "comboom-sucht-Live-Wallpaper-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "comboom.sucht Live Wallpaper";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
+					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
+					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
+					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
+				);
+				MARKETING_VERSION = 1.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.comboom.sucht.comboom-sucht-Live-Wallpaper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = YES;
+				RUNTIME_EXCEPTION_ALLOW_JIT = YES;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "comboom.sucht Live Wallpaper/Bridging-Header.h";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		91CB037E2F73D91500E8BCDF /* Build configuration list for PBXProject "comboom.sucht Live Wallpaper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				91CB038C2F73D91800E8BCDF /* Debug configuration for PBXProject "comboom.sucht Live Wallpaper" */,
+				91CB038D2F73D91800E8BCDF /* Release configuration for PBXProject "comboom.sucht Live Wallpaper" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		91CB038E2F73D91800E8BCDF /* Build configuration list for PBXNativeTarget "comboom.sucht Live Wallpaper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				91CB038F2F73D91800E8BCDF /* Debug configuration for PBXNativeTarget "comboom.sucht Live Wallpaper" */,
+				91CB03902F73D91800E8BCDF /* Release configuration for PBXNativeTarget "comboom.sucht Live Wallpaper" */,
+			);
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 91CB037B2F73D91500E8BCDF /* Project object */;
+}
