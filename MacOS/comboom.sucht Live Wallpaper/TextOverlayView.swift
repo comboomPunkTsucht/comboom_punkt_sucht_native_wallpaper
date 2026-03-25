@@ -52,7 +52,7 @@ struct TextOverlayView: View {
                     gradientLine(width: lineWidth)
 
                     // H2 (Untertitel oder cbps Logo)
-                    if engineManager.h2.lowercased() == "comboom.sucht" {
+                    if engineManager.h2.lowercased() == "comboom.sucht".lowercased() {
                         Image("cbps_logo")
                             .resizable()
                             .scaledToFit()
@@ -98,13 +98,13 @@ struct TextOverlayView: View {
             HStack {
                 Spacer()
 
-                if h1Lower == "mcpeaps_hd" {
+                if h1Lower == "mcpeaps_hd".lowercased() {
                     Image("mahd_logo").resizable().scaledToFit().frame(height: targetH)
-                } else if h1Lower == "blackdragon" {
+                } else if h1Lower == "blackdragon".lowercased() {
                     Image("bd_logo").resizable().scaledToFit().frame(height: targetH)
-                } else if h1Lower == "knuddelzwerck" {
+                } else if h1Lower == "knuddelzwerck".lowercased() {
                     Image("knuddelzwerck_logo").resizable().scaledToFit().frame(height: targetH)
-                } else if h1Lower == "fabelke" {
+                } else if h1Lower == "fabelke".lowercased() {
                     Image("fabelke_logo").resizable().scaledToFit().frame(height: targetH)
                 }
             }

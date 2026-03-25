@@ -24,9 +24,11 @@ default:
 
 # --- 1. WebAssembly ---
 @wasm: prepare
-    echo "🚀 Baue WebAssembly (.wasm)..."
-    {{CC}} --target=wasm32-unknown-unknown -nostdlib -O3 -flto -Wl,--no-entry -Wl,--export-dynamic -o {{WASM_OUT}} {{SRC}}
-    echo "✅ Fertig: {{WASM_OUT}}"
+	echo "🚀 Baue WebAssembly (.wasm)..."
+	{{CC}} --target=wasm32-unknown-unknown -nostdlib -fno-builtin -O3 -flto -Wl,--no-entry -Wl,--export-dynamic -Wl,--export-table -Wl,--growable-table -Wl,--export=cbps_engine_create -Wl,--export=cbps_engine_update -Wl,--export=cbps_engine_destroy -o {{WASM_OUT}} {{SRC}}
+	echo "📦 Kopiere .wasm in den SvelteKit static Ordner..."
+	cp {{WASM_OUT}} ./WASM/static/cbps_we_core.wasm
+	echo "✅ Fertig!"
 
 # --- 2. macOS ---
 @mac-static: prepare
