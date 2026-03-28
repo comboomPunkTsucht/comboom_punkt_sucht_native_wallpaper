@@ -8,18 +8,19 @@ dist/
 *.dylib
 *.exe
 *.wasm
+!WASM/static/*.wasm
 *.app
 
 node_modules/
 **/node_modules/
 
 # Output
-****/.output
-****/.vercel
-****/.netlify
-****/.wrangler
-****/.svelte-kit
-****/build
+**/.output
+**/.vercel
+**/.netlify
+**/.wrangler
+**/.svelte-kit
+**/build
 
 # OS
 **/.DS_Store
