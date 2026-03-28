@@ -10,3 +10,5 @@ then
 fi
 # update the wasm file
 just wasm
+
+git add WASM/static/*.wasm
