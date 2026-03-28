@@ -29,8 +29,6 @@ CBPSWallpaperEngine* cbps_engine_create(
   unsigned int screen_width, unsigned int screen_height,
   unsigned int particle_count, const char* h1, const char* h2,
   cbps_malloc_t m_fn, cbps_free_t f_fn, cbps_rand_t r_fn ) {
-
-  particle_count += 2;
   // Sicherheitscheck: Ohne Memory-Allocator können wir nicht arbeiten
   if ( !m_fn || !f_fn || !r_fn ) {
     return 0;
