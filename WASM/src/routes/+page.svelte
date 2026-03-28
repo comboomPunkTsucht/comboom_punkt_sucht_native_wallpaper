@@ -292,13 +292,13 @@
 
 <div class="fixed inset-0 z-10 pointer-events-none flex flex-col items-center justify-center space-y-6 select-none">
 
-  <div class="w-[85vw] max-w-7xl shrink-0 rounded-full" style="height: 3px; background: linear-gradient(to right, #2e3440, #eceff4, #2e3440);"></div>
+  <div class="w-[85vw] max-w-9xl shrink-0 rounded-full" style="height: 3px; background: linear-gradient(to right, #2e3440, #eceff4, #2e3440);"></div>
 
-  <h1 class="text-[#eceff4] font-sans font-bold tracking-wider text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
+  <h1 class="text-[#eceff4] font-sans font-bold tracking-wider text-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl">
     {h1}
   </h1>
 
-  <div class="w-[85vw] max-w-7xl shrink-0 rounded-full" style="height: 3px; background: linear-gradient(to right, #2e3440, #eceff4, #2e3440);"></div>
+  <div class="w-[85vw] max-w-9xl shrink-0 rounded-full" style="height: 3px; background: linear-gradient(to right, #2e3440, #eceff4, #2e3440);"></div>
 
   {#if h2.toLowerCase() === "comboom.sucht"}
     <img
@@ -307,7 +307,7 @@
       class="object-contain w-50 h-50"
     />
   {:else}
-    <h2 class="text-[#eceff4] font-sans text-center text-2xl md:text-3xl lg:text-4xl">
+    <h2 class="text-[#eceff4] font-sans text-center text-2xl md:text-4xl lg:text-5xl">
       {h2}
     </h2>
   {/if}
