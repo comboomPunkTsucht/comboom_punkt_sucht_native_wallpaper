@@ -7,8 +7,8 @@
   ],
   "scripts": {
     "prepare": "husky",
-    "dev": "bun --cwd WASM run dev",
-    "build": "bun --cwd WASM run build",
+    "dev": "bun --cwd=WASM run dev",
+    "build": "bun --cwd=WASM run build",
     "libs": "just all",
     "libs:wasm": "just wasm",
     "libs:windows": "just win-static",

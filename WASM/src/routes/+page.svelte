@@ -19,9 +19,21 @@
   let canvas: HTMLCanvasElement | null = $state(null);
   let gl: WebGL2RenderingContext | null = $state(null);
 
-  let mouse = { x: 0, y: 0 };
-  let canvasSize = { w: 0, h: 0 };
+  let mouse = $state({ x: 0, y: 0 });
+  let canvasSize = $state({ w: 0, h: 0 });
 
+  let titleFontSize =$derived(Math.max(24, Math.min(160, canvasSize.w / 10)))
+  let subFontSize = $derived(Math.max(12, Math.min(48, canvasSize.w / 30)))
+  let lineWidth = $derived(canvasSize.w * 0.85)
+
+  let BRLogoTargetH = $derived(Math.max(24, Math.min(128, canvasSize.h * 0.06)))
+
+  let CBPSLogoTargetH = $derived(Math.max(48, Math.min(192, canvasSize.h * 0.12)))
+
+
+
+  let backgroundColor;
+  let foregroundColor;
   // --- WASM & Engine State ---
   let wasmInstance: WebAssembly.Instance | null = null;
   let enginePtr: number = 0;
@@ -54,6 +66,10 @@
     canvas.height = canvasSize.h * dpr;
     canvas.style.width = `${canvasSize.w}px`;
     canvas.style.height = `${canvasSize.h}px`;
+
+    console.log("CBPSLogoTargetH:", CBPSLogoTargetH);
+    console.log("BRLogoTargetH:", BRLogoTargetH);
+
   }
 
   function writeWasmString(str: string): number {
@@ -292,22 +308,23 @@
 
 <div class="fixed inset-0 z-10 pointer-events-none flex flex-col items-center justify-center space-y-6 select-none">
 
-  <div class="w-[85vw] max-w-9xl shrink-0 rounded-full" style="height: 3px; background: linear-gradient(to right, #2e3440, #eceff4, #2e3440);"></div>
+  <div class="shrink-0 rounded-full" style="width: {lineWidth}px; height: 3px; background: linear-gradient(to right, #2e3440, #eceff4, #2e3440);"></div>
 
-  <h1 class="text-[#eceff4] font-sans font-bold tracking-wider text-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl">
+  <h1 class="text-[#eceff4] font-sans tracking-wider text-center" style="font-size: {titleFontSize}px;">
     {h1}
   </h1>
 
-  <div class="w-[85vw] max-w-9xl shrink-0 rounded-full" style="height: 3px; background: linear-gradient(to right, #2e3440, #eceff4, #2e3440);"></div>
+  <div class="shrink-0 rounded-full" style="width: {lineWidth}px; height: 3px; background: linear-gradient(to right, #2e3440, #eceff4, #2e3440);"></div>
 
   {#if h2.toLowerCase() === "comboom.sucht"}
     <img
       src="/pictures/cbps_logo.png"
       alt="comboom.sucht Logo"
-      class="object-contain w-50 h-50"
+      class="object-contain w-auto"
+      style="height: {CBPSLogoTargetH}px;"
     />
   {:else}
-    <h2 class="text-[#eceff4] font-sans text-center text-2xl md:text-4xl lg:text-5xl">
+    <h2 class="text-[#eceff4] font-sans text-center" style="font-size: {subFontSize}px;">
       {h2}
     </h2>
   {/if}
@@ -315,14 +332,14 @@
 </div>
 
 {#if h1.toLowerCase() === "mcpeaps_hd"}
-<img src="/pictures/mahd_logo.png" alt="mcpeaps_HD Logo" class="w-16 h-16 absolute bottom-6 right-6 pointer-events-none" />
+  <img src="/pictures/mahd_logo.png" alt="mcpeaps_HD Logo" class="absolute bottom-4 right-4 pointer-events-none object-contain w-auto" style="height: {BRLogoTargetH}px;" />
 {/if}
 {#if h1.toLowerCase() === "blackdragon"}
-<img src="/pictures/bd_logo.png" alt="BlackDragon Logo" class="w-16 h-16 absolute bottom-6 right-6 pointer-events-none" />
+  <img src="/pictures/bd_logo.png" alt="BlackDragon Logo" class="absolute bottom-4 right-4 pointer-events-none object-contain w-auto" style="height: {BRLogoTargetH}px;" />
 {/if}
 {#if h1.toLowerCase() === "knuddelzwerck"}
-<img src="/pictures/knuddelzwerck_logo.png" alt="Knuddelzwerck Logo" class="w-16 h-16 absolute bottom-6 right-6 pointer-events-none" />
+  <img src="/pictures/knuddelzwerck_logo.png" alt="Knuddelzwerck Logo" class="absolute bottom-4 right-4 pointer-events-none object-contain w-auto" style="height: {BRLogoTargetH}px;" />
 {/if}
 {#if h1.toLowerCase() === "fabelke"}
-<img src="/pictures/fabelke_logo.png" alt="Fabelke Logo" class="w-16 h-16 absolute bottom-6 right-6 pointer-events-none" />
+  <img src="/pictures/fabelke_logo.png" alt="Fabelke Logo" class="absolute bottom-4 right-4 pointer-events-none object-contain w-auto" style="height: {BRLogoTargetH}px;" />
 {/if}
