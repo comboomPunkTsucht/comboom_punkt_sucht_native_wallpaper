@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+set -e
+git update-index -g

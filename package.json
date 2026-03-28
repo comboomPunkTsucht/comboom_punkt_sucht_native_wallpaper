@@ -1,0 +1,23 @@
+{
+  "name": "comboom_punkt_sucht_native_wallpaper",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "WASM"
+  ],
+  "scripts": {
+    "prepare": "husky",
+    "dev": "bun --cwd WASM run dev",
+    "build": "bun run libs:wasm && bun --cwd WASM run build",
+    "libs": "just all",
+    "libs:wasm": "just wasm",
+    "libs:windows": "just win-static",
+    "libs:linux": "just linux-static",
+    "libs:macos": "just macos-static",
+    "libs:clean": "just clean"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "rust-just": "^1.48.1"
+  }
+}
