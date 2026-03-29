@@ -25,7 +25,7 @@ default:
 # --- 1. WebAssembly ---
 @wasm: prepare
 	echo "🚀 Baue WebAssembly (.wasm)..."
-	{{CC}} --target=wasm32-unknown-unknown -nostdlib -fno-builtin -O3 -flto -Wl,--no-entry -Wl,--export-dynamic -Wl,--export-table -Wl,--growable-table -Wl,--export=cbps_engine_create -Wl,--export=cbps_engine_update -Wl,--export=cbps_engine_destroy -o {{WASM_OUT}} {{SRC}}
+	{{CC}} --target=wasm32-unknown-unknown -nostdlib -fno-builtin -O3 -flto -Wl,--no-entry -Wl,--export-dynamic -Wl,--export-table -Wl,--growable-table -Wl,--allow-undefined -Wl,--export=cbps_engine_create -Wl,--export=cbps_engine_update -Wl,--export=cbps_engine_destroy -o {{WASM_OUT}} {{SRC}}
 	echo "📦 Kopiere .wasm in den SvelteKit static Ordner..."
 	cp {{WASM_OUT}} ./WASM/static/cbps_we_core.wasm
 	echo "✅ Fertig!"
@@ -40,14 +40,11 @@ default:
 
 # --- 3. Windows ---
 @win-static: prepare
-    echo "🪟 Baue Windows Static (.a)..."
-    # Kompiliere zur Objektdatei (.o) für Windows
-    x86_64-w64-mingw32-clang -O3 -c {{SRC}} -o {{BUILD_DIR}}/win.o 2>/dev/null || \
-    {{CC}} --target=x86_64-pc-windows-gnu -O3 -c {{SRC}} -o {{BUILD_DIR}}/win.o
-    # Erstelle das statische Archiv
-    ar rcs {{WIN_STATIC}} {{BUILD_DIR}}/win.o
-    rm {{BUILD_DIR}}/win.o
-    echo "✅ Fertig: {{WIN_STATIC}}"
+	echo "🪟 Baue Windows Static (.a)..."
+	x86_64-w64-mingw32-gcc -O3 -c {{SRC}} -o {{BUILD_DIR}}/win.o
+	x86_64-w64-mingw32-ar rcs {{WIN_STATIC}} {{BUILD_DIR}}/win.o
+	rm {{BUILD_DIR}}/win.o
+	echo "✅ Fertig: {{WIN_STATIC}}"
 
 # --- 4. Linux (Wayland/X11) ---
 @linux-static: prepare

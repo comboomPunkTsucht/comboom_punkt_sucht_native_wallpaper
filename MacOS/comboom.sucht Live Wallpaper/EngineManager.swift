@@ -38,10 +38,7 @@ class EngineManager: ObservableObject {
       // C-Engine initialisieren
     engine = cbps_engine_create(
       self.sceen_width, self.sceen_height, 400,
-      "", "",
-      { size in malloc(Int(size)) },
-      { ptr in free(ptr) },
-      { Int32(arc4random() % 0x7FFFFFFF) }
+      "", ""
     )
 
       // NEU: Für JEDEN angeschlossenen Monitor ein eigenes Fenster bauen!
@@ -96,10 +93,7 @@ class EngineManager: ObservableObject {
             h1CStr,
             h2CStr,
             self.sceen_width, self.sceen_height,
-            mouseX, mouseY,
-            { size in malloc(Int(size)) },
-            { ptr in free(ptr) },
-            { Int32(arc4random() % 0x7FFFFFFF) }
+            mouseX, mouseY
           )
         }
       }
@@ -116,7 +110,7 @@ class EngineManager: ObservableObject {
     displayLink = nil
 
     if let enginePtr = engine {
-      cbps_engine_destroy(enginePtr, { ptr in free(ptr) })
+      cbps_engine_destroy(enginePtr)
       engine = nil
     }
   }

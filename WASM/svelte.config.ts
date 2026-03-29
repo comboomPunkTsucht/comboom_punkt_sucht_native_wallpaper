@@ -1,6 +1,5 @@
 import adapter from "@sveltejs/adapter-vercel";
 import { type Config } from "@sveltejs/kit";
-import { sveltePreprocess } from "svelte-preprocess";
 
 const config: Config = {
 	kit: {
@@ -13,11 +12,6 @@ const config: Config = {
 			},
 		},
 	},
-	preprocess: [
-		sveltePreprocess({
-			typescript: true,
-		}),
-	],
 	vitePlugin: {
 		inspector: true,
 	},

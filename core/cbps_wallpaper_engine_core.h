@@ -4,12 +4,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-  // --- Eigene Typen für die Host-Funktionen (Dependency Injection) ---
-  typedef void* ( *cbps_malloc_t )( unsigned int size );
-  typedef void  ( *cbps_free_t )( void* ptr );
-  typedef int   ( *cbps_rand_t )( void );
-
   typedef struct {
       unsigned char r, g, b, a;
   } CBPSColor;
@@ -48,17 +42,20 @@ extern "C" {
   // Funktionen
   CBPSWallpaperEngine* cbps_engine_create(
     unsigned int screen_width, unsigned int screen_height,
-    unsigned int particle_count, const char* h1, const char* h2,
-    cbps_malloc_t m_fn, cbps_free_t f_fn, cbps_rand_t r_fn );
+    unsigned int particle_count, const char* h1, const char* h2);
 
   void cbps_engine_update(
     CBPSWallpaperEngine* engine, float delta_time, const char* h1,
-    const char* h2, unsigned int screen_width, unsigned int screen_height, int mouseX, int mouseY, cbps_malloc_t m_fn, cbps_free_t f_fn, cbps_rand_t r_fn);
+    const char* h2, unsigned int screen_width, unsigned int screen_height, int mouseX, int mouseY);
 
   const CBPSParticle* cbps_engine_get_particles(
     CBPSWallpaperEngine* engine, unsigned int* out_particle_count );
 
-  void cbps_engine_destroy( CBPSWallpaperEngine* engine, cbps_free_t f_fn );
+  void cbps_engine_destroy( CBPSWallpaperEngine* engine);
+
+  // --- Debugging & Logging ---
+  void cbps_log( const char* message );
+  void cbps_log_num( const char* message, float number );
 
 #ifdef __cplusplus
 }
