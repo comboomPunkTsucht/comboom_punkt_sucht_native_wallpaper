@@ -10,6 +10,7 @@
     quantity?: number;
   }
 let wasmpath = "/cbps_we_core.wasm";
+const utf8Decoder = new TextDecoder();
 
   let { h1 = $bindable(), h2 = $bindable(), canvasSize = $bindable(), quantity = 150 }: Props = $props();
   let mouse = { x: 0, y: 0 };
@@ -88,23 +89,11 @@ let wasmpath = "/cbps_we_core.wasm";
     mouse.y = (canvasSize.h / 2) + (tiltY / 45) * (canvasSize.h / 2);
   }
 
-  // Hilfsfunktion: Wandelt einen C-Speicherpointer in einen JS-String um
-  function readWasmStringFromMemory(ptr: number): string {
-    if (!wasmInstance) return "";
-    const memory = (wasmInstance.exports.memory as WebAssembly.Memory).buffer;
-    const bytes = new Uint8Array(memory, ptr);
-    let len = 0;
-    while (bytes[len] !== 0) len++; // Suche das Null-Byte (\0) des C-Strings
-    return new TextDecoder().decode(new Uint8Array(memory, ptr, len));
-  }
-
   onMount(() => {
     const env = {
-      js_log: (strPtr: number) => {
-        console.log("🛠️ [C-ENGINE]:", readWasmStringFromMemory(strPtr));
-      },
-      js_log_num: (strPtr: number, num: number) => {
-        console.log("📊 [C-ENGINE]:", readWasmStringFromMemory(strPtr), num);
+      js_write: (buf: number, n: number) => {
+        const s = utf8Decoder.decode(new Uint8Array((wasmInstance.exports.memory as WebAssembly.Memory).buffer, buf, n));
+        console.log(s);
       }
     };
 
@@ -113,6 +102,11 @@ let wasmpath = "/cbps_we_core.wasm";
       .then(bytes => WebAssembly.instantiate(bytes, { env }))
       .then(({ instance }) => {
         wasmInstance = instance;
+
+        heapBase = (wasmInstance.exports.__heap_base as WebAssembly.Global).value;
+
+        const randomSeed = Math.floor(Math.random() * 2147483647);
+        (wasmInstance.exports.cbps_engine_set_seed as Function)(randomSeed);
 
         // KEIN SAFARI HACK MEHR!
         let h1Ptr = writeWasmString(h1);

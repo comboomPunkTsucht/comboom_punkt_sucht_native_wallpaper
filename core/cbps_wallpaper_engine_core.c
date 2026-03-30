@@ -1,4 +1,6 @@
 #include "cbps_wallpaper_engine_core.h"
+#include <stdarg.h>
+#include <stddef.h>
 #if !defined (__wasm__)
   #include <stdio.h>   // Für printf
   #include <stdlib.h>  // Für malloc, free
@@ -9,17 +11,16 @@
   #define CBPS_WE_malloc malloc
   #define CBPS_WE_free free
   #define CBPS_WE_rand rand
-
-void cbps_log( const char* message ) {
-  printf( message );
-}
-
-void cbps_log_num( const char* message, float number ) {
-  printf( message, number );
-}
 #else
+#define STB_SPRINTF_IMPLEMENTATION
+#include "stb_sprintf.h" // Für vsnprintf (WASM hat kein stdio, aber wir brauchen es für printf)
 
 static unsigned int r_seed = 12345;  // Kann von außen einmal gesetzt werden
+
+// 1. NEU: Seed von außen setzbar machen
+void cbps_engine_set_seed(unsigned int seed) {
+    if (seed != 0) r_seed = seed;
+}
 
 int internal_rand( ) {
   r_seed = r_seed * 1103515245 + 12345;
@@ -37,7 +38,7 @@ void*                internal_malloc( unsigned int size ) {
 
 // Free macht in WASM bei dir aktuell eh nichts, da beim Reload der Speichers
 // komplett verworfen wird
-void internal_free( void* ptr ) { }
+void internal_free( void* ptr, ... ) { }
 
 // --- Interne Hilfsfunktionen (Ersatz für <string.h>) ---
 static unsigned int internal_strlen( const char* str ) {
@@ -62,16 +63,19 @@ static char* internal_strdup( const char* str ) {
   return copy;
 }
 
-extern void js_log( const char* message );
-extern void js_log_num( const char* message, float number );
+extern void js_write( void* buffer,  size_t size );
 
 // 2. Die Funktionen, die du in deinem C-Code aufrufen kannst
-void cbps_log( const char* message ) {
-  js_log( message );
-}
-
-void cbps_log_num( const char* message, float number ) {
-  js_log_num( message, number );
+int printf( const char* fmt, ... ) {
+  // Implementierung für printf
+  va_list args;
+  va_start( args, fmt );
+  int n = stbsp_vsnprintf( NULL, 0, fmt, args );  // Benötigte Größe ermitteln
+  va_end( args );
+  char buf[ n + 1 ];
+  stbsp_vsnprintf( buf, n + 1, fmt, args );
+  js_write( buf, n +1);
+  return n;
 }
 
 #define CBPS_WE_strdup internal_strdup
@@ -136,7 +140,7 @@ CBPSWallpaperEngine* cbps_engine_create(
   engine->background_color = CBPSBACKGROUND;
   engine->foreground_color = CBPSFOREGROUND;
 
-  cbps_log( "Engine created.\n" );
+  printf( "Engine created.\n" );
   return engine;
 }
 
@@ -215,7 +219,7 @@ const CBPSParticle* cbps_engine_get_particles(
     return 0;  // NULL
   }
   *out_particle_count = engine->particle_count;
-  cbps_log_num( "Get Particles: %d\n", engine->particle_count );
+  printf( "Get Particles: %d\n", engine->particle_count );
   return engine->particles;
 }
 
@@ -234,6 +238,6 @@ void cbps_engine_destroy( CBPSWallpaperEngine* engine) {
 
     CBPS_WE_free( engine );
 
-    cbps_log( "Engine destroyed.\n" );
+    printf( "Engine destroyed.\n" );
   }
 }

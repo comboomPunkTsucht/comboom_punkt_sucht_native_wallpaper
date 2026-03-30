@@ -53,9 +53,8 @@ extern "C" {
 
   void cbps_engine_destroy( CBPSWallpaperEngine* engine);
 
-  // --- Debugging & Logging ---
-  void cbps_log( const char* message );
-  void cbps_log_num( const char* message, float number );
+  // --- Engine & State ---
+  void cbps_engine_set_seed(unsigned int seed);
 
 #ifdef __cplusplus
 }
