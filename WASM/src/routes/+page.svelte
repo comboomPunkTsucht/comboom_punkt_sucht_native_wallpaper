@@ -32,7 +32,6 @@
   {#if canvasSize.w > 0}
     <Canvas
     toneMapping={NoToneMapping}
-    gl={{ g}}
     >
       <Scene bind:h1={h1} bind:h2={h2} bind:canvasSize={canvasSize} quantity={400} />
     </Canvas>
