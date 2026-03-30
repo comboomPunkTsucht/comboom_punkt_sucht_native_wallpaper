@@ -18,14 +18,27 @@ class EngineManager: ObservableObject {
   private var mtkViews: [MTKView] = []
 
     // @Published sorgt dafür, dass die SwiftUI-Menüleiste sofort reagiert
-  @Published var h1: String = "mcpeaps_HD"
-  @Published var h2: String = "comboom.sucht"
+  @Published var h1: String {
+    didSet {
+      UserDefaults.standard.set(h1, forKey: "saved_h1")
+      // Hier ggf. deine C-Engine updaten lassen
+    }
+  }
+
+  @Published var h2: String {
+    didSet {
+      UserDefaults.standard.set(h2, forKey: "saved_h2")
+      // Hier ggf. deine C-Engine updaten lassen
+    }
+  }
   private var sceen_width: UInt32 = 7690
   private var sceen_height: UInt32 = 4320
 
   init() {
       // Wir verzögern den Start um den Bruchteil einer Sekunde,
       // damit macOS Zeit hat, die Bildschirme (NSScreen.main) richtig zu laden
+    self.h1 = UserDefaults.standard.string(forKey: "saved_h1") ?? "mcpeaps_HD"
+    self.h2 = UserDefaults.standard.string(forKey: "saved_h2") ?? "comboom.sucht"
     DispatchQueue.main.async {
       self.start()
     }
