@@ -28,7 +28,7 @@
 
 <svelte:window bind:innerWidth={canvasSize.w} bind:innerHeight={canvasSize.h} />
 
-<div class={cn("fixed inset-0 w-full h-full z-0 animate-fade-in pointer-events-none bg-[#2e3440]")} aria-hidden="true">
+<div class={cn("fixed inset-0 w-full h-full z-0 animate-fade-in pointer-events-none ")} aria-hidden="true">
   {#if canvasSize.w > 0}
     <Canvas
     toneMapping={NoToneMapping}
@@ -41,7 +41,7 @@
 <div class="fixed inset-0 z-10 pointer-events-none flex flex-col items-center justify-center space-y-6 select-none">
   <div class="shrink-0 rounded-full" style="width: {lineWidth}px; height: 3px; background: linear-gradient(to right, #2e3440, #eceff4, #2e3440);"></div>
 
-  <h1 class="text-[#eceff4] font-sans tracking-wider text-center" style="font-size: {titleFontSize}px;">
+  <h1 class="tracking-wider text-center" style="font-size: {titleFontSize}px;">
     {h1}
   </h1>
 
@@ -50,7 +50,7 @@
   {#if h2.toLowerCase() === "comboom.sucht"}
     <img src="/pictures/cbps_logo.png" alt="comboom.sucht Logo" class="object-contain w-auto" style="height: {CBPSLogoTargetH}px;" />
   {:else}
-    <h2 class="text-[#eceff4] font-sans text-center" style="font-size: {subFontSize}px;">
+    <h2 class="text-center" style="font-size: {subFontSize}px;">
       {h2}
     </h2>
   {/if}
