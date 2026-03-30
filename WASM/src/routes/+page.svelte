@@ -3,6 +3,7 @@
   import { z } from "zod";
   import { page } from "$app/state";
   import { Canvas } from '@threlte/core';
+  import { NoToneMapping } from "three";
   import Scene from '$lib/components/Scene.svelte';
 
   const SearchParamsSchema = z.object({
@@ -29,7 +30,10 @@
 
 <div class={cn("fixed inset-0 w-full h-full z-0 animate-fade-in pointer-events-none bg-[#2e3440]")} aria-hidden="true">
   {#if canvasSize.w > 0}
-    <Canvas>
+    <Canvas
+    toneMapping={NoToneMapping}
+    gl={{ g}}
+    >
       <Scene bind:h1={h1} bind:h2={h2} bind:canvasSize={canvasSize} quantity={400} />
     </Canvas>
   {/if}
