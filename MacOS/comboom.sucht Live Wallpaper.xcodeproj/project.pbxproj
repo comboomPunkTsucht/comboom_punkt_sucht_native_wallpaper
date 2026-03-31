@@ -48,22 +48,12 @@
 		91E7680A2F73E80600446EFB /* libcbps_we_core_mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcbps_we_core_mac.a; path = ../build/libcbps_we_core_mac.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		91E768042F73E5BB00446EFB /* Exceptions for "comboom.sucht Live Wallpaper" folder in "comboom.sucht Live Wallpaper" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				core,
-			);
-			target = 91CB03822F73D91500E8BCDF /* comboom.sucht Live Wallpaper */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		91CB03852F73D91500E8BCDF /* comboom.sucht Live Wallpaper */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				91E768042F73E5BB00446EFB /* Exceptions for "comboom.sucht Live Wallpaper" folder in "comboom.sucht Live Wallpaper" target */,
-			);
+			explicitFileTypes = {
+				"Bridging-Header.h" = sourcecode.cpp.h;
+			};
 			path = "comboom.sucht Live Wallpaper";
 			sourceTree = "<group>";
 		};
@@ -228,7 +218,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++23";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -260,7 +250,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -284,6 +274,7 @@
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "comboom.sucht Live Wallpaper/Bridging-Header.h";
 				SWIFT_OBJC_INTEROP_MODE = objcxx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
@@ -294,7 +285,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++23";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -326,7 +317,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -338,10 +329,12 @@
 				MACOSX_DEPLOYMENT_TARGET = 26.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "comboom.sucht Live Wallpaper/Bridging-Header.h";
 				SWIFT_OBJC_INTEROP_MODE = objcxx;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
@@ -380,6 +373,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
 					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
 					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
 					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
@@ -444,6 +438,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
 					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
 					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
 					"$(PROJECT_DIR)/comboom.sucht\\ Live\\ Wallpaper",
