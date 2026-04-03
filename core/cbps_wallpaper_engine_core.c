@@ -1,6 +1,7 @@
 #include "cbps_wallpaper_engine_core.h"
 #include <stdarg.h>
 #include <stddef.h>
+
 #if !defined (__wasm__)
   #include <stdio.h>   // Für printf
   #include <stdlib.h>  // Für malloc, free
@@ -10,7 +11,8 @@
   #define CBPS_WE_strlen strlen
   #define CBPS_WE_malloc malloc
   #define CBPS_WE_free free
-  #define CBPS_WE_rand rand
+  #define CBPS_WE_rand   rand
+  #define CBPS_WE_srand  srand
 #else
 #define STB_SPRINTF_IMPLEMENTATION
 #include "stb_sprintf.h" // Für vsnprintf (WASM hat kein stdio, aber wir brauchen es für printf)
@@ -18,7 +20,7 @@
 static unsigned int r_seed = 12345;  // Kann von außen einmal gesetzt werden
 
 // 1. NEU: Seed von außen setzbar machen
-void cbps_engine_set_seed(unsigned int seed) {
+void internal_srand(unsigned int seed) {
     if (seed != 0) r_seed = seed;
 }
 
@@ -83,8 +85,14 @@ int printf( const char* fmt, ... ) {
 #define CBPS_WE_malloc internal_malloc
 #define CBPS_WE_free internal_free
 #define CBPS_WE_rand internal_rand
+#define CBPS_WE_srand internal_srand
 
 #endif
+
+void cbps_engine_set_seed( unsigned int seed ) {
+  CBPS_WE_srand( seed );
+}
+
 
 // --- API Implementierung ---
 

@@ -105,7 +105,7 @@ const utf8Decoder = new TextDecoder();
 
         heapBase = (wasmInstance.exports.__heap_base as WebAssembly.Global).value;
 
-        const randomSeed = Math.floor(Math.random() * 2147483647);
+        const randomSeed = Math.floor(Date.now()) >>> 0;
         (wasmInstance.exports.cbps_engine_set_seed as Function)(randomSeed);
 
         // KEIN SAFARI HACK MEHR!
