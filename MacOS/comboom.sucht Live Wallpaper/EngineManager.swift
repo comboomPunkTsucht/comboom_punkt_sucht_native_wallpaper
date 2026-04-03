@@ -17,8 +17,6 @@ class EngineManager: ObservableObject {
   private var wallpaperWindows: [WallpaperWindow] = []
   private var mtkViews: [MTKView] = []
 
-  private var randomSeed: UInt32 = UInt32(truncatingIfNeeded: UInt64(Date().timeIntervalSince1970 * 1000) % UInt64(UInt32.max)) // Zufälliger Seed für die C-Engine
-
     // @Published sorgt dafür, dass die SwiftUI-Menüleiste sofort reagiert
   @Published var h1: String {
     didSet {
@@ -48,6 +46,8 @@ class EngineManager: ObservableObject {
 
   func start() {
     Self.shared = self // Singleton setzen
+    var randomSeed: UInt32 = UInt32(
+      truncatingIfNeeded: UInt64(Date().timeIntervalSince1970 * 1000) % UInt64(UInt32.max))  // Zufälliger Seed für die C-Engine
     cbps_engine_set_seed(randomSeed) // Zufälligen Seed an die C-Engine übergeben
 
       // C-Engine initialisieren
