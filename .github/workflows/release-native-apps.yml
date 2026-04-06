@@ -91,8 +91,8 @@ jobs:
       - name: Install cross-compile clang tools (ARM64) on Linux
         if: runner.os == 'Linux' && matrix.arch == 'arm64'
         run: |
+          sudo apt-get update
           sudo apt-get install -y \
-            clang-${{ matrix.clang-version }} \
             gcc-aarch64-linux-gnu \
             binutils-aarch64-linux-gnu
 
@@ -112,6 +112,7 @@ jobs:
       - name: Install Vulkan and graphics libraries (Linux)
         if: runner.os == 'Linux'
         run: |
+          sudo apt-get update
           sudo apt-get install -y \
             libglfw3-dev \
             vulkan-tools \
@@ -136,7 +137,7 @@ jobs:
 
       - name: Build C-core library (Linux ARM64)
         if: matrix.platform == 'linux' && matrix.arch == 'arm64'
-        run: CC=aarch64-linux-gnu-clang just libs_linux
+        run: CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ just libs_linux
 
       - name: Build C-core library (Windows x86_64)
         if: matrix.platform == 'windows' && matrix.arch == 'x86_64'
@@ -160,7 +161,7 @@ jobs:
 
       - name: Build Linux Vulkan app (ARM64)
         if: matrix.platform == 'linux' && matrix.arch == 'arm64'
-        run: just linux-vulkan-arm
+        run: CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ just linux-vulkan-arm
 
       - name: Build Windows Vulkan app (x86_64)
         if: matrix.platform == 'windows' && matrix.arch == 'x86_64'

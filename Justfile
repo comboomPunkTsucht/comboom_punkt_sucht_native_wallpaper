@@ -166,11 +166,11 @@ default:
 
 # --- Linux ARM64 Vulkan App (cross-compile) ---
 @linux-vulkan-arm: linux-static
-    echo "🐧 Baue Linux Vulkan App (ARM64 cross-compile) mit Clang 18..."
+    echo "🐧 Baue Linux Vulkan App (ARM64 cross-compile)..."
     cd Linux && \
     cmake -B build-arm \
-      -DCMAKE_C_COMPILER=aarch64-linux-gnu-clang-18 \
-      -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-clang++-18 \
+      -DCMAKE_C_COMPILER={{CC}} \
+      -DCMAKE_CXX_COMPILER={{CXX}} \
       -DCMAKE_SYSTEM_NAME=Linux \
       -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
       -DCMAKE_BUILD_TYPE=Release \
