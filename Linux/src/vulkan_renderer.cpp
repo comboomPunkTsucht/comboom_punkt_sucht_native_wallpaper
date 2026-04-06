@@ -3,7 +3,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #define VMA_IMPLEMENTATION
-#include "vk_mem_alloc.h"
+#define VMA_STATIC_VULKAN_FUNCTIONS 0
+#include <vk_mem_alloc/vk_mem_alloc.h>
 #include <vk_bootstrap.h>
 #include <stdexcept>
 #include <iostream>

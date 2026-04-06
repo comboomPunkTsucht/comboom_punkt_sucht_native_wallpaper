@@ -38,6 +38,13 @@ struct Particle {
 class WallpaperEngine {
 public:
     /**
+     * @brief Color struct - RGBA color representation
+     */
+    struct Color {
+        uint8_t r, g, b, a;
+    };
+
+    /**
      * @brief Initialize the wallpaper engine
      * @param width Screen width in pixels
      * @param height Screen height in pixels
@@ -93,12 +100,12 @@ public:
     /**
      * @brief Get background color
      */
-    struct Color getBackgroundColor() const;
+    Color getBackgroundColor() const;
 
     /**
      * @brief Get foreground color
      */
-    struct Color getForegroundColor() const;
+    Color getForegroundColor() const;
 
 private:
     CBPSWallpaperEngine* engine_;

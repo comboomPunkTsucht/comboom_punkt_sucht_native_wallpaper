@@ -63,7 +63,7 @@ std::vector<Particle> WallpaperEngine::getParticles() const
     }
 
     unsigned int count = 0;
-    CBPSParticle* c_particles = cbps_engine_get_particles(engine_, &count);
+    const CBPSParticle* c_particles = cbps_engine_get_particles(engine_, &count);
 
     if (!c_particles || count == 0) {
         return {};
