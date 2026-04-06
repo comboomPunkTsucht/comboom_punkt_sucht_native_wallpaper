@@ -149,7 +149,7 @@ jobs:
 
       - name: Build C-core library (macOS)
         if: matrix.platform == 'macos'
-        run: just libs_macos
+        run: CC=clang CXX=clang++ just libs_macos
 
       # ============= Build Vulkan Apps (Linux & Windows) =============
       # ============= Build Vulkan & Metal Apps via Justfile =============
@@ -173,7 +173,7 @@ jobs:
 
       - name: Build macOS Metal app
         if: matrix.platform == 'macos'
-        run: just macos-metal
+        run: CC=clang CXX=clang++ just macos-metal
 
       # ============= Create Archives (with arch-specific paths) =============
       - name: Create Linux archive (x86_64)

@@ -1,7 +1,7 @@
 # --- Konfiguration ---
 # Use environment variables with defaults - allows easy override
-CC := env_var_or("CC", "clang-18")
-CXX := env_var_or("CXX", "clang++-18")
+CC := env_var_or("CC", "clang")
+CXX := env_var_or("CXX", "clang++")
 SRC := "core/cbps_wallpaper_engine_core.c"
 BUILD_DIR := "build"
 
@@ -69,7 +69,7 @@ default:
 # --- 3. Windows ---
 @win-static: prepare
 	echo "🪟 Baue Windows Static (.a) mit Clang..."
-	clang-18 -O3 -c {{SRC}} -o {{BUILD_DIR}}/win.o
+	{{CC}} -O3 -c {{SRC}} -o {{BUILD_DIR}}/win.o
 	ar rcs {{WIN_STATIC}} {{BUILD_DIR}}/win.o
 	rm {{BUILD_DIR}}/win.o
 	echo "✅ Fertig: {{WIN_STATIC}}"
@@ -149,8 +149,8 @@ default:
     cd Windows && \
     cmake -B build \
       -G Ninja \
-      -DCMAKE_C_COMPILER=clang \
-      -DCMAKE_CXX_COMPILER=clang++ \
+      -DCMAKE_C_COMPILER={{CC}} \
+      -DCMAKE_CXX_COMPILER={{CXX}} \
       -DCMAKE_BUILD_TYPE=Release && \
     cmake --build build --config Release --parallel
     echo "✅ Fertig: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe"
@@ -185,8 +185,8 @@ default:
     cd Windows && \
     cmake -B build-arm \
       -G Ninja \
-      -DCMAKE_C_COMPILER=clang \
-      -DCMAKE_CXX_COMPILER=clang++ \
+      -DCMAKE_C_COMPILER={{CC}} \
+      -DCMAKE_CXX_COMPILER={{CXX}} \
       -DCMAKE_SYSTEM_NAME=Windows \
       -DCMAKE_SYSTEM_PROCESSOR=ARM64 \
       -DCMAKE_BUILD_TYPE=Release && \
