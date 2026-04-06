@@ -32,31 +32,52 @@ file(MAKE_DIRECTORY ${SHADER_OUTPUT_DIR})
 
 # Find glslc or glslangValidator
 find_program(GLSLC_EXECUTABLE glslc)
-if(NOT GLSLC_EXECUTABLE)
-    find_program(GLSLC_EXECUTABLE glslangValidator REQUIRED)
-    set(GLSLC_ARGS "-V")  # glslangValidator needs -V flag for Vulkan
+if(GLSLC_EXECUTABLE)
+    set(SHADER_COMPILER_TYPE "glslc")
 else()
-    set(GLSLC_ARGS "")
+    find_program(GLSLC_EXECUTABLE glslangValidator REQUIRED)
+    set(SHADER_COMPILER_TYPE "glslangValidator")
 endif()
 
-# Compile shaders
-add_custom_command(
-    OUTPUT ${SHADER_OUTPUT_DIR}/particle.vert.spv
-    COMMAND ${GLSLC_EXECUTABLE} ${GLSLC_ARGS} -fshader-stage=vertex
-            ${LINUX_SRC_DIR}/shaders/particle.vert.glsl
-            -o ${SHADER_OUTPUT_DIR}/particle.vert.spv
-    DEPENDS ${LINUX_SRC_DIR}/shaders/particle.vert.glsl
-    COMMENT "Compiling particle.vert.glsl"
-)
+# Compile shaders with correct flags based on compiler
+if(SHADER_COMPILER_TYPE STREQUAL "glslc")
+    add_custom_command(
+        OUTPUT ${SHADER_OUTPUT_DIR}/particle.vert.spv
+        COMMAND ${GLSLC_EXECUTABLE} -fshader-stage=vertex
+                ${LINUX_SRC_DIR}/shaders/particle.vert.glsl
+                -o ${SHADER_OUTPUT_DIR}/particle.vert.spv
+        DEPENDS ${LINUX_SRC_DIR}/shaders/particle.vert.glsl
+        COMMENT "Compiling particle.vert.glsl (glslc)"
+    )
 
-add_custom_command(
-    OUTPUT ${SHADER_OUTPUT_DIR}/particle.frag.spv
-    COMMAND ${GLSLC_EXECUTABLE} ${GLSLC_ARGS} -fshader-stage=fragment
-            ${LINUX_SRC_DIR}/shaders/particle.frag.glsl
-            -o ${SHADER_OUTPUT_DIR}/particle.frag.spv
-    DEPENDS ${LINUX_SRC_DIR}/shaders/particle.frag.glsl
-    COMMENT "Compiling particle.frag.glsl"
-)
+    add_custom_command(
+        OUTPUT ${SHADER_OUTPUT_DIR}/particle.frag.spv
+        COMMAND ${GLSLC_EXECUTABLE} -fshader-stage=fragment
+                ${LINUX_SRC_DIR}/shaders/particle.frag.glsl
+                -o ${SHADER_OUTPUT_DIR}/particle.frag.spv
+        DEPENDS ${LINUX_SRC_DIR}/shaders/particle.frag.glsl
+        COMMENT "Compiling particle.frag.glsl (glslc)"
+    )
+else()
+    # glslangValidator flags
+    add_custom_command(
+        OUTPUT ${SHADER_OUTPUT_DIR}/particle.vert.spv
+        COMMAND ${GLSLC_EXECUTABLE} -S vert -V
+                ${LINUX_SRC_DIR}/shaders/particle.vert.glsl
+                -o ${SHADER_OUTPUT_DIR}/particle.vert.spv
+        DEPENDS ${LINUX_SRC_DIR}/shaders/particle.vert.glsl
+        COMMENT "Compiling particle.vert.glsl (glslangValidator)"
+    )
+
+    add_custom_command(
+        OUTPUT ${SHADER_OUTPUT_DIR}/particle.frag.spv
+        COMMAND ${GLSLC_EXECUTABLE} -S frag -V
+                ${LINUX_SRC_DIR}/shaders/particle.frag.glsl
+                -o ${SHADER_OUTPUT_DIR}/particle.frag.spv
+        DEPENDS ${LINUX_SRC_DIR}/shaders/particle.frag.glsl
+        COMMENT "Compiling particle.frag.glsl (glslangValidator)"
+    )
+endif()
 
 # --- Create executable ---
 add_executable(comboom_punkt_sucht_wallpaper
