@@ -1,39 +1,33 @@
 #version 450
 
-// Input: Particle vertex data
-layout(binding = 0, std430) readonly buffer ParticleBuffer {
-    vec4 pos;        // x, y, translateX, translateY
-    vec4 vel;        // dx, dy, magnetism, radius
-    vec4 color;      // r, g, b, a (0-1 normalized)
-} particles[];
+layout(binding = 0) readonly buffer ParticleBuffer {
+    vec4 particles[];
+};
 
-// Output
-layout(location = 0) out VS_OUT {
-    vec4 color;
-} vs_out;
-
-// Push constants for screen dimensions
 layout(push_constant) uniform PushConstants {
-    vec2 screen_size;
+    vec2 screenSize;
+    vec2 mousePos;
 } pc;
 
-void main() {
-    // Get particle data
-    vec4 particle_pos = particles[gl_VertexIndex].pos;
-    vec4 particle_vel = particles[gl_VertexIndex].vel;
-    vec4 particle_color = particles[gl_VertexIndex].color;
+layout(location = 0) out vec4 fragColor;
 
-    float x = particle_pos.x + particle_pos.z;  // x + translateX
-    float y = particle_pos.y + particle_pos.w;  // y + translateY
-    float radius = particle_vel.w;
+void main()
+{
+    // Get particle data from SSBO
+    vec4 particle = particles[gl_InstanceIndex];
+    vec2 pos = particle.xy;
 
-    // Transform to clip space (-1 to 1)
-    float clip_x = (x / pc.screen_size.x) * 2.0 - 1.0;
-    float clip_y = 1.0 - (y / pc.screen_size.y) * 2.0;  // Flip Y for Vulkan NDC
+    // Apply mouse offset (optional)
+    vec2 toMouse = pc.mousePos - pos;
+    pos += normalize(toMouse) * 0.01;
 
-    gl_Position = vec4(clip_x, clip_y, 0.0, 1.0);
-    gl_PointSize = radius * 2.0;
+    // Convert to NDC
+    vec2 ndc = (pos / pc.screenSize) * 2.0 - 1.0;
+    ndc.y = -ndc.y; // Flip Y for Vulkan
 
-    // Pass color to fragment shader
-    vs_out.color = particle_color;
+    gl_Position = vec4(ndc, 0.0, 1.0);
+    gl_PointSize = 5.0;
+
+    // Pass color
+    fragColor = vec4(particle.zw, 1.0, 1.0);
 }
