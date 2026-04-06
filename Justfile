@@ -11,12 +11,18 @@ LINUX_STATIC := BUILD_DIR + "/libcbps_we_core_linux.a"
 
 # Standard-Task: Zeigt das Hilfe-Menü an
 default:
-    @echo "Verfügbare Befehle (Nur Statisch):"
+    @echo "=== C-Core Libraries (Statisch) ==="
     @echo "  just wasm         - Baue WebAssembly (.wasm)"
     @echo "  just mac-static   - Baue macOS Static Library (.a)"
     @echo "  just win-static   - Baue Windows Static Library (.a)"
     @echo "  just linux-static - Baue Linux Static Library (.a)"
     @echo "  just all          - Versucht alle 4 Targets zu bauen"
+    @echo ""
+    @echo "=== Native Apps (Vulkan) ==="
+    @echo "  just linux-vulkan - Baue Linux Vulkan App (X11/Wayland)"
+    @echo "  just windows-vulkan - Baue Windows Vulkan App"
+    @echo "  just macos-metal  - Baue macOS Metal App (via Xcode)"
+    @echo ""
     @echo "  just clean        - Löscht den Build-Ordner"
 
 @prepare:
@@ -56,6 +62,31 @@ default:
 
 # --- Alles bauen ---
 @all: wasm mac-static win-static linux-static
+
+# --- Linux Vulkan App ---
+@linux-vulkan: linux-static
+    echo "🐧 Baue Linux Vulkan App (X11/Wayland)..."
+    cd Linux && \
+    cmake -B build -DCMAKE_BUILD_TYPE=Release -DGLFW_USE_WAYLAND=ON -DGLFW_USE_X11=ON && \
+    cmake --build build --config Release
+    echo "✅ Fertig: Linux/build/bin/comboom_punkt_sucht_wallpaper"
+
+# --- Windows Vulkan App ---
+@windows-vulkan: win-static
+    echo "🪟 Baue Windows Vulkan App..."
+    cd Windows && \
+    cmake -B build -DCMAKE_BUILD_TYPE=Release && \
+    cmake --build build --config Release
+    echo "✅ Fertig: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe"
+
+# --- macOS Metal App (via Xcode) ---
+@macos-metal: mac-static
+    echo "🍎 Baue macOS Metal App..."
+    cd MacOS && \
+    xcodebuild -project "comboom.sucht Live Wallpaper.xcodeproj" \
+               -scheme "comboom.sucht Live Wallpaper" \
+               -configuration Release
+    echo "✅ Fertig: MacOS/build/Release/comboom.sucht Live Wallpaper.app"
 
 # --- Aufräumen ---
 @clean:
