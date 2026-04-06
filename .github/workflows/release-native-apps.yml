@@ -145,25 +145,25 @@ jobs:
       # ============= Build C-core Library =============
       - name: Build C-core library (Linux x86_64)
         if: matrix.platform == 'linux' && matrix.arch == 'x86_64'
-        run: CC=clang-${{ matrix.clang-version }} just libs:linux
+        run: CC=clang-${{ matrix.clang-version }} just libs_linux
 
       - name: Build C-core library (Linux ARM64)
         if: matrix.platform == 'linux' && matrix.arch == 'arm64'
-        run: CC=aarch64-linux-gnu-clang just libs:linux
+        run: CC=aarch64-linux-gnu-clang just libs_linux
 
       - name: Build C-core library (Windows x86_64)
         if: matrix.platform == 'windows' && matrix.arch == 'x86_64'
-        run: just libs:windows
+        run: just libs_windows
         shell: bash
 
       - name: Build C-core library (Windows ARM64)
         if: matrix.platform == 'windows' && matrix.arch == 'arm64'
-        run: just libs:windows
+        run: just libs_windows
         shell: bash
 
       - name: Build C-core library (macOS)
         if: matrix.platform == 'macos'
-        run: just libs:macos
+        run: just libs_macos
 
       # ============= Build Vulkan Apps (Linux & Windows) =============
       # ============= Build Vulkan & Metal Apps via Justfile =============

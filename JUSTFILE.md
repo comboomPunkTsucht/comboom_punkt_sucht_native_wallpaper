@@ -14,12 +14,21 @@ just info         # Show project information
 ```bash
 # Individual platform libraries
 just wasm         # Build WebAssembly (.wasm)
-just linux-static # Build Linux static library (.a)
-just win-static   # Build Windows static library (.a)
-just mac-static   # Build macOS static library (.a)
+just linux_static # Build Linux static library (.a)
+just win_static   # Build Windows static library (.a)
+just mac_static   # Build macOS static library (.a)
 
 # All libraries at once
 just all
+```
+
+Or use convenience recipes:
+```bash
+just libs_wasm    # = just wasm
+just libs_linux   # = just linux_static
+just libs_windows # = just win_static
+just libs_macos   # = just mac_static
+just libs_all     # = just all
 ```
 
 ## Building Native Apps
@@ -178,7 +187,7 @@ choco install ninja             # Windows
 just c
 
 # 2. Build all libraries
-just libs:all
+just libs_all
 
 # 3. Build all native apps (5 architectures)
 just all-platforms

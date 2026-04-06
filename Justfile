@@ -23,7 +23,7 @@ default:
     @echo "    just mac-static   - Build macOS Static Library (.a)"
     @echo "    just win-static   - Build Windows Static Library (.a)"
     @echo "    just linux-static - Build Linux Static Library (.a)"
-    @echo "    just libs:all     - Build all libraries"
+    @echo "    just libs_all     - Build all libraries"
     @echo ""
     @echo "  🚀 Native Apps (Vulkan/Metal) - Clang 18"
     @echo "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -255,9 +255,18 @@ alias b := native
 alias ba := all-platforms
 alias c := clean
 
-# --- Convenience namespace aliases (matches package.json scripts) ---
-alias libs:linux := linux-static
-alias libs:windows := win-static
-alias libs:macos := mac-static
-alias libs:wasm := wasm
-alias libs:all := all
+# --- Convenience recipes (matches package.json scripts style) ---
+@libs_linux:
+    @just linux-static
+
+@libs_windows:
+    @just win-static
+
+@libs_macos:
+    @just mac-static
+
+@libs_wasm:
+    @just wasm
+
+@libs_all:
+    @just all
