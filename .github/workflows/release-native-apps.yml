@@ -50,6 +50,7 @@ jobs:
             cross-compile: true
 
           # ========== macOS ARM64 (Apple Silicon) ==========
+          # Note: GitHub-hosted macOS runners are currently not the latest xcode version, so it is teporaly disabled, until they updated to xcode 26.4
           #- os: macos-latest
           #  platform: macos
           #  arch: arm64
