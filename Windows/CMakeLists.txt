@@ -5,11 +5,22 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# --- FetchContent for dependencies ---
+include(FetchContent)
+
 # --- GLFW ---
 find_package(glfw3 3.3 REQUIRED)
 
 # --- Vulkan ---
 find_package(Vulkan REQUIRED)
+
+# --- VulkanMemoryAllocator ---
+FetchContent_Declare(
+    VulkanMemoryAllocator
+    GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(VulkanMemoryAllocator)
 
 # --- Directories ---
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -92,6 +103,7 @@ target_include_directories(comboom_punkt_sucht_wallpaper PRIVATE
     ${SRC_DIR}
     ${CORE_DIR}
     ${Vulkan_INCLUDE_DIRS}
+    ${VulkanMemoryAllocator_SOURCE_DIR}/include
 )
 
 # --- Link libraries ---

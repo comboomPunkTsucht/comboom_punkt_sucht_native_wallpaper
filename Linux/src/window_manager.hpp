@@ -35,7 +35,12 @@ public:
      * @brief Initialize window manager and create window
      * @param config Window configuration
      */
-    explicit WindowManager(const Config& config = {});
+    explicit WindowManager(const Config& config);
+
+    /**
+     * @brief Initialize window manager with default configuration
+     */
+    WindowManager() : WindowManager(Config()) {}
 
     /**
      * @brief Destructor - destroys GLFW window

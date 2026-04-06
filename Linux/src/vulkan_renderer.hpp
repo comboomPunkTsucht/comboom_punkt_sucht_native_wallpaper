@@ -7,8 +7,12 @@
 
 // Forward declarations
 struct GLFWwindow;
-struct VmaAllocator;
-struct VmaAllocation;
+
+// VMA types (forward declare - full definitions in vk_mem_alloc.h which is included in .cpp)
+struct VmaAllocator_T;
+struct VmaAllocation_T;
+using VmaAllocator = VmaAllocator_T*;
+using VmaAllocation = VmaAllocation_T*;
 
 namespace cbps {
 

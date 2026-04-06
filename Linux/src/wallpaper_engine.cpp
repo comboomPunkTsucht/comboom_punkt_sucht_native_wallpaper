@@ -1,5 +1,4 @@
 #include "wallpaper_engine.hpp"
-#include "cbps_wallpaper_engine_core.h"
 
 namespace cbps {
 

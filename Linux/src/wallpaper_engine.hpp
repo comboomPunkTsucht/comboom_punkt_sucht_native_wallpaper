@@ -5,11 +5,9 @@
 #include <string>
 #include <cstdint>
 
-// Forward declare C struct
+// Include C core engine
 extern "C" {
-    struct CBPSWallpaperEngine;
-    struct CBPSParticle;
-    struct CBPSColor;
+#include "../core/cbps_wallpaper_engine_core.h"
 }
 
 namespace cbps {
