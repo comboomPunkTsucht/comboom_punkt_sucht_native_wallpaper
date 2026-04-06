@@ -50,12 +50,12 @@ jobs:
             cross-compile: true
 
           # ========== macOS ARM64 (Apple Silicon) ==========
-          - os: macos-latest
-            platform: macos
-            arch: arm64
-            artifact-name: comboom.sucht Live Wallpaper.app
-            artifact-path: MacOS/build/Release/comboom.sucht Live Wallpaper.app
-            archive-name: comboom-sucht-macos-arm64.zip
+          #- os: macos-latest
+          #  platform: macos
+          #  arch: arm64
+          #  artifact-name: comboom.sucht Live Wallpaper.app
+          #  artifact-path: MacOS/build/Release/comboom.sucht Live Wallpaper.app
+          #  archive-name: comboom-sucht-macos-arm64.zip
 
     name: "Build ${{ matrix.platform }}-${{ matrix.arch }}"
     runs-on: ${{ matrix.os }}
