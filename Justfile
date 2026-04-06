@@ -287,3 +287,10 @@ alias m := macos-metal
 alias b := native
 alias ba := all-platforms
 alias c := clean
+
+# --- Convenience namespace aliases (matches package.json scripts) ---
+alias libs:linux := linux-static
+alias libs:windows := win-static
+alias libs:macos := mac-static
+alias libs:wasm := wasm
+alias libs:all := all
