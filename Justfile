@@ -29,11 +29,9 @@ default:
     @echo "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     @echo "    just linux-vulkan      - Build Linux Vulkan (x86_64, X11/Wayland)"
     @echo "    just linux-vulkan-arm  - Build Linux Vulkan (ARM64 cross-compile)"
-    @echo "    just linux-vulkan-x86  - Build Linux Vulkan (x86 32-bit)"
     @echo ""
     @echo "    just windows-vulkan    - Build Windows Vulkan (x86_64, Clang/LLVM)"
     @echo "    just windows-vulkan-arm - Build Windows Vulkan (ARM64 cross-compile)"
-    @echo "    just windows-vulkan-x86 - Build Windows Vulkan (x86 32-bit)"
     @echo ""
     @echo "    just macos-metal   - Build macOS Metal (ARM64 Apple Silicon)"
     @echo ""
@@ -103,14 +101,14 @@ default:
     echo "  ✨ Rebuild complete!"
     echo ""
 
-# --- Build all Linux variants (x86_64, ARM64, x86) ---
-@linux-all: linux-vulkan linux-vulkan-arm linux-vulkan-x86
+# --- Build all Linux variants (x86_64, ARM64) ---
+@linux-all: linux-vulkan linux-vulkan-arm
     echo ""
     echo "  ✅ All Linux variants built!"
     echo ""
 
-# --- Build all Windows variants (x86_64, ARM64, x86) ---
-@windows-all: windows-vulkan windows-vulkan-arm windows-vulkan-x86
+# --- Build all Windows variants (x86_64, ARM64) ---
+@windows-all: windows-vulkan windows-vulkan-arm
     echo ""
     echo "  ✅ All Windows variants built!"
     echo ""
@@ -124,11 +122,9 @@ default:
     echo "    Linux:"
     echo "      • Linux/build/bin/comboom_punkt_sucht_wallpaper (x86_64)"
     echo "      • Linux/build-arm/bin/comboom_punkt_sucht_wallpaper (ARM64)"
-    echo "      • Linux/build-x86/bin/comboom_punkt_sucht_wallpaper (x86)"
     echo "    Windows:"
     echo "      • Windows/build/bin/comboom_punkt_sucht_wallpaper.exe (x86_64)"
     echo "      • Windows/build-arm/bin/comboom_punkt_sucht_wallpaper.exe (ARM64)"
-    echo "      • Windows/build-x86/bin/comboom_punkt_sucht_wallpaper.exe (x86)"
     echo "    macOS:"
     echo "      • MacOS/build/Release/comboom.sucht Live Wallpaper.app (ARM64)"
     echo ""
@@ -182,21 +178,6 @@ default:
     cmake --build build-arm --config Release --parallel
     echo "✅ Fertig: Linux/build-arm/bin/comboom_punkt_sucht_wallpaper (ARM64)"
 
-# --- Linux x86 (32-bit) Vulkan App ---
-@linux-vulkan-x86: linux-static
-    echo "🐧 Baue Linux Vulkan App (x86 32-bit) mit Clang 18..."
-    cd Linux && \
-    cmake -B build-x86 \
-      -DCMAKE_C_COMPILER={{CC}} \
-      -DCMAKE_CXX_COMPILER={{CXX}} \
-      -DCMAKE_C_FLAGS=-m32 \
-      -DCMAKE_CXX_FLAGS=-m32 \
-      -DCMAKE_BUILD_TYPE=Release \
-      -DGLFW_USE_WAYLAND=ON \
-      -DGLFW_USE_X11=ON && \
-    cmake --build build-x86 --config Release --parallel
-    echo "✅ Fertig: Linux/build-x86/bin/comboom_punkt_sucht_wallpaper (x86)"
-
 # --- Windows ARM64 Vulkan App (cross-compile) ---
 @windows-vulkan-arm: win-static
     echo "🪟 Baue Windows Vulkan App (ARM64 cross-compile) mit Clang..."
@@ -211,26 +192,12 @@ default:
     cmake --build build-arm --config Release --parallel
     echo "✅ Fertig: Windows/build-arm/bin/comboom_punkt_sucht_wallpaper.exe (ARM64)"
 
-# --- Windows x86 (32-bit) Vulkan App ---
-@windows-vulkan-x86: win-static
-    echo "🪟 Baue Windows Vulkan App (x86 32-bit) mit Clang..."
-    cd Windows && \
-    cmake -B build-x86 \
-      -G Ninja \
-      -DCMAKE_C_COMPILER=clang \
-      -DCMAKE_CXX_COMPILER=clang++ \
-      -DCMAKE_C_FLAGS=-m32 \
-      -DCMAKE_CXX_FLAGS=-m32 \
-      -DCMAKE_BUILD_TYPE=Release && \
-    cmake --build build-x86 --config Release --parallel
-    echo "✅ Fertig: Windows/build-x86/bin/comboom_punkt_sucht_wallpaper.exe (x86)"
-
 # --- Aufräumen ---
 @clean:
     echo "🧹 Deleting build artifacts..."
     rm -rf {{BUILD_DIR}}
-    rm -rf Linux/build Linux/build-arm Linux/build-x86
-    rm -rf Windows/build Windows/build-arm Windows/build-x86
+    rm -rf Linux/build Linux/build-arm
+    rm -rf Windows/build Windows/build-arm
     rm -rf MacOS/build
     echo "✨ Clean!"
 

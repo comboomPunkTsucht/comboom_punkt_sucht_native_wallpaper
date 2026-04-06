@@ -29,7 +29,6 @@ just all
 ```bash
 just linux-vulkan       # x86_64 (default, X11/Wayland)
 just linux-vulkan-arm   # ARM64 cross-compile
-just linux-vulkan-x86   # x86 (32-bit)
 just linux-all          # All Linux architectures
 ```
 
@@ -43,7 +42,6 @@ just run-linux    # Run Linux app with test parameters
 ```bash
 just windows-vulkan       # x86_64 (default)
 just windows-vulkan-arm   # ARM64 cross-compile
-just windows-vulkan-x86   # x86 (32-bit)
 just windows-all          # All Windows architectures
 ```
 
@@ -100,10 +98,8 @@ just info         # Show project details (compiler, versions, etc.)
 |---------|--------|------|----------|--------|
 | `just linux-vulkan` | Linux | x86_64 | Clang 18 | `Linux/build/bin/...` |
 | `just linux-vulkan-arm` | Linux | ARM64 | aarch64-linux-gnu-clang | `Linux/build-arm/bin/...` |
-| `just linux-vulkan-x86` | Linux | x86 | Clang 18 (-m32) | `Linux/build-x86/bin/...` |
 | `just windows-vulkan` | Windows | x86_64 | LLVM | `Windows/build/bin/...` |
 | `just windows-vulkan-arm` | Windows | ARM64 | LLVM | `Windows/build-arm/bin/...` |
-| `just windows-vulkan-x86` | Windows | x86 | LLVM (-m32) | `Windows/build-x86/bin/...` |
 | `just macos-metal` | macOS | ARM64 | Apple Clang | `MacOS/build/Release/...` |
 
 ## Common Workflows
@@ -184,10 +180,10 @@ just c
 # 2. Build all libraries
 just libs:all
 
-# 3. Build all native apps
+# 3. Build all native apps (5 architectures)
 just all-platforms
 
-# Result: 9 artifacts ready for GitHub Release
+# Result: 5 artifacts ready for GitHub Release
 ```
 
 This is equivalent to running GitHub Actions workflow locally!

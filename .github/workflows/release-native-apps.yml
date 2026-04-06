@@ -30,16 +30,6 @@ jobs:
             cmake-args: "-DCMAKE_C_COMPILER=aarch64-linux-gnu-clang-18 -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-clang++-18 -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DGLFW_USE_WAYLAND=ON -DGLFW_USE_X11=ON"
             cross-compile: true
 
-          # ========== Linux x86 (32-bit) ==========
-          - os: ubuntu-latest
-            platform: linux
-            arch: x86
-            clang-version: "18"
-            artifact-name: comboom_punkt_sucht_wallpaper
-            artifact-path: Linux/build/bin/comboom_punkt_sucht_wallpaper
-            archive-name: comboom-sucht-linux-x86.tar.gz
-            cmake-args: "-DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32 -DGLFW_USE_WAYLAND=ON -DGLFW_USE_X11=ON"
-
           # ========== Windows x86_64 ==========
           - os: windows-latest
             platform: windows
@@ -58,15 +48,6 @@ jobs:
             archive-name: comboom-sucht-windows-arm64.zip
             cmake-args: "-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=ARM64"
             cross-compile: true
-
-          # ========== Windows x86 (32-bit) ==========
-          - os: windows-latest
-            platform: windows
-            arch: x86
-            artifact-name: comboom_punkt_sucht_wallpaper.exe
-            artifact-path: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe
-            archive-name: comboom-sucht-windows-x86.zip
-            cmake-args: "-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32"
 
           # ========== macOS ARM64 (Apple Silicon) ==========
           - os: macos-latest
@@ -170,10 +151,6 @@ jobs:
         if: matrix.platform == 'linux' && matrix.arch == 'arm64'
         run: CC=aarch64-linux-gnu-clang just libs:linux
 
-      - name: Build C-core library (Linux x86)
-        if: matrix.platform == 'linux' && matrix.arch == 'x86'
-        run: CC="clang-${{ matrix.clang-version }} -m32" just libs:linux
-
       - name: Build C-core library (Windows x86_64)
         if: matrix.platform == 'windows' && matrix.arch == 'x86_64'
         run: just libs:windows
@@ -184,28 +161,15 @@ jobs:
         run: just libs:windows
         shell: bash
 
-      - name: Build C-core library (Windows x86)
-        if: matrix.platform == 'windows' && matrix.arch == 'x86'
-        run: just libs:windows
-        shell: bash
-
       - name: Build C-core library (macOS)
         if: matrix.platform == 'macos'
         run: just libs:macos
 
       # ============= Build Vulkan Apps (Linux & Windows) =============
       # ============= Build Vulkan & Metal Apps via Justfile =============
-      - name: Build Linux Vulkan app (x86_64)
-        if: matrix.platform == 'linux' && matrix.arch == 'x86_64'
-        run: just linux-vulkan
-
       - name: Build Linux Vulkan app (ARM64)
         if: matrix.platform == 'linux' && matrix.arch == 'arm64'
         run: just linux-vulkan-arm
-
-      - name: Build Linux Vulkan app (x86 32-bit)
-        if: matrix.platform == 'linux' && matrix.arch == 'x86'
-        run: just linux-vulkan-x86
 
       - name: Build Windows Vulkan app (x86_64)
         if: matrix.platform == 'windows' && matrix.arch == 'x86_64'
@@ -217,36 +181,15 @@ jobs:
         run: just windows-vulkan-arm
         shell: bash
 
-      - name: Build Windows Vulkan app (x86 32-bit)
-        if: matrix.platform == 'windows' && matrix.arch == 'x86'
-        run: just windows-vulkan-x86
-        shell: bash
-
       - name: Build macOS Metal app
         if: matrix.platform == 'macos'
         run: just macos-metal
 
       # ============= Create Archives (with arch-specific paths) =============
-      - name: Create Linux archive (x86_64)
-        if: matrix.platform == 'linux' && matrix.arch == 'x86_64'
-        run: |
-          cd Linux/build/bin
-          tar -czf ../../../${{ matrix.archive-name }} comboom_punkt_sucht_wallpaper
-          cd ../../..
-          ls -lh ${{ matrix.archive-name }}
-
       - name: Create Linux archive (ARM64)
         if: matrix.platform == 'linux' && matrix.arch == 'arm64'
         run: |
           cd Linux/build-arm/bin
-          tar -czf ../../../${{ matrix.archive-name }} comboom_punkt_sucht_wallpaper
-          cd ../../..
-          ls -lh ${{ matrix.archive-name }}
-
-      - name: Create Linux archive (x86)
-        if: matrix.platform == 'linux' && matrix.arch == 'x86'
-        run: |
-          cd Linux/build-x86/bin
           tar -czf ../../../${{ matrix.archive-name }} comboom_punkt_sucht_wallpaper
           cd ../../..
           ls -lh ${{ matrix.archive-name }}
@@ -266,16 +209,6 @@ jobs:
         run: |
           powershell -Command "
             Compress-Archive -Path 'Windows/build-arm/bin/comboom_punkt_sucht_wallpaper.exe' `
-                           -DestinationPath '${{ matrix.archive-name }}'
-          "
-          ls -lh ${{ matrix.archive-name }}
-        shell: bash
-
-      - name: Create Windows archive (x86)
-        if: matrix.platform == 'windows' && matrix.arch == 'x86'
-        run: |
-          powershell -Command "
-            Compress-Archive -Path 'Windows/build-x86/bin/comboom_punkt_sucht_wallpaper.exe' `
                            -DestinationPath '${{ matrix.archive-name }}'
           "
           ls -lh ${{ matrix.archive-name }}
@@ -327,12 +260,10 @@ jobs:
           ### 🐧 Linux (Clang 18 + Vulkan)
           - **x86-64** (Intel/AMD): `comboom-sucht-linux-x86_64.tar.gz`
           - **ARM64** (ARMv8, Raspberry Pi, etc.): `comboom-sucht-linux-arm64.tar.gz`
-          - **x86 (32-bit)** (Legacy): `comboom-sucht-linux-x86.tar.gz`
 
           ### 🪟 Windows (Clang + Vulkan)
           - **x86-64** (Intel/AMD): `comboom-sucht-windows-x86_64.zip`
           - **ARM64** (Snapdragon, future ARM laptops): `comboom-sucht-windows-arm64.zip`
-          - **x86 (32-bit)** (Legacy): `comboom-sucht-windows-x86.zip`
 
           ### 🍎 macOS (Apple Clang + Metal)
           - **ARM64** (Apple Silicon M1/M2/M3): `comboom-sucht-macos-arm64.zip`
@@ -397,11 +328,11 @@ jobs:
 
           ## 🔄 Architecture Support Matrix
 
-          | Platform | x86-64 | ARM64 | x86 (32-bit) | Status |
-          |----------|--------|-------|-------------|--------|
-          | Linux    | ✅     | ✅    | ✅          | Full   |
-          | Windows  | ✅     | ✅    | ✅          | Full   |
-          | macOS    | ❌     | ✅    | ❌          | ARM64  |
+          | Platform | x86-64 | ARM64 | Status |
+          |----------|--------|-------|--------|
+          | Linux    | ✅     | ✅    | Full   |
+          | Windows  | ✅     | ✅    | Full   |
+          | macOS    | ❌     | ✅    | ARM64  |
 
           ## 🛠️ Technical Stack
 
@@ -482,18 +413,16 @@ jobs:
           if [ "${{ needs.build-matrix.result }}" == "success" ]; then
             echo "✅ All native builds completed successfully!"
             echo ""
-            echo "📦 Built via Justfile:"
-            echo "  Linux (3 architectures):"
+            echo "📦 Built via Justfile (5 architectures):"
+            echo "  Linux:"
             echo "    • just linux-vulkan     → comboom-sucht-linux-x86_64.tar.gz"
             echo "    • just linux-vulkan-arm → comboom-sucht-linux-arm64.tar.gz"
-            echo "    • just linux-vulkan-x86 → comboom-sucht-linux-x86.tar.gz"
             echo ""
-            echo "  Windows (3 architectures):"
+            echo "  Windows:"
             echo "    • just windows-vulkan     → comboom-sucht-windows-x86_64.zip"
             echo "    • just windows-vulkan-arm → comboom-sucht-windows-arm64.zip"
-            echo "    • just windows-vulkan-x86 → comboom-sucht-windows-x86.zip"
             echo ""
-            echo "  macOS (1 architecture):"
+            echo "  macOS:"
             echo "    • just macos-metal → comboom-sucht-macos-arm64.zip"
             echo ""
             echo "🚀 Artifacts uploaded to GitHub Release"
