@@ -11,7 +11,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # --- GLFW ---
-find_package(glfw3 3.4 REQUIRED)
+find_package(glfw3 3.3 REQUIRED)
 
 # --- Vulkan ---
 find_package(Vulkan REQUIRED)
