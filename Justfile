@@ -12,19 +12,41 @@ LINUX_STATIC := BUILD_DIR + "/libcbps_we_core_linux.a"
 
 # Standard-Task: Zeigt das Hilfe-Menü an
 default:
-    @echo "=== C-Core Libraries (Statisch) ==="
-    @echo "  just wasm         - Baue WebAssembly (.wasm)"
-    @echo "  just mac-static   - Baue macOS Static Library (.a)"
-    @echo "  just win-static   - Baue Windows Static Library (.a)"
-    @echo "  just linux-static - Baue Linux Static Library (.a)"
-    @echo "  just all          - Versucht alle 4 Targets zu bauen"
     @echo ""
-    @echo "=== Native Apps (Vulkan) ==="
-    @echo "  just linux-vulkan - Baue Linux Vulkan App (X11/Wayland)"
-    @echo "  just windows-vulkan - Baue Windows Vulkan App"
-    @echo "  just macos-metal  - Baue macOS Metal App (via Xcode)"
+    @echo "  ╔════════════════════════════════════════════════════════╗"
+    @echo "  ║        comboom. sucht - Multi-Platform Build          ║"
+    @echo "  ╚════════════════════════════════════════════════════════╝"
     @echo ""
-    @echo "  just clean        - Löscht den Build-Ordner"
+    @echo "  📚 C-Core Libraries (Statisch)"
+    @echo "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    @echo "    just wasm         - Build WebAssembly (.wasm)"
+    @echo "    just mac-static   - Build macOS Static Library (.a)"
+    @echo "    just win-static   - Build Windows Static Library (.a)"
+    @echo "    just linux-static - Build Linux Static Library (.a)"
+    @echo "    just libs:all     - Build all libraries"
+    @echo ""
+    @echo "  🚀 Native Apps (Vulkan/Metal) - Clang 18"
+    @echo "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    @echo "    just linux-vulkan      - Build Linux Vulkan (x86_64, X11/Wayland)"
+    @echo "    just linux-vulkan-arm  - Build Linux Vulkan (ARM64 cross-compile)"
+    @echo "    just linux-vulkan-x86  - Build Linux Vulkan (x86 32-bit)"
+    @echo ""
+    @echo "    just windows-vulkan    - Build Windows Vulkan (x86_64, Clang/LLVM)"
+    @echo "    just windows-vulkan-arm - Build Windows Vulkan (ARM64 cross-compile)"
+    @echo "    just windows-vulkan-x86 - Build Windows Vulkan (x86 32-bit)"
+    @echo ""
+    @echo "    just macos-metal   - Build macOS Metal (ARM64 Apple Silicon)"
+    @echo ""
+    @echo "  🎯 Build Shortcuts"
+    @echo "  ━━━━━━━━━━━━━━━━"
+    @echo "    just all           - Build all libraries + macOS app"
+    @echo "    just native        - Build all native apps (recommended)"
+    @echo ""
+    @echo "  🧹 Utility"
+    @echo "  ━━━━━━━━"
+    @echo "    just clean         - Delete build artifacts"
+    @echo "    just rebuild       - Clean + rebuild all libraries + macOS"
+    @echo ""
 
 @prepare:
     mkdir -p {{BUILD_DIR}}
@@ -64,6 +86,53 @@ default:
 # --- Alles bauen ---
 @all: wasm mac-static win-static linux-static
 
+# --- Build all native apps (Linux, Windows, macOS) ---
+@native: linux-vulkan windows-vulkan macos-metal
+    echo ""
+    echo "  ✅ All native apps built successfully!"
+    echo ""
+    echo "  📦 Build outputs:"
+    echo "    • Linux   (x86_64): Linux/build/bin/comboom_punkt_sucht_wallpaper"
+    echo "    • Windows (x86_64): Windows/build/bin/comboom_punkt_sucht_wallpaper.exe"
+    echo "    • macOS   (ARM64):  MacOS/build/Release/comboom.sucht Live Wallpaper.app"
+    echo ""
+
+# --- Rebuild all libraries + macOS app ---
+@rebuild: clean all
+    echo ""
+    echo "  ✨ Rebuild complete!"
+    echo ""
+
+# --- Build all Linux variants (x86_64, ARM64, x86) ---
+@linux-all: linux-vulkan linux-vulkan-arm linux-vulkan-x86
+    echo ""
+    echo "  ✅ All Linux variants built!"
+    echo ""
+
+# --- Build all Windows variants (x86_64, ARM64, x86) ---
+@windows-all: windows-vulkan windows-vulkan-arm windows-vulkan-x86
+    echo ""
+    echo "  ✅ All Windows variants built!"
+    echo ""
+
+# --- Build all architectures (recommended for CI/release) ---
+@all-platforms: linux-all windows-all macos-metal
+    echo ""
+    echo "  ✅ All platforms & architectures built!"
+    echo ""
+    echo "  📦 Available artifacts:"
+    echo "    Linux:"
+    echo "      • Linux/build/bin/comboom_punkt_sucht_wallpaper (x86_64)"
+    echo "      • Linux/build-arm/bin/comboom_punkt_sucht_wallpaper (ARM64)"
+    echo "      • Linux/build-x86/bin/comboom_punkt_sucht_wallpaper (x86)"
+    echo "    Windows:"
+    echo "      • Windows/build/bin/comboom_punkt_sucht_wallpaper.exe (x86_64)"
+    echo "      • Windows/build-arm/bin/comboom_punkt_sucht_wallpaper.exe (ARM64)"
+    echo "      • Windows/build-x86/bin/comboom_punkt_sucht_wallpaper.exe (x86)"
+    echo "    macOS:"
+    echo "      • MacOS/build/Release/comboom.sucht Live Wallpaper.app (ARM64)"
+    echo ""
+
 # --- Linux Vulkan App ---
 @linux-vulkan: linux-static
     echo "🐧 Baue Linux Vulkan App (X11/Wayland) mit Clang 18..."
@@ -98,8 +167,123 @@ default:
                -configuration Release
     echo "✅ Fertig: MacOS/build/Release/comboom.sucht Live Wallpaper.app"
 
+# --- Linux ARM64 Vulkan App (cross-compile) ---
+@linux-vulkan-arm: linux-static
+    echo "🐧 Baue Linux Vulkan App (ARM64 cross-compile) mit Clang 18..."
+    cd Linux && \
+    cmake -B build-arm \
+      -DCMAKE_C_COMPILER=aarch64-linux-gnu-clang-18 \
+      -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-clang++-18 \
+      -DCMAKE_SYSTEM_NAME=Linux \
+      -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DGLFW_USE_WAYLAND=ON \
+      -DGLFW_USE_X11=ON && \
+    cmake --build build-arm --config Release --parallel
+    echo "✅ Fertig: Linux/build-arm/bin/comboom_punkt_sucht_wallpaper (ARM64)"
+
+# --- Linux x86 (32-bit) Vulkan App ---
+@linux-vulkan-x86: linux-static
+    echo "🐧 Baue Linux Vulkan App (x86 32-bit) mit Clang 18..."
+    cd Linux && \
+    cmake -B build-x86 \
+      -DCMAKE_C_COMPILER={{CC}} \
+      -DCMAKE_CXX_COMPILER={{CXX}} \
+      -DCMAKE_C_FLAGS=-m32 \
+      -DCMAKE_CXX_FLAGS=-m32 \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DGLFW_USE_WAYLAND=ON \
+      -DGLFW_USE_X11=ON && \
+    cmake --build build-x86 --config Release --parallel
+    echo "✅ Fertig: Linux/build-x86/bin/comboom_punkt_sucht_wallpaper (x86)"
+
+# --- Windows ARM64 Vulkan App (cross-compile) ---
+@windows-vulkan-arm: win-static
+    echo "🪟 Baue Windows Vulkan App (ARM64 cross-compile) mit Clang..."
+    cd Windows && \
+    cmake -B build-arm \
+      -G Ninja \
+      -DCMAKE_C_COMPILER=clang \
+      -DCMAKE_CXX_COMPILER=clang++ \
+      -DCMAKE_SYSTEM_NAME=Windows \
+      -DCMAKE_SYSTEM_PROCESSOR=ARM64 \
+      -DCMAKE_BUILD_TYPE=Release && \
+    cmake --build build-arm --config Release --parallel
+    echo "✅ Fertig: Windows/build-arm/bin/comboom_punkt_sucht_wallpaper.exe (ARM64)"
+
+# --- Windows x86 (32-bit) Vulkan App ---
+@windows-vulkan-x86: win-static
+    echo "🪟 Baue Windows Vulkan App (x86 32-bit) mit Clang..."
+    cd Windows && \
+    cmake -B build-x86 \
+      -G Ninja \
+      -DCMAKE_C_COMPILER=clang \
+      -DCMAKE_CXX_COMPILER=clang++ \
+      -DCMAKE_C_FLAGS=-m32 \
+      -DCMAKE_CXX_FLAGS=-m32 \
+      -DCMAKE_BUILD_TYPE=Release && \
+    cmake --build build-x86 --config Release --parallel
+    echo "✅ Fertig: Windows/build-x86/bin/comboom_punkt_sucht_wallpaper.exe (x86)"
+
 # --- Aufräumen ---
 @clean:
-    echo "🧹 Lösche {{BUILD_DIR}}..."
+    echo "🧹 Deleting build artifacts..."
     rm -rf {{BUILD_DIR}}
-    echo "✨ Sauber!"
+    rm -rf Linux/build Linux/build-arm Linux/build-x86
+    rm -rf Windows/build Windows/build-arm Windows/build-x86
+    rm -rf MacOS/build
+    echo "✨ Clean!"
+
+# --- Test/Run Linux app (development) ---
+@run-linux: linux-vulkan
+    echo ""
+    echo "  🎮 Running Linux Vulkan app..."
+    ./Linux/build/bin/comboom_punkt_sucht_wallpaper --h1 "Test" --h2 "App"
+
+# --- Test/Run Windows app (if on Windows) ---
+@run-windows: windows-vulkan
+    echo ""
+    echo "  🎮 Running Windows Vulkan app..."
+    .\Windows\build\bin\comboom_punkt_sucht_wallpaper.exe --h1 "Test" --h2 "App"
+
+# --- Open macOS app ---
+@run-macos: macos-metal
+    echo ""
+    echo "  🎮 Opening macOS Metal app..."
+    open "MacOS/build/Release/comboom.sucht Live Wallpaper.app"
+
+# --- Show status/info ---
+@info:
+    @echo ""
+    @echo "  ℹ️  Project Information"
+    @echo "  ━━━━━━━━━━━━━━━━━━━━━"
+    @echo ""
+    @echo "  Project: comboom. sucht Native Wallpaper"
+    @echo "  Version: 1.0.5"
+    @echo "  Compiler: Clang 18 (primary), Apple Clang (macOS)"
+    @echo "  C++ Standard: C++23"
+    @echo "  Build System: CMake 3.20+"
+    @echo ""
+    @echo "  Graphics:"
+    @echo "    • Linux/Windows: Vulkan 1.2+"
+    @echo "    • macOS: Metal"
+    @echo ""
+    @echo "  Platforms:"
+    @echo "    • Linux: X11 & Wayland"
+    @echo "    • Windows: Win32"
+    @echo "    • macOS: AppKit"
+    @echo ""
+    @echo "  Quick start:"
+    @echo "    just linux-vulkan      # Build Linux app"
+    @echo "    just windows-vulkan    # Build Windows app"
+    @echo "    just macos-metal       # Build macOS app"
+    @echo "    just all-platforms     # Build everything"
+    @echo ""
+
+# --- Shorthand aliases for convenience ---
+alias l := linux-vulkan
+alias w := windows-vulkan
+alias m := macos-metal
+alias b := native
+alias ba := all-platforms
+alias c := clean
