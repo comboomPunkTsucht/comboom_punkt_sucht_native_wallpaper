@@ -48,13 +48,19 @@ endif()
 set(SHADER_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/shaders")
 file(MAKE_DIRECTORY ${SHADER_OUTPUT_DIR})
 
-# Find glslc
-find_program(GLSLC_EXECUTABLE glslc REQUIRED)
+# Find glslc or glslangValidator
+find_program(GLSLC_EXECUTABLE glslc)
+if(NOT GLSLC_EXECUTABLE)
+    find_program(GLSLC_EXECUTABLE glslangValidator REQUIRED)
+    set(GLSLC_ARGS "-V")  # glslangValidator needs -V flag for Vulkan
+else()
+    set(GLSLC_ARGS "")
+endif()
 
 # Compile shaders
 add_custom_command(
     OUTPUT ${SHADER_OUTPUT_DIR}/particle.vert.spv
-    COMMAND ${GLSLC_EXECUTABLE} -fshader-stage=vertex
+    COMMAND ${GLSLC_EXECUTABLE} ${GLSLC_ARGS} -fshader-stage=vertex
             ${SRC_DIR}/shaders/particle.vert.glsl
             -o ${SHADER_OUTPUT_DIR}/particle.vert.spv
     DEPENDS ${SRC_DIR}/shaders/particle.vert.glsl
@@ -63,7 +69,7 @@ add_custom_command(
 
 add_custom_command(
     OUTPUT ${SHADER_OUTPUT_DIR}/particle.frag.spv
-    COMMAND ${GLSLC_EXECUTABLE} -fshader-stage=fragment
+    COMMAND ${GLSLC_EXECUTABLE} ${GLSLC_ARGS} -fshader-stage=fragment
             ${SRC_DIR}/shaders/particle.frag.glsl
             -o ${SHADER_OUTPUT_DIR}/particle.frag.spv
     DEPENDS ${SRC_DIR}/shaders/particle.frag.glsl
