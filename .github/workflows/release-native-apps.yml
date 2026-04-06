@@ -103,6 +103,9 @@ jobs:
       - name: Setup Clang on macOS
         if: runner.os == 'macOS'
         run: |
+          # Use latest Xcode for objectVersion 100 support
+          sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer || echo "Using system Xcode"
+          xcrun xcodebuild -version
           brew install llvm cmake ninja glslang just
           # Vulkan SDK on macOS - download from Khronos or use local installation
           # For now, we focus on Metal rendering for macOS (no Vulkan needed)
