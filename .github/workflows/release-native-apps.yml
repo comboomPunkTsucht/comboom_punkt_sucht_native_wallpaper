@@ -123,20 +123,6 @@ jobs:
             libxinerama-dev \
             libxcursor-dev
 
-      - name: Install cross-compile Vulkan libs (ARM64)
-        if: runner.os == 'Linux' && matrix.arch == 'arm64'
-        run: |
-          sudo apt-get install -y \
-            libvulkan-dev:arm64 \
-            libx11-dev:arm64 \
-            libxrandr-dev:arm64
-
-      - name: Install 32-bit Vulkan libs (x86)
-        if: runner.os == 'Linux' && matrix.arch == 'x86'
-        run: |
-          sudo apt-get install -y \
-            libvulkan-dev:i386
-
       # ============= Windows: Vulkan & Dependencies =============
       - name: Install Vulkan on Windows
         if: runner.os == 'Windows'
