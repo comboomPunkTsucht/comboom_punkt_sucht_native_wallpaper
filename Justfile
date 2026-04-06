@@ -1,5 +1,6 @@
 # --- Konfiguration ---
-CC := "clang"
+CC := "clang-18"
+CXX := "clang++-18"
 SRC := "core/cbps_wallpaper_engine_core.c"
 BUILD_DIR := "build"
 
@@ -46,9 +47,9 @@ default:
 
 # --- 3. Windows ---
 @win-static: prepare
-	echo "🪟 Baue Windows Static (.a)..."
-	x86_64-w64-mingw32-gcc -O3 -c {{SRC}} -o {{BUILD_DIR}}/win.o
-	x86_64-w64-mingw32-ar rcs {{WIN_STATIC}} {{BUILD_DIR}}/win.o
+	echo "🪟 Baue Windows Static (.a) mit Clang..."
+	clang-18 -O3 -c {{SRC}} -o {{BUILD_DIR}}/win.o
+	ar rcs {{WIN_STATIC}} {{BUILD_DIR}}/win.o
 	rm {{BUILD_DIR}}/win.o
 	echo "✅ Fertig: {{WIN_STATIC}}"
 
@@ -65,18 +66,27 @@ default:
 
 # --- Linux Vulkan App ---
 @linux-vulkan: linux-static
-    echo "🐧 Baue Linux Vulkan App (X11/Wayland)..."
+    echo "🐧 Baue Linux Vulkan App (X11/Wayland) mit Clang 18..."
     cd Linux && \
-    cmake -B build -DCMAKE_BUILD_TYPE=Release -DGLFW_USE_WAYLAND=ON -DGLFW_USE_X11=ON && \
-    cmake --build build --config Release
+    cmake -B build \
+      -DCMAKE_C_COMPILER={{CC}} \
+      -DCMAKE_CXX_COMPILER={{CXX}} \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DGLFW_USE_WAYLAND=ON \
+      -DGLFW_USE_X11=ON && \
+    cmake --build build --config Release --parallel
     echo "✅ Fertig: Linux/build/bin/comboom_punkt_sucht_wallpaper"
 
 # --- Windows Vulkan App ---
 @windows-vulkan: win-static
-    echo "🪟 Baue Windows Vulkan App..."
+    echo "🪟 Baue Windows Vulkan App mit Clang..."
     cd Windows && \
-    cmake -B build -DCMAKE_BUILD_TYPE=Release && \
-    cmake --build build --config Release
+    cmake -B build \
+      -G Ninja \
+      -DCMAKE_C_COMPILER=clang \
+      -DCMAKE_CXX_COMPILER=clang++ \
+      -DCMAKE_BUILD_TYPE=Release && \
+    cmake --build build --config Release --parallel
     echo "✅ Fertig: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe"
 
 # --- macOS Metal App (via Xcode) ---

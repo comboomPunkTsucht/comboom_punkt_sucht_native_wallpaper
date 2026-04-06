@@ -15,10 +15,10 @@ just linux-vulkan  # or windows-vulkan, macos-metal
 ## Prerequisites
 
 ### Common (All Platforms)
-- **C++23 Compiler**: GCC 13+ (primary), Clang 17+ (alternative)
+- **C++23 Compiler**: Clang 17+ (primary), GCC 13+ (fallback)
 - **CMake**: 3.20 or later
-- **Git**: Version control
-- **just**: Task runner (optional)
+- **Git**: For version control
+- **just**: Task runner (optional, for convenience)
 
 ### Linux (Ubuntu/Debian 22.04+)
 ```bash
@@ -29,8 +29,10 @@ sudo apt-get install -y \
     ninja-build \
     pkg-config \
     just \
-    gcc-14 \
-    g++-14 \
+    clang-18 \
+    clang++-18 \
+    libomp-18-dev \
+    lld-18 \
     libglfw3-dev \
     vulkan-tools \
     libvulkan-dev \
@@ -49,8 +51,8 @@ sudo apt-get install -y \
 **ARM64 cross-compilation**:
 ```bash
 sudo apt-get install -y \
+    clang-18 \
     gcc-aarch64-linux-gnu \
-    g++-aarch64-linux-gnu \
     binutils-aarch64-linux-gnu \
     libvulkan-dev:arm64 \
     libx11-dev:arm64 \
@@ -60,8 +62,8 @@ sudo apt-get install -y \
 **x86 (32-bit) support**:
 ```bash
 sudo apt-get install -y \
-    gcc-multilib \
-    g++-multilib \
+    clang-18 \
+    libomp-18-dev \
     libglfw3-dev:i386 \
     libvulkan-dev:i386
 ```
@@ -71,8 +73,7 @@ sudo apt-get install -y \
 sudo dnf install -y \
     cmake \
     ninja-build \
-    gcc-14 \
-    gcc-c++-14 \
+    clang-tools-extra \
     glfw-devel \
     vulkan-headers \
     vulkan-loader-devel \
@@ -85,7 +86,9 @@ sudo dnf install -y \
 sudo pacman -S \
     cmake \
     ninja \
-    gcc \
+    clang \
+    lld \
+    openmp \
     glfw-x11 \
     vulkan-headers \
     vulkan-icd-loader \
@@ -93,26 +96,26 @@ sudo pacman -S \
     libappindicator-gtk3
 ```
 
-### Windows (MinGW-w64 + Vulkan SDK)
+### Windows (Clang/LLVM + Vulkan SDK)
 
 Using Chocolatey:
 ```bash
-choco install -y mingw-w64 cmake ninja vulkan-sdk
+choco install -y llvm cmake ninja vulkan-sdk
 ```
 
 Or manually:
-1. Download MinGW-w64 from https://www.mingw-w64.org/
+1. Download LLVM from https://github.com/llvm/llvm-project/releases
 2. Download CMake from https://cmake.org/download/
 3. Download Vulkan SDK from https://www.lunarg.com/vulkan-sdk/
 4. Add all to system PATH
 
-### macOS (GCC + Metal)
+### macOS (Apple Clang + Metal)
 ```bash
 # Xcode Command Line Tools
 xcode-select --install
 
 # Homebrew dependencies
-brew install gcc cmake ninja vulkan-sdk glslang
+brew install llvm cmake ninja vulkan-sdk glslang
 ```
 
 ---
@@ -121,9 +124,9 @@ brew install gcc cmake ninja vulkan-sdk glslang
 
 | Platform | x86-64 | ARM64 | x86 | Compiler |
 |----------|--------|-------|-----|----------|
-| Linux    | ✅     | ✅    | ✅  | GCC 14   |
-| Windows  | ✅     | ✅    | ✅  | MinGW-64 |
-| macOS    | ❌     | ✅    | ❌  | Apple GCC|
+| Linux    | ✅     | ✅    | ✅  | Clang 18 |
+| Windows  | ✅     | ✅    | ✅  | LLVM     |
+| macOS    | ❌     | ✅    | ❌  | Apple Clang|
 
 ---
 
@@ -162,8 +165,8 @@ just linux-vulkan
 cd Linux
 cmake -B build \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc \
-  -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ \
+  -DCMAKE_C_COMPILER=aarch64-linux-gnu-clang-18 \
+  -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-clang++-18 \
   -DCMAKE_SYSTEM_NAME=Linux \
   -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
   -DGLFW_USE_WAYLAND=ON \
@@ -176,8 +179,8 @@ cmake --build build --config Release
 cd Linux
 cmake -B build \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_C_COMPILER=gcc-14 \
-  -DCMAKE_CXX_COMPILER=g++-14 \
+  -DCMAKE_C_COMPILER=clang-18 \
+  -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_C_FLAGS=-m32 \
   -DCMAKE_CXX_FLAGS=-m32 \
   -DGLFW_USE_WAYLAND=ON \
@@ -197,8 +200,8 @@ cd Windows
 cmake -B build \
   -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_C_COMPILER=gcc \
-  -DCMAKE_CXX_COMPILER=g++ \
+  -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_CXX_COMPILER=clang++ \
   -DCMAKE_SYSTEM_NAME=Windows \
   -DCMAKE_SYSTEM_PROCESSOR=ARM64
 cmake --build build --config Release
@@ -210,8 +213,8 @@ cd Windows
 cmake -B build \
   -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_C_COMPILER=gcc \
-  -DCMAKE_CXX_COMPILER=g++ \
+  -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_CXX_COMPILER=clang++ \
   -DCMAKE_C_FLAGS=-m32 \
   -DCMAKE_CXX_FLAGS=-m32
 cmake --build build --config Release
@@ -263,22 +266,22 @@ brew install cmake
 choco install cmake
 ```
 
-### G++ / GCC not found
+### Clang / Clang++ not found
 ```bash
 # Verify version
-gcc --version  # Should be 13+
-g++ --version
+clang --version  # Should be 17+
+clang++ --version
 
-# Linux - Update to GCC 14
-sudo apt install gcc-14 g++-14
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
-sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
+# Linux - Update to Clang 18
+sudo apt install clang-18 clang++-18
+sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100
+sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100
 
 # macOS
-brew install gcc@14
+brew install llvm
 
 # Windows
-choco install mingw-w64
+choco install llvm
 ```
 
 ### Vulkan SDK not found
@@ -418,14 +421,14 @@ See [RELEASE.md](RELEASE.md) for detailed release workflow.
 - Target: 60 FPS with 500 particles
 - GPU: Vulkan multi-buffering with VMA
 
-### Compiler Choice
-- **GCC 14**: Default, best C++23 support
-- **Clang 17+**: Alternative for better diagnostics
-- **MSVC**: No longer supported (MinGW-w64 only on Windows)
+### Compiler choice
+- **Clang 18**: Default, best C++23 support + faster compilation
+- **GCC 13+**: Alternative for better diagnostics
+- **Apple Clang**: macOS native (via Xcode)
 
 ---
 
 **Last Updated**: 2026-04-06
-**Primary Compiler**: GCC 14 (C++23)
+**Primary Compiler**: Clang 18 (C++23)
 **Build System**: CMake 3.20+
 **Architectures**: x86-64, ARM64, x86 (32-bit)

@@ -13,32 +13,32 @@ jobs:
           - os: ubuntu-latest
             platform: linux
             arch: x86_64
-            gcc-version: "14"
+            clang-version: "18"
             artifact-name: comboom_punkt_sucht_wallpaper
             artifact-path: Linux/build/bin/comboom_punkt_sucht_wallpaper
             archive-name: comboom-sucht-linux-x86_64.tar.gz
-            cmake-args: "-DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14 -DGLFW_USE_WAYLAND=ON -DGLFW_USE_X11=ON"
+            cmake-args: "-DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18 -DGLFW_USE_WAYLAND=ON -DGLFW_USE_X11=ON"
 
           # ========== Linux ARM64 ==========
           - os: ubuntu-latest
             platform: linux
             arch: arm64
-            gcc-version: "14"
+            clang-version: "18"
             artifact-name: comboom_punkt_sucht_wallpaper
             artifact-path: Linux/build/bin/comboom_punkt_sucht_wallpaper
             archive-name: comboom-sucht-linux-arm64.tar.gz
-            cmake-args: "-DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DGLFW_USE_WAYLAND=ON -DGLFW_USE_X11=ON"
+            cmake-args: "-DCMAKE_C_COMPILER=aarch64-linux-gnu-clang-18 -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-clang++-18 -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DGLFW_USE_WAYLAND=ON -DGLFW_USE_X11=ON"
             cross-compile: true
 
           # ========== Linux x86 (32-bit) ==========
           - os: ubuntu-latest
             platform: linux
             arch: x86
-            gcc-version: "14"
+            clang-version: "18"
             artifact-name: comboom_punkt_sucht_wallpaper
             artifact-path: Linux/build/bin/comboom_punkt_sucht_wallpaper
             archive-name: comboom-sucht-linux-x86.tar.gz
-            cmake-args: "-DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32 -DGLFW_USE_WAYLAND=ON -DGLFW_USE_X11=ON"
+            cmake-args: "-DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32 -DGLFW_USE_WAYLAND=ON -DGLFW_USE_X11=ON"
 
           # ========== Windows x86_64 ==========
           - os: windows-latest
@@ -47,7 +47,7 @@ jobs:
             artifact-name: comboom_punkt_sucht_wallpaper.exe
             artifact-path: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe
             archive-name: comboom-sucht-windows-x86_64.zip
-            cmake-args: "-G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++"
+            cmake-args: "-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
 
           # ========== Windows ARM64 ==========
           - os: windows-latest
@@ -56,7 +56,7 @@ jobs:
             artifact-name: comboom_punkt_sucht_wallpaper.exe
             artifact-path: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe
             archive-name: comboom-sucht-windows-arm64.zip
-            cmake-args: "-G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=ARM64"
+            cmake-args: "-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=ARM64"
             cross-compile: true
 
           # ========== Windows x86 (32-bit) ==========
@@ -66,7 +66,7 @@ jobs:
             artifact-name: comboom_punkt_sucht_wallpaper.exe
             artifact-path: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe
             archive-name: comboom-sucht-windows-x86.zip
-            cmake-args: "-G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32"
+            cmake-args: "-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32"
 
           # ========== macOS ARM64 (Apple Silicon) ==========
           - os: macos-latest
@@ -90,47 +90,38 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
         shell: bash
 
-      # ============= Common: Setup GCC/G++ =============
-      - name: Install GCC on Linux
+      # ============= Common: Setup Clang++ =============
+      - name: Install Clang on Linux
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            gcc-${{ matrix.gcc-version }} \
-            g++-${{ matrix.gcc-version }} \
+            clang-${{ matrix.clang-version }} \
+            lld-${{ matrix.clang-version }} \
             cmake \
             ninja-build \
             pkg-config \
             just
 
           # Set as default
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${{ matrix.gcc-version }} 100
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{ matrix.gcc-version }} 100
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${{ matrix.clang-version }} 100
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${{ matrix.clang-version }} 100
 
-      - name: Install cross-compile tools (ARM64) on Linux
+      - name: Install cross-compile clang tools (ARM64) on Linux
         if: runner.os == 'Linux' && matrix.arch == 'arm64'
         run: |
           sudo apt-get install -y \
+            clang-${{ matrix.clang-version }} \
             gcc-aarch64-linux-gnu \
-            g++-aarch64-linux-gnu \
             binutils-aarch64-linux-gnu
 
-      - name: Install 32-bit libraries on Linux
-        if: runner.os == 'Linux' && matrix.arch == 'x86'
-        run: |
-          sudo apt-get install -y \
-            gcc-multilib \
-            g++-multilib \
-            libglfw3-dev:i386 \
-            libvulkan-dev:i386
-
-      - name: Install GCC on Windows
+      - name: Setup Clang on Windows
         if: runner.os == 'Windows'
-        run: choco install -y mingw-w64 cmake ninja vulkan-sdk
+        run: choco install -y llvm cmake ninja vulkan-sdk
 
-      - name: Install GCC on macOS
+      - name: Setup Clang on macOS
         if: runner.os == 'macOS'
-        run: brew install gcc cmake ninja vulkan-sdk glslang
+        run: brew install llvm cmake ninja vulkan-sdk glslang
 
       # ============= Linux: Vulkan & Dependencies =============
       - name: Install Vulkan and graphics libraries (Linux)
@@ -169,15 +160,15 @@ jobs:
       # ============= Build C-core Library =============
       - name: Build C-core library (Linux x86_64)
         if: matrix.platform == 'linux' && matrix.arch == 'x86_64'
-        run: CC=gcc-${{ matrix.gcc-version }} just libs:linux
+        run: CC=clang-${{ matrix.clang-version }} just libs:linux
 
       - name: Build C-core library (Linux ARM64)
         if: matrix.platform == 'linux' && matrix.arch == 'arm64'
-        run: CC=aarch64-linux-gnu-gcc just libs:linux
+        run: CC=aarch64-linux-gnu-clang just libs:linux
 
       - name: Build C-core library (Linux x86)
         if: matrix.platform == 'linux' && matrix.arch == 'x86'
-        run: CC="gcc-${{ matrix.gcc-version }} -m32" just libs:linux
+        run: CC="clang-${{ matrix.clang-version }} -m32" just libs:linux
 
       - name: Build C-core library (Windows x86_64)
         if: matrix.platform == 'windows' && matrix.arch == 'x86_64'
@@ -290,17 +281,17 @@ jobs:
 
           ## 📦 Downloads by Platform & Architecture
 
-          ### 🐧 Linux (GCC 14 + Vulkan)
+          ### 🐧 Linux (Clang 18 + Vulkan)
           - **x86-64** (Intel/AMD): `comboom-sucht-linux-x86_64.tar.gz`
           - **ARM64** (ARMv8, Raspberry Pi, etc.): `comboom-sucht-linux-arm64.tar.gz`
           - **x86 (32-bit)** (Legacy): `comboom-sucht-linux-x86.tar.gz`
 
-          ### 🪟 Windows (MinGW-w64 + Vulkan)
+          ### 🪟 Windows (Clang + Vulkan)
           - **x86-64** (Intel/AMD): `comboom-sucht-windows-x86_64.zip`
           - **ARM64** (Snapdragon, future ARM laptops): `comboom-sucht-windows-arm64.zip`
           - **x86 (32-bit)** (Legacy): `comboom-sucht-windows-x86.zip`
 
-          ### 🍎 macOS (GCC + Metal)
+          ### 🍎 macOS (Apple Clang + Metal)
           - **ARM64** (Apple Silicon M1/M2/M3): `comboom-sucht-macos-arm64.zip`
 
           ## 🚀 Quick Start
@@ -390,7 +381,7 @@ jobs:
           - **Release Tag**: v${{ steps.version.outputs.VERSION }}
           - **Core Engine Version**: 1.0.5
           - **Build Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          - **Primary Compiler**: GCC 14
+          - **Primary Compiler**: Clang 18
           - **C++ Standard**: C++23
 
           ## 🐛 Installation & Troubleshooting
