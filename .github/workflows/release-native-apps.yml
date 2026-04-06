@@ -153,6 +153,10 @@ jobs:
 
       # ============= Build Vulkan Apps (Linux & Windows) =============
       # ============= Build Vulkan & Metal Apps via Justfile =============
+      - name: Build Linux Vulkan app (x86_64)
+        if: matrix.platform == 'linux' && matrix.arch == 'x86_64'
+        run: just linux-vulkan
+
       - name: Build Linux Vulkan app (ARM64)
         if: matrix.platform == 'linux' && matrix.arch == 'arm64'
         run: just linux-vulkan-arm
@@ -172,6 +176,14 @@ jobs:
         run: just macos-metal
 
       # ============= Create Archives (with arch-specific paths) =============
+      - name: Create Linux archive (x86_64)
+        if: matrix.platform == 'linux' && matrix.arch == 'x86_64'
+        run: |
+          cd Linux/build/bin
+          tar -czf ../../../${{ matrix.archive-name }} comboom_punkt_sucht_wallpaper
+          cd ../../..
+          ls -lh ${{ matrix.archive-name }}
+
       - name: Create Linux archive (ARM64)
         if: matrix.platform == 'linux' && matrix.arch == 'arm64'
         run: |
