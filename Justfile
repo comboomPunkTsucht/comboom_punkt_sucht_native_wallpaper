@@ -4,6 +4,7 @@ CC := "clang"
 CXX := "clang++"
 SRC := "core/cbps_wallpaper_engine_core.c"
 BUILD_DIR := "build"
+TOOLCHAIN := "" # Add this line
 
 # --- Ausgabe-Dateien ---
 WASM_OUT     := BUILD_DIR + "/cbps_we_core.wasm"
@@ -135,6 +136,7 @@ default:
     echo "🐧 Baue Linux Vulkan App (X11/Wayland) mit Clang 18..."
     cd Linux && \
     cmake -B build \
+      {{TOOLCHAIN}} \
       -DCMAKE_C_COMPILER={{CC}} \
       -DCMAKE_CXX_COMPILER={{CXX}} \
       -DCMAKE_BUILD_TYPE=Release \
@@ -148,6 +150,7 @@ default:
     echo "🪟 Baue Windows Vulkan App mit Clang..."
     cd Windows && \
     cmake -B build \
+      {{TOOLCHAIN}} \
       -G Ninja \
       -DCMAKE_C_COMPILER={{CC}} \
       -DCMAKE_CXX_COMPILER={{CXX}} \
@@ -169,6 +172,7 @@ default:
     echo "🐧 Baue Linux Vulkan App (ARM64 cross-compile)..."
     cd Linux && \
     cmake -B build-arm \
+      {{TOOLCHAIN}} \
       -DCMAKE_C_COMPILER={{CC}} \
       -DCMAKE_CXX_COMPILER={{CXX}} \
       -DCMAKE_SYSTEM_NAME=Linux \
@@ -184,6 +188,7 @@ default:
     echo "🪟 Baue Windows Vulkan App (ARM64 cross-compile) mit Clang..."
     cd Windows && \
     cmake -B build-arm \
+      {{TOOLCHAIN}} \
       -G Ninja \
       -DCMAKE_C_COMPILER={{CC}} \
       -DCMAKE_CXX_COMPILER={{CXX}} \
