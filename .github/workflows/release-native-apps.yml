@@ -121,7 +121,11 @@ jobs:
 
       - name: Setup Clang on macOS
         if: runner.os == 'macOS'
-        run: brew install llvm cmake ninja vulkan-sdk glslang just
+        run: |
+          brew install llvm cmake ninja glslang just
+          # Vulkan SDK on macOS - download from Khronos or use local installation
+          # For now, we focus on Metal rendering for macOS (no Vulkan needed)
+          echo "ℹ️  macOS uses Metal rendering (no Vulkan needed)"
 
       # ============= Linux: Vulkan & Dependencies =============
       - name: Install Vulkan and graphics libraries (Linux)
