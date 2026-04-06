@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # --- Dependencies (via vcpkg) ---
 find_package(glfw3 3.3 REQUIRED)
 find_package(Vulkan REQUIRED)
-find_package(vulkan_memory_allocator CONFIG REQUIRED)
+find_package(vulkan-memory-allocator CONFIG REQUIRED)
 
 # --- Directories ---
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -97,7 +97,7 @@ target_include_directories(comboom_punkt_sucht_wallpaper PRIVATE
 target_link_libraries(comboom_punkt_sucht_wallpaper
     glfw
     Vulkan::Vulkan
-    vulkan_memory_allocator::vulkan_memory_allocator
+    vulkan-memory-allocator::vulkan-memory-allocator
 )
 
 # Windows-specific libraries
