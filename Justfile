@@ -1,6 +1,7 @@
 # --- Konfiguration ---
-CC := "clang-18"
-CXX := "clang++-18"
+# Use environment variables with defaults - allows easy override
+CC := env_var_or("CC", "clang-18")
+CXX := env_var_or("CXX", "clang++-18")
 SRC := "core/cbps_wallpaper_engine_core.c"
 BUILD_DIR := "build"
 
