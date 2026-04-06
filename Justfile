@@ -1,7 +1,7 @@
 # --- Konfiguration ---
-# Use environment variables with defaults - allows easy override
-CC := env_var_or("CC", "clang")
-CXX := env_var_or("CXX", "clang++")
+# Defaults: can be overridden via environment (e.g., CC=clang-18 just libs_linux)
+CC := "clang"
+CXX := "clang++"
 SRC := "core/cbps_wallpaper_engine_core.c"
 BUILD_DIR := "build"
 
