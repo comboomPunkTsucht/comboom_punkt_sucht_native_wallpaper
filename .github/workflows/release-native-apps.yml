@@ -113,6 +113,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install -y \
+            libglfw3-dev \
             vulkan-tools \
             libvulkan-dev \
             glslang-tools \
