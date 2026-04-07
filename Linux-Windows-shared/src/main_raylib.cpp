@@ -99,19 +99,19 @@ int main(int argc, char* argv[]) {
         }
 
         // Set up system tray callbacks
-        tray->set_h1_callback([](const std::string& text) {
+        tray->set_h1_callback([&tray](const std::string& text) {
             std::lock_guard<std::mutex> lock(g_app_state.state_mutex);
             g_app_state.h1_text = text;
             tray->set_h1_text(text);  // Update display
         });
 
-        tray->set_h2_callback([](const std::string& text) {
+        tray->set_h2_callback([&tray](const std::string& text) {
             std::lock_guard<std::mutex> lock(g_app_state.state_mutex);
             g_app_state.h2_text = text;
             tray->set_h2_text(text);
         });
 
-        tray->set_quit_callback([]() {
+        tray->set_quit_callback([&]() {
             g_app_state.should_quit = true;
         });
 
