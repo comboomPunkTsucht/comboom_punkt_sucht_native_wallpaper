@@ -295,31 +295,31 @@ default:
     echo "🐧 Compiling Linux Raylib App (ARM64 cross-compile)..."
     mkdir -p {{BUILD_DIR}}/app_linux_arm64
     # Compile C core with aarch64 target
-    {{CXX}} -x c++ --target=aarch64-linux-gnu -std=c++23 -O3 -c {{SRC}} \
+    {{CXX}}  --target=aarch64-linux-gnu -std=c++23 -O3 -c {{SRC}} \
         -o {{BUILD_DIR}}/app_linux_arm64/cbps_core.o
     # Compile C++ app files
-    {{CXX}} -x c++ --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+    {{CXX}}  --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/main_raylib.cpp \
         -o {{BUILD_DIR}}/app_linux_arm64/main.o
-    {{CXX}} -x c++ --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+    {{CXX}}  --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/wallpaper_app.cpp \
         -o {{BUILD_DIR}}/app_linux_arm64/wallpaper_app.o
-    {{CXX}} -x c++ --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+    {{CXX}}  --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/renderer_raylib.cpp \
         -o {{BUILD_DIR}}/app_linux_arm64/renderer.o
-    {{CXX}} -x c++ --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+    {{CXX}}  --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/assets_loader.cpp \
         -o {{BUILD_DIR}}/app_linux_arm64/assets_loader.o
-    {{CXX}} -x c++ --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+    {{CXX}}  --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/system_tray_linux.cpp \
         -o {{BUILD_DIR}}/app_linux_arm64/system_tray_linux.o
     # Link with static libraries
-    {{CXX}} -x c++ --target=aarch64-linux-gnu -O3 {{BUILD_DIR}}/app_linux_arm64/*.o \
+    {{CXX}}  --target=aarch64-linux-gnu -O3 {{BUILD_DIR}}/app_linux_arm64/*.o \
         {{RAYLIB_LINUX_ARM64}} {{LINUX_STATIC}} \
         --sysroot=/usr/aarch64-linux-gnu \
         -lX11 -lGLX -lGL -ldl -lpthread \
