@@ -161,20 +161,20 @@ jobs:
       # ============= Build Vulkan & Metal Apps via Justfile =============
       - name: Build Linux Vulkan app (x86_64)
         if: matrix.platform == 'linux' && matrix.arch == 'x86_64'
-        run: just TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" linux-vulkan
+        run: just linux-vulkan
 
       - name: Build Linux Vulkan app (ARM64)
         if: matrix.platform == 'linux' && matrix.arch == 'arm64'
-        run: CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ just TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" linux-vulkan-arm
+        run: CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ just linux-vulkan-arm
 
       - name: Build Windows Vulkan app (x86_64)
         if: matrix.platform == 'windows' && matrix.arch == 'x86_64'
-        run: just TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" windows-vulkan
+        run: just windows-vulkan
         shell: bash
 
       - name: Build Windows Vulkan app (ARM64)
         if: matrix.platform == 'windows' && matrix.arch == 'arm64'
-        run: just TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" windows-vulkan-arm
+        run: just windows-vulkan-arm
         shell: bash
 
       - name: Build macOS Metal app
