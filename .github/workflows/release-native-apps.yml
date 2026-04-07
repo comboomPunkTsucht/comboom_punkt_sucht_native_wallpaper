@@ -40,14 +40,15 @@ jobs:
             cmake-args: "-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
 
           # ========== Windows ARM64 ==========
-          - os: windows-latest
-            platform: windows
-            arch: arm64
-            artifact-name: comboom_punkt_sucht_wallpaper.exe
-            artifact-path: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe
-            archive-name: comboom-sucht-windows-arm64.zip
-            cmake-args: "-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=ARM64"
-            cross-compile: true
+          # Note: Windows ARM64 support is still evolving, so this build may require additional tweaks or dependencies (e.g. Windows SDK for ARM64). We will test and iterate on this configuration as needed.
+          #- os: windows-latest
+          #  platform: windows
+          #  arch: arm64
+          #  artifact-name: comboom_punkt_sucht_wallpaper.exe
+          #  artifact-path: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe
+          #  archive-name: comboom-sucht-windows-arm64.zip
+          #  cmake-args: "-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=ARM64"
+          #  cross-compile: true
 
           # ========== macOS ARM64 (Apple Silicon) ==========
           # Note: GitHub-hosted macOS runners are currently not the latest xcode version, so it is teporaly disabled, until they updated to xcode 26.4
