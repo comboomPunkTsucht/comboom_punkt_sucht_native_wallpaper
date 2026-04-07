@@ -5,6 +5,15 @@ SRC := "core/cbps_wallpaper_engine_core.c"
 BUILD_DIR := "build"
 RAYLIB_DIR := "thirdparty/raylib"
 
+# MinGW Sysroot auto-detection (macOS vs Linux)
+MINGW_SYSROOT := if os() == "macos" {
+    "/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64"
+} else {
+    "/usr/x86_64-w64-mingw32"
+}
+
+MINGW_SYSROOT_OVERRIDE := env_var_or_default("MINGW_SYSROOT", MINGW_SYSROOT)
+
 # --- Ausgabe-Dateien ---
 WASM_OUT     := BUILD_DIR + "/cbps_we_core.wasm"
 MAC_STATIC   := BUILD_DIR + "/libcbps_we_core_mac.a"
@@ -130,10 +139,11 @@ default:
 # --- Raylib Compilation via Makefile (Windows x64) ---
 @build-raylib-windows-x64: prepare
     echo "📦 Compiling Raylib for Windows (x64) via Makefile (MinGW)..."
+    echo "   Sysroot: {{MINGW_SYSROOT_OVERRIDE}}"
     mkdir -p {{BUILD_DIR}}/raylib_win_x64
     cd {{RAYLIB_DIR}}/src && \
     make \
-        CC="clang --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64" \
+        CC="clang --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}}" \
         PLATFORM=PLATFORM_DESKTOP \
         GRAPHICS=GRAPHICS_API_OPENGL_43 \
         GLFW_USE_X11=0 \
@@ -286,31 +296,31 @@ default:
     echo "🪟 Compiling Windows Raylib App (x64 MinGW)..."
     mkdir -p {{BUILD_DIR}}/app_win_x64
     # Compile C core
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -std=c++23 -O3 -c {{SRC}} \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -std=c++23 -O3 -c {{SRC}} \
         -o {{BUILD_DIR}}/app_win_x64/cbps_core.o
     # Compile C++ app files
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/main_raylib.cpp \
         -o {{BUILD_DIR}}/app_win_x64/main.o
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/wallpaper_app.cpp \
         -o {{BUILD_DIR}}/app_win_x64/wallpaper_app.o
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/renderer_raylib.cpp \
         -o {{BUILD_DIR}}/app_win_x64/renderer.o
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/assets_loader.cpp \
         -o {{BUILD_DIR}}/app_win_x64/assets_loader.o
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/system_tray_windows.cpp \
         -o {{BUILD_DIR}}/app_win_x64/system_tray_windows.o
     # Link with static libraries and Windows API
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -O3 {{BUILD_DIR}}/app_win_x64/*.o \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -O3 {{BUILD_DIR}}/app_win_x64/*.o \
         {{RAYLIB_WIN_X64}} {{WIN_STATIC}} \
         -lopengl32 -lgdi32 -luser32 -lshell32 -lole32 -lwinmm \
         -static-libstdc++ -static-libgcc \

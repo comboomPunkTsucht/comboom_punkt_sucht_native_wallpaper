@@ -123,9 +123,10 @@ jobs:
             mingw-w64-x86-64-dev \
             mingw-w64-common
 
-          # Verify installation
+          # Verify installation and show sysroot path
+          echo "✅ MinGW-w64 installed"
           x86_64-w64-mingw32-gcc --version
-          aarch64-w64-mingw32-gcc --version || echo "ARM64 MinGW tools may not be available in this Ubuntu version"
+          echo "Sysroot: $(x86_64-w64-mingw32-gcc -print-sysroot)"
 
       # ============= Build Apps via Justfile =============
       - name: "Build ${{ matrix.platform }}-${{ matrix.arch }} (Raylib)"
@@ -133,23 +134,48 @@ jobs:
         shell: bash
 
       # ============= Create Archives =============
-      - name: Create Linux archive
+      - name: Create Linux archive with assets
         if: matrix.platform == 'linux'
         run: |
-          mkdir -p dist
-          tar -czf dist/${{ matrix.archive-name }} \
-            -C build ${{ matrix.artifact-name }}
-          ls -lh dist/${{ matrix.archive-name }}
+          mkdir -p dist/comboom-sucht-${{ matrix.arch }}
+
+          # Copy executable
+          if [ "${{ matrix.arch }}" == "x86_64" ]; then
+            cp build/comboom-sucht-linux-x64 dist/comboom-sucht-${{ matrix.arch }}/
+          else
+            cp build/comboom-sucht-linux-arm64 dist/comboom-sucht-${{ matrix.arch }}/
+          fi
+
+          # Copy assets
+          mkdir -p dist/comboom-sucht-${{ matrix.arch }}/assets
+          cp -r WASM/static/fonts dist/comboom-sucht-${{ matrix.arch }}/assets/
+          cp -r WASM/static/pictures dist/comboom-sucht-${{ matrix.arch }}/assets/
+          cp ASSETS_README.md dist/comboom-sucht-${{ matrix.arch }}/
+
+          # Create archive
+          cd dist && tar -czf ../comboom-sucht-linux-${{ matrix.arch }}.tar.gz comboom-sucht-${{ matrix.arch }}/
+          cd ..
+          ls -lh comboom-sucht-linux-${{ matrix.arch }}.tar.gz
         shell: bash
 
-      - name: Create Windows archive (ZIP)
+      - name: Create Windows archive with assets
         if: matrix.platform == 'windows'
         run: |
-          mkdir -p dist
-          cd build
-          zip -j ../dist/${{ matrix.archive-name }} ${{ matrix.artifact-name }}
+          mkdir -p dist/comboom-sucht-windows-x64
+
+          # Copy executable
+          cp build/comboom-sucht-windows-x64.exe dist/comboom-sucht-windows-x64/
+
+          # Copy assets
+          mkdir -p dist/comboom-sucht-windows-x64/assets
+          cp -r WASM/static/fonts dist/comboom-sucht-windows-x64/assets/
+          cp -r WASM/static/pictures dist/comboom-sucht-windows-x64/assets/
+          cp ASSETS_README.md dist/comboom-sucht-windows-x64/
+
+          # Create archive
+          cd dist && zip -r ../comboom-sucht-windows-x64.zip comboom-sucht-windows-x64/
           cd ..
-          ls -lh dist/${{ matrix.archive-name }}
+          ls -lh comboom-sucht-windows-x64.zip
         shell: bash
 
       # ============= Upload to Release =============
@@ -157,7 +183,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: dist/${{ matrix.archive-name }}
+          files: comboom-sucht-*.{tar.gz,zip}
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
