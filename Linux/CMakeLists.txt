@@ -127,7 +127,7 @@ target_include_directories(comboom_punkt_sucht_wallpaper PRIVATE
     ${CORE_DIR}
     ${Vulkan_INCLUDE_DIRS}
     ${vulkanmemoryallocator_SOURCE_DIR}/include
-    ${vk_bootstrap_SOURCE_DIR}/src
+    "${CMAKE_BINARY_DIR}/_deps/vk_bootstrap-src/src"
 )
 
 # --- Link libraries ---
