@@ -136,10 +136,8 @@ bool SystemTrayWindows::init(const std::string& app_name_str, const std::string&
     // Load icon - for now use default Windows icon
     nid.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
 
-    // Set tooltip (convert to wide char for Windows)
-    wchar_t tooltip_w[128] = {};
-    MultiByteToWideChar(CP_ACP, 0, "comboom.sucht Live Wallpaper", -1, tooltip_w, 128);
-    wcscpy(nid.szTip, tooltip_w);
+    // Set tooltip (NOTIFYICONDATA uses CHAR array, not wchar_t)
+    strncpy(nid.szTip, "comboom.sucht Live Wallpaper", sizeof(nid.szTip) - 1);
 
     if (!Shell_NotifyIcon(NIM_ADD, &nid)) {
         return false;
@@ -150,10 +148,8 @@ bool SystemTrayWindows::init(const std::string& app_name_str, const std::string&
 
 void SystemTrayWindows::set_h1_text(const std::string& text) {
     h1_text = text;
-    // Update tooltip with new text (convert ANSI to wide char)
-    wchar_t tooltip_w[128] = {};
-    MultiByteToWideChar(CP_ACP, 0, text.c_str(), -1, tooltip_w, 128);
-    wcscpy(nid.szTip, tooltip_w);
+    // Update tooltip with new text (NOTIFYICONDATA uses CHAR array)
+    strncpy(nid.szTip, text.c_str(), sizeof(nid.szTip) - 1);
     Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
 

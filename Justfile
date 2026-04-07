@@ -115,6 +115,7 @@ default:
     cd {{RAYLIB_DIR}}/src && \
     make \
         CC={{CC}} \
+        -x c++ \
         PLATFORM=PLATFORM_DESKTOP \
         GRAPHICS=GRAPHICS_API_OPENGL_43 \
         LDLIBS="" \
@@ -130,6 +131,7 @@ default:
     cd {{RAYLIB_DIR}}/src && \
     make \
         CC="clang --target=aarch64-linux-gnu" \
+        -x c++ \
         PLATFORM=PLATFORM_DESKTOP \
         GRAPHICS=GRAPHICS_API_OPENGL_43 \
         LDLIBS="" \
@@ -161,7 +163,7 @@ default:
         mkdir -p {{BUILD_DIR}}/raylib_win_x64
         cd {{RAYLIB_DIR}}/src && \
         make \
-            CC="clang --target=x86_64-w64-mingw32" \
+            CC="clang --target=x86_64-w64-mingw32 + -x c++" \
             PLATFORM=PLATFORM_DESKTOP \
             GRAPHICS=GRAPHICS_API_OPENGL_43 \
             GLFW_USE_X11=0 \
@@ -240,22 +242,22 @@ default:
     echo "🐧 Compiling Linux Raylib App (x64)..."
     mkdir -p {{BUILD_DIR}}/app_linux_x64
     # Compile C core
-    {{CXX}} -std=c++23 -O3 -c {{SRC}} \
+    {{CXX}} -x c++ -std=c++23 -O3 -c {{SRC}} \
         -o {{BUILD_DIR}}/app_linux_x64/cbps_core.o
     # Compile C++ app files
-    {{CXX}} -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/main_raylib.cpp \
         -o {{BUILD_DIR}}/app_linux_x64/main.o
-    {{CXX}} -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/wallpaper_app.cpp \
         -o {{BUILD_DIR}}/app_linux_x64/wallpaper_app.o
-    {{CXX}} -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/renderer_raylib.cpp \
         -o {{BUILD_DIR}}/app_linux_x64/renderer.o
-    {{CXX}} -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/assets_loader.cpp \
         -o {{BUILD_DIR}}/app_linux_x64/assets_loader.o
@@ -264,24 +266,24 @@ default:
     set -e
     if [[ "$OSTYPE" == "darwin"* ]]; then \
         echo "ℹ️  Compiling with macOS stub system tray (for testing only)..."; \
-        {{CXX}} -std=c++23 -O3 -fPIC \
+        {{CXX}} -x c++ -std=c++23 -O3 -fPIC \
             -I{{RAYLIB_DIR}}/src -Icore \
             -c Linux-Windows-shared/src/system_tray_macos_stub.cpp \
             -o {{BUILD_DIR}}/app_linux_x64/system_tray.o; \
     else \
-        {{CXX}} -std=c++23 -O3 -fPIC \
+        {{CXX}} -x c++ -std=c++23 -O3 -fPIC \
             -I{{RAYLIB_DIR}}/src -Icore \
             -c Linux-Windows-shared/src/system_tray_linux.cpp \
             -o {{BUILD_DIR}}/app_linux_x64/system_tray.o; \
     fi
     # Link (try with full dependencies first, fallback to minimal on macOS)
-    {{CXX}} -O3 {{BUILD_DIR}}/app_linux_x64/*.o \
+    {{CXX}} -x c++ -O3 {{BUILD_DIR}}/app_linux_x64/*.o \
         {{RAYLIB_LINUX_X64}} {{LINUX_STATIC}} \
         -lX11 -lGLX -lGL -ldl -lpthread \
         -lappindicator3 -lgtk-3 -lglib-2.0 -lgobject-2.0 \
         -static-libstdc++ -static-libgcc \
         -o {{APP_LINUX_X64}} 2>/dev/null || \
-    {{CXX}} -O3 {{BUILD_DIR}}/app_linux_x64/*.o \
+    {{CXX}} -x c++ -O3 {{BUILD_DIR}}/app_linux_x64/*.o \
         {{RAYLIB_LINUX_X64}} {{LINUX_STATIC}} \
         -lX11 -lGLX -lGL -ldl -lpthread \
         -static-libstdc++ -static-libgcc \
@@ -293,31 +295,31 @@ default:
     echo "🐧 Compiling Linux Raylib App (ARM64 cross-compile)..."
     mkdir -p {{BUILD_DIR}}/app_linux_arm64
     # Compile C core with aarch64 target
-    {{CXX}} --target=aarch64-linux-gnu -std=c++23 -O3 -c {{SRC}} \
+    {{CXX}} -x c++ --target=aarch64-linux-gnu -std=c++23 -O3 -c {{SRC}} \
         -o {{BUILD_DIR}}/app_linux_arm64/cbps_core.o
     # Compile C++ app files
-    {{CXX}} --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/main_raylib.cpp \
         -o {{BUILD_DIR}}/app_linux_arm64/main.o
-    {{CXX}} --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/wallpaper_app.cpp \
         -o {{BUILD_DIR}}/app_linux_arm64/wallpaper_app.o
-    {{CXX}} --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/renderer_raylib.cpp \
         -o {{BUILD_DIR}}/app_linux_arm64/renderer.o
-    {{CXX}} --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/assets_loader.cpp \
         -o {{BUILD_DIR}}/app_linux_arm64/assets_loader.o
-    {{CXX}} --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/system_tray_linux.cpp \
         -o {{BUILD_DIR}}/app_linux_arm64/system_tray_linux.o
     # Link with static libraries
-    {{CXX}} --target=aarch64-linux-gnu -O3 {{BUILD_DIR}}/app_linux_arm64/*.o \
+    {{CXX}} -x c++ --target=aarch64-linux-gnu -O3 {{BUILD_DIR}}/app_linux_arm64/*.o \
         {{RAYLIB_LINUX_ARM64}} {{LINUX_STATIC}} \
         --sysroot=/usr/aarch64-linux-gnu \
         -lX11 -lGLX -lGL -ldl -lpthread \
@@ -331,31 +333,31 @@ default:
     echo "🪟 Compiling Windows Raylib App (x64 MinGW)..."
     mkdir -p {{BUILD_DIR}}/app_win_x64
     # Compile C core
-    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -c {{SRC}} \
+    {{CXX}} -x c++ --target=x86_64-w64-mingw32 -std=c++23 -O3 -c {{SRC}} \
         -o {{BUILD_DIR}}/app_win_x64/cbps_core.o
     # Compile C++ app files
-    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/main_raylib.cpp \
         -o {{BUILD_DIR}}/app_win_x64/main.o
-    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/wallpaper_app.cpp \
         -o {{BUILD_DIR}}/app_win_x64/wallpaper_app.o
-    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/renderer_raylib.cpp \
         -o {{BUILD_DIR}}/app_win_x64/renderer.o
-    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/assets_loader.cpp \
         -o {{BUILD_DIR}}/app_win_x64/assets_loader.o
-    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+    {{CXX}} -x c++ --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/system_tray_windows.cpp \
         -o {{BUILD_DIR}}/app_win_x64/system_tray_windows.o
     # Link with static libraries and Windows API
-    {{CXX}} --target=x86_64-w64-mingw32 -O3 {{BUILD_DIR}}/app_win_x64/*.o \
+    {{CXX}} -x c++ --target=x86_64-w64-mingw32 -O3 {{BUILD_DIR}}/app_win_x64/*.o \
         {{RAYLIB_WIN_X64}} {{WIN_STATIC}} \
         -lopengl32 -lgdi32 -luser32 -lshell32 -lole32 -lwinmm \
         -static-libstdc++ -static-libgcc \
