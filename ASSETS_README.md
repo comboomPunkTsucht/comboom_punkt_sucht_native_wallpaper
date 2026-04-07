@@ -13,6 +13,7 @@
    ```
    comboom-sucht-linux-x64          (or .exe on Windows)
    assets/
+     ├── Logo.png                   (main application icon)
      ├── fonts/
      │   ├── CaskaydiaCoveNerdFontPropo-Regular.ttf
      │   ├── CaskaydiaCoveNerdFontPropo-Bold.ttf
@@ -37,6 +38,7 @@
 
 The wallpaper includes custom fonts and logo images used for rendering:
 
+- **Logo.png**: Main application icon (used in system tray, window title bar, etc.)
 - **Fonts**: CaskaydiaCove Nerd Font Proportional (variants: Regular, Bold, Light, ExtraLight)
 - **Pictures**: Brand logos from collaborators (bd, cbps, fabelke, knuddelzwerck, mahd)
 
@@ -44,10 +46,11 @@ The wallpaper includes custom fonts and logo images used for rendering:
 
 You can customize the wallpaper by editing the files in the `assets/` folder:
 
+- **Replace Logo.png**: Use any PNG image as the app icon/logo
 - **Replace fonts**: Drop your own `.ttf` font files in `assets/fonts/`
 - **Replace pictures**: Drop your own `.png` image files in `assets/pictures/`
 
-The app will automatically use the fonts to render text overlays, and gracefully fall back to default fonts if custom ones aren't found.
+The app will automatically use the files and gracefully fall back to default fonts if custom ones aren't found.
 
 ## Troubleshooting
 
@@ -56,6 +59,7 @@ The app will automatically use the fonts to render text overlays, and gracefully
 | "No assets found" warning | Make sure `assets/` folder is in the same directory as the executable |
 | Custom fonts not working | Ensure font files are `.ttf` format and readable |
 | Missing logos in tray menu | The app works fine without picture assets - they're optional |
+| Logo not displayed in tray | Verify Logo.png is readable and in a standard format (24x24 or 32x32 preferred) |
 | Wallpaper won't start | Check that the executable has execute permissions (`chmod +x` on Linux) |
 
 ## Advanced: Running from Different Directory

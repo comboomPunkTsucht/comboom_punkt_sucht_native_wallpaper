@@ -148,8 +148,9 @@ jobs:
 
           # Copy assets
           mkdir -p dist/comboom-sucht-${{ matrix.arch }}/assets
-          cp -r WASM/static/fonts dist/comboom-sucht-${{ matrix.arch }}/assets/
-          cp -r WASM/static/pictures dist/comboom-sucht-${{ matrix.arch }}/assets/
+          cp WASM/static/Logo.png dist/comboom-sucht-${{ matrix.arch }}/assets/
+          cp -r WASM/static/fonts dist/comboom-sucht-${{ matrix.arch }}/assets/ 2>/dev/null || true
+          cp -r WASM/static/pictures dist/comboom-sucht-${{ matrix.arch }}/assets/ 2>/dev/null || true
           cp ASSETS_README.md dist/comboom-sucht-${{ matrix.arch }}/
 
           # Create archive
@@ -168,8 +169,9 @@ jobs:
 
           # Copy assets
           mkdir -p dist/comboom-sucht-windows-x64/assets
-          cp -r WASM/static/fonts dist/comboom-sucht-windows-x64/assets/
-          cp -r WASM/static/pictures dist/comboom-sucht-windows-x64/assets/
+          cp WASM/static/Logo.png dist/comboom-sucht-windows-x64/assets/
+          cp -r WASM/static/fonts dist/comboom-sucht-windows-x64/assets/ 2>/dev/null || true
+          cp -r WASM/static/pictures dist/comboom-sucht-windows-x64/assets/ 2>/dev/null || true
           cp ASSETS_README.md dist/comboom-sucht-windows-x64/
 
           # Create archive

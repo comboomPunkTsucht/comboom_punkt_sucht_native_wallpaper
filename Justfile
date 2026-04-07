@@ -338,8 +338,10 @@ default:
     echo "📦 Packaging Linux app with assets..."
     mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-x64
     cp {{APP_LINUX_X64}} {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/
-    cp -r WASM/static/fonts {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/assets/ 2>/dev/null || mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/assets/fonts
-    cp -r WASM/static/pictures {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/assets/ 2>/dev/null || mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/assets/pictures
+    mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/assets
+    cp WASM/static/Logo.png {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/assets/
+    cp -r WASM/static/fonts {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/assets/ 2>/dev/null || true
+    cp -r WASM/static/pictures {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/assets/ 2>/dev/null || true
     cp ASSETS_README.md {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/
     cd {{BUILD_DIR}}/dist && tar -czf ../comboom-sucht-linux-x64.tar.gz comboom-sucht-linux-x64/
     rm -rf {{BUILD_DIR}}/dist
@@ -350,8 +352,10 @@ default:
     echo "📦 Packaging Windows app with assets..."
     mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-windows-x64
     cp {{APP_WIN_X64}} {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/
-    cp -r WASM/static/fonts {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/assets/ 2>/dev/null || mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/assets/fonts
-    cp -r WASM/static/pictures {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/assets/ 2>/dev/null || mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/assets/pictures
+    mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/assets
+    cp WASM/static/Logo.png {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/assets/
+    cp -r WASM/static/fonts {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/assets/ 2>/dev/null || true
+    cp -r WASM/static/pictures {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/assets/ 2>/dev/null || true
     cp ASSETS_README.md {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/
     cd {{BUILD_DIR}}/dist && zip -r ../comboom-sucht-windows-x64.zip comboom-sucht-windows-x64/
     rm -rf {{BUILD_DIR}}/dist
@@ -363,8 +367,10 @@ default:
     echo "🍎 Preparing Linux ARM64 package..."
     mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64
     cp {{APP_LINUX_ARM64}} {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/
-    cp -r WASM/static/fonts {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/assets/ 2>/dev/null || mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/assets/fonts
-    cp -r WASM/static/pictures {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/assets/ 2>/dev/null || mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/assets/pictures
+    mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/assets
+    cp WASM/static/Logo.png {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/assets/
+    cp -r WASM/static/fonts {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/assets/ 2>/dev/null || true
+    cp -r WASM/static/pictures {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/assets/ 2>/dev/null || true
     cp ASSETS_README.md {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/
     cd {{BUILD_DIR}}/dist && tar -czf ../comboom-sucht-linux-arm64.tar.gz comboom-sucht-linux-arm64/
     rm -rf {{BUILD_DIR}}/dist
