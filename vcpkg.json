@@ -7,7 +7,6 @@
     "vulkan-headers",
     "vulkan-loader",
     "vulkan-memory-allocator",
-    "vk-bootstrap",
     "glslang"
   ],
   "overrides": [
