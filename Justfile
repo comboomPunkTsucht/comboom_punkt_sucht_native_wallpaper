@@ -43,7 +43,7 @@ default:
     @echo "    just linux-raylib-arm64   - Build Linux (ARM64 cross-compile, Raylib)"
     @echo ""
     @echo "    just windows-raylib       - Build Windows (x64, MinGW, Raylib)"
-    @echo "    just windows-raylib-arm64 - Build Windows (ARM64 cross-compile, Raylib)"
+    @echo "    (Windows ARM64 support pending)"
     @echo ""
     @echo "  🎯 Build Shortcuts"
     @echo "  ━━━━━━━━━━━━━━━━"
@@ -146,22 +146,60 @@ default:
     echo "✅ Raylib static library: {{RAYLIB_WIN_X64}}"
 
 # --- Raylib Compilation via Makefile (Windows ARM64) ---
-@build-raylib-windows-arm64: prepare
-    echo "📦 Compiling Raylib for Windows (ARM64) via Makefile (cross-compile)..."
-    mkdir -p {{BUILD_DIR}}/raylib_win_arm64
-    cd {{RAYLIB_DIR}}/src && \
-    make \
-        CC="clang --target=aarch64-w64-mingw32" \
-        PLATFORM=PLATFORM_DESKTOP \
-        GRAPHICS=GRAPHICS_API_OPENGL_43 \
-        GLFW_USE_X11=0 \
-        GLFW_USE_WAYLAND=0 \
-        CFLAGS="-D_GLFW_WIN32 -DGL_SILENCE_DEPRECATION" \
-        LDLIBS="" \
-        -j$(nproc) && \
-    cp libraylib.a ../../../{{RAYLIB_WIN_ARM64}} && \
-    make clean
-    echo "✅ Raylib static library: {{RAYLIB_WIN_ARM64}}"
+# NOTE: Temporarily disabled - MinGW-w64 ARM64 support in Ubuntu is limited
+# Uncomment and use when better cross-compilation toolchains are available
+# @build-raylib-windows-arm64: prepare
+#     echo "📦 Compiling Raylib for Windows (ARM64) via Makefile (cross-compile)..."
+#     mkdir -p {{BUILD_DIR}}/raylib_win_arm64
+#     cd {{RAYLIB_DIR}}/src && \
+#     make \
+#         CC="clang --target=aarch64-w64-mingw32" \
+#         PLATFORM=PLATFORM_DESKTOP \
+#         GRAPHICS=GRAPHICS_API_OPENGL_43 \
+#         GLFW_USE_X11=0 \
+#         GLFW_USE_WAYLAND=0 \
+#         CFLAGS="-D_GLFW_WIN32 -DGL_SILENCE_DEPRECATION" \
+#         LDLIBS="" \
+#         -j$(nproc) && \
+#     cp libraylib.a ../../../{{RAYLIB_WIN_ARM64}} && \
+#     make clean
+#     echo "✅ Raylib static library: {{RAYLIB_WIN_ARM64}}"
+
+# --- Windows Raylib App (ARM64 cross-compile) ---
+# NOTE: Temporarily disabled - use when build-raylib-windows-arm64 is re-enabled
+# @windows-raylib-arm64: win-static build-raylib-windows-arm64
+#     echo "🪟 Compiling Windows Raylib App (ARM64 cross-compile, MinGW)..."
+#     mkdir -p {{BUILD_DIR}}/app_win_arm64
+#     # Compile C core
+#     {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -c {{SRC}} \
+#         -o {{BUILD_DIR}}/app_win_arm64/cbps_core.o
+#     # Compile C++ app files
+#     {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
+#         -I{{RAYLIB_DIR}}/src -Icore \
+#         -c Linux-Windows-shared/src/main_raylib.cpp \
+#         -o {{BUILD_DIR}}/app_win_arm64/main.o
+#     {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
+#         -I{{RAYLIB_DIR}}/src -Icore \
+#         -c Linux-Windows-shared/src/wallpaper_app.cpp \
+#         -o {{BUILD_DIR}}/app_win_arm64/wallpaper_app.o
+#     {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
+#         -I{{RAYLIB_DIR}}/src -Icore \
+#         -c Linux-Windows-shared/src/renderer_raylib.cpp \
+#         -o {{BUILD_DIR}}/app_win_arm64/renderer.o
+#     {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
+#         -I{{RAYLIB_DIR}}/src -Icore \
+#         -c Linux-Windows-shared/src/assets_loader.cpp \
+#         -o {{BUILD_DIR}}/app_win_arm64/assets_loader.o
+#     {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
+#         -I{{RAYLIB_DIR}}/src -Icore -c Linux-Windows-shared/src/system_tray_windows.cpp \
+#         -o {{BUILD_DIR}}/app_win_arm64/system_tray_windows.o
+#     # Link with static libraries and Windows API
+#     {{CXX}} --target=aarch64-w64-mingw32 -O3 {{BUILD_DIR}}/app_win_arm64/*.o \
+#         {{RAYLIB_WIN_ARM64}} {{WIN_STATIC}} \
+#         -lopengl32 -lgdi32 -luser32 -lshell32 -lole32 -lwinmm \
+#         -static-libstdc++ -static-libgcc \
+#         -o {{APP_WIN_ARM64}}
+#     echo "✅ App built: {{APP_WIN_ARM64}}"
 
 # --- Embed Assets with C++23 #embed ---
 @embed-assets: prepare
@@ -279,42 +317,6 @@ default:
         -o {{APP_WIN_X64}}
     echo "✅ App built: {{APP_WIN_X64}}"
 
-# --- Windows Raylib App (ARM64 cross-compile) ---
-@windows-raylib-arm64: win-static build-raylib-windows-arm64
-    echo "🪟 Compiling Windows Raylib App (ARM64 cross-compile, MinGW)..."
-    mkdir -p {{BUILD_DIR}}/app_win_arm64
-    # Compile C core
-    {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -c {{SRC}} \
-        -o {{BUILD_DIR}}/app_win_arm64/cbps_core.o
-    # Compile C++ app files
-    {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
-        -I{{RAYLIB_DIR}}/src -Icore \
-        -c Linux-Windows-shared/src/main_raylib.cpp \
-        -o {{BUILD_DIR}}/app_win_arm64/main.o
-    {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
-        -I{{RAYLIB_DIR}}/src -Icore \
-        -c Linux-Windows-shared/src/wallpaper_app.cpp \
-        -o {{BUILD_DIR}}/app_win_arm64/wallpaper_app.o
-    {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
-        -I{{RAYLIB_DIR}}/src -Icore \
-        -c Linux-Windows-shared/src/renderer_raylib.cpp \
-        -o {{BUILD_DIR}}/app_win_arm64/renderer.o
-    {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
-        -I{{RAYLIB_DIR}}/src -Icore \
-        -c Linux-Windows-shared/src/assets_loader.cpp \
-        -o {{BUILD_DIR}}/app_win_arm64/assets_loader.o
-    {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
-        -I{{RAYLIB_DIR}}/src -Icore \
-        -c Linux-Windows-shared/src/system_tray_windows.cpp \
-        -o {{BUILD_DIR}}/app_win_arm64/system_tray_windows.o
-    # Link with static libraries and Windows API
-    {{CXX}} --target=aarch64-w64-mingw32 -O3 {{BUILD_DIR}}/app_win_arm64/*.o \
-        {{RAYLIB_WIN_ARM64}} {{WIN_STATIC}} \
-        -lopengl32 -lgdi32 -luser32 -lshell32 -lole32 -lwinmm \
-        -static-libstdc++ -static-libgcc \
-        -o {{APP_WIN_ARM64}}
-    echo "✅ App built: {{APP_WIN_ARM64}}"
-
 # --- Build all apps ---
 @apps: linux-raylib windows-raylib
     echo ""
@@ -322,15 +324,14 @@ default:
     echo ""
 
 # --- Build all apps and architectures ---
-@apps-all: linux-raylib linux-raylib-arm64 windows-raylib windows-raylib-arm64
+@apps-all: linux-raylib linux-raylib-arm64 windows-raylib
     echo ""
-    echo "✅ All apps & architectures built!"
+    echo "✅ All supported apps & architectures built!"
     echo ""
     echo "📦 Artifacts:"
     echo "  {{APP_LINUX_X64}}"
     echo "  {{APP_LINUX_ARM64}}"
     echo "  {{APP_WIN_X64}}"
-    echo "  {{APP_WIN_ARM64}}"
     echo ""
 
 # --- Build all (libraries only) ---
@@ -361,14 +362,13 @@ default:
     @echo ""
     @echo "  Platforms:"
     @echo "    • Linux (x64 & ARM64) - X11/Wayland"
-    @echo "    • Windows (x64 & ARM64) - MinGW"
+    @echo "    • Windows (x64) - MinGW [ARM64 support pending]"
     @echo ""
 
 # --- Shorthand aliases ---
 alias l := linux-raylib
 alias la := linux-raylib-arm64
 alias w := windows-raylib
-alias wa := windows-raylib-arm64
 alias a := apps
 alias aa := apps-all
 alias c := clean

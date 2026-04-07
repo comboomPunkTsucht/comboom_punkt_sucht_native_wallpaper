@@ -35,13 +35,15 @@ jobs:
             archive-name: comboom-sucht-windows-x64.zip
 
           # ========== Windows ARM64 (Raylib, cross-compiled from Linux) ==========
-          - os: ubuntu-latest
-            platform: windows
-            arch: arm64
-            justfile-recipe: windows-raylib-arm64
-            artifact-name: comboom-sucht-windows-arm64.exe
-            archive-name: comboom-sucht-windows-arm64.zip
-            cross-compile: true
+          # Note: Temporarily disabled - MinGW-w64 ARM64 support in Ubuntu is limited
+          # Windows 11 ARM64 is still rare; we can re-enable this once better toolchain support exists
+          #- os: ubuntu-latest
+          #  platform: windows
+          #  arch: arm64
+          #  justfile-recipe: windows-raylib-arm64
+          #  artifact-name: comboom-sucht-windows-arm64.exe
+          #  archive-name: comboom-sucht-windows-arm64.zip
+          #  cross-compile: true
 
           # ========== macOS ARM64 (Native Metal Build) ==========
           # Note: Currently requires latest Xcode (26.4+)
@@ -191,7 +193,6 @@ jobs:
 
           ### 🪟 Windows (Raylib + MinGW + OpenGL)
           - **x86-64** (Intel/AMD): `comboom-sucht-windows-x64.zip`
-          - **ARM64** (Future ARM Windows): `comboom-sucht-windows-arm64.zip`
 
           ## 🚀 Quick Start
 
@@ -232,7 +233,7 @@ jobs:
           - 📝 Custom text overlay (H1 header, H2 subtitle - via system tray)
           - 🎯 System tray integration
           - 📊 5000+ particles @ 60 FPS
-          - 🌍 Multi-architecture support (x86-64, ARM64)
+          - 🌍 Multi-architecture support (x86-64, ARM64 on Linux; x86-64 on Windows)
           - 🔗 Fully static linked - no runtime dependencies
 
           ## 🔄 Architecture Support
@@ -240,7 +241,7 @@ jobs:
           | Platform | x86-64 | ARM64 | Graphics |
           |----------|--------|-------|----------|
           | Linux    | ✅     | ✅    | OpenGL 4.3 (Raylib) |
-          | Windows  | ✅     | ✅    | OpenGL (MinGW) |
+          | Windows  | ✅     | ⏳    | OpenGL (MinGW x64) |
 
           ## 🛠️ Technical Stack
 
@@ -260,15 +261,16 @@ jobs:
           - **Build Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           - **Primary Compiler**: Clang 18
           - **C++ Standard**: C++23
-          - **Total Builds**: 4 (Linux x64/ARM64, Windows x64/ARM64)
+          - **Total Builds**: 3 (Linux x64/ARM64, Windows x64)
 
           ## 🚀 Cross-Platform Building
 
-          All builds (including Windows) are cross-compiled from **Ubuntu Linux** using:
+          All builds are cross-compiled from **Ubuntu Linux** using:
           - **Linux x86-64**: Native Clang
           - **Linux ARM64**: Clang with \`--target=aarch64-linux-gnu\`
-          - **Windows x86-64**: LLVM-MinGW with \`--target=x86_64-w64-mingw32\`
-          - **Windows ARM64**: LLVM-MinGW with \`--target=aarch64-w64-mingw32\`
+          - **Windows x86-64**: MinGW-w64 with \`--target=x86_64-w64-mingw32\`
+
+          **Windows ARM64**: Currently not available due to limited MinGW-w64 ARM64 support in Ubuntu. Support can be added when better cross-compilation toolchains become available.
 
           ## 📚 Documentation
 
@@ -303,15 +305,15 @@ jobs:
           if [ "${{ needs.build-matrix.result }}" == "success" ]; then
             echo "✅ All native builds completed successfully!"
             echo ""
-            echo "📦 Built via Justfile (4 architectures, all cross-compiled from Ubuntu):"
+            echo "📦 Built via Justfile (3 architectures, all cross-compiled from Ubuntu):"
             echo ""
             echo "  Linux:"
             echo "    • just linux-raylib     → comboom-sucht-linux-x64.tar.gz"
             echo "    • just linux-raylib-arm64 → comboom-sucht-linux-arm64.tar.gz"
             echo ""
-            echo "  Windows (cross-compiled from Ubuntu via LLVM-MinGW):"
-            echo "    • just windows-raylib     → comboom-sucht-windows-x64.zip"
-            echo "    • just windows-raylib-arm64 → comboom-sucht-windows-arm64.zip"
+            echo "  Windows (cross-compiled from Ubuntu via MinGW-w64):"
+            echo "    • just windows-raylib → comboom-sucht-windows-x64.zip"
+            echo "    (ARM64 support pending better toolchain availability)"
             echo ""
             echo "🚀 Artifacts uploaded to GitHub Release"
           else
