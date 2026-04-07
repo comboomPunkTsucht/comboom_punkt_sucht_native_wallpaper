@@ -11,6 +11,7 @@ include(FetchContent)
 # --- Dependencies (via vcpkg) ---
 find_package(glfw3 3.3 REQUIRED)
 find_package(Vulkan REQUIRED)
+find_package(vk_bootstrap CONFIG REQUIRED)
 
 # --- VulkanMemoryAllocator (via FetchContent for cross-compilation compatibility) ---
 FetchContent_Declare(
@@ -125,6 +126,7 @@ target_include_directories(comboom_punkt_sucht_wallpaper PRIVATE
 target_link_libraries(comboom_punkt_sucht_wallpaper
     glfw
     Vulkan::Vulkan
+    vk-bootstrap::vk-bootstrap
 )
 
 # AppIndicator on Linux
