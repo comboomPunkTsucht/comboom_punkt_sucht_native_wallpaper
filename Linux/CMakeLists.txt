@@ -23,6 +23,10 @@ if(NOT vk_bootstrap_POPULATED)
     FetchContent_Populate(vk_bootstrap)
     add_subdirectory(${vk_bootstrap_SOURCE_DIR} ${vk_bootstrap_BINARY_DIR})
 endif()
+# Ensure vk_bootstrap_SOURCE_DIR is available globally
+if(NOT DEFINED vk_bootstrap_SOURCE_DIR)
+    set(vk_bootstrap_SOURCE_DIR "${CMAKE_BINARY_DIR}/_deps/vk_bootstrap-src")
+endif()
 
 # --- VulkanMemoryAllocator (via FetchContent for cross-compilation compatibility) ---
 FetchContent_Declare(
