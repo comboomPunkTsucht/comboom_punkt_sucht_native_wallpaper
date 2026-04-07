@@ -31,16 +31,17 @@ jobs:
             cross-compile: true
 
           # ========== Windows x86_64 ==========
-          - os: windows-latest
-            platform: windows
-            arch: x86_64
-            artifact-name: comboom_punkt_sucht_wallpaper.exe
-            artifact-path: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe
-            archive-name: comboom-sucht-windows-x86_64.zip
-            cmake-args: "-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
+          # Note: Tempraly disabled
+          #- os: windows-latest
+          #  platform: windows
+          #  arch: x86_64
+          #  artifact-name: comboom_punkt_sucht_wallpaper.exe
+          #  artifact-path: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe
+          #  archive-name: comboom-sucht-windows-x86_64.zip
+          #  cmake-args: "-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
 
           # ========== Windows ARM64 ==========
-          # Note: Windows ARM64 support is still evolving, so this build may require additional tweaks or dependencies (e.g. Windows SDK for ARM64). We will test and iterate on this configuration as needed.
+          # Note: Teporaly disabled due to Windows ARM64 support is still evolving, so this build may require additional tweaks or dependencies (e.g. Windows SDK for ARM64). We will test and iterate on this configuration as needed.
           #- os: windows-latest
           #  platform: windows
           #  arch: arm64
