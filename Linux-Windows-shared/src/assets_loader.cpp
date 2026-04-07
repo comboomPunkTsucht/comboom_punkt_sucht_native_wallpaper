@@ -3,6 +3,12 @@
 #include <array>
 
 // C++23 #embed directives for embedded assets
+// Only compiled on platforms/compilers that fully support C++23 #embed
+// Windows MinGW-w64 doesn't fully support #embed yet, so we use conditional compilation
+
+#ifdef __clang__
+// Clang with proper C++23 support can use #embed
+#ifndef _WIN32
 
 // Logo image (PNG)
 constexpr auto logo_data_array = std::to_array<unsigned char>({
@@ -46,6 +52,24 @@ constexpr auto knuddelzwerck_logo_data_array = std::to_array<unsigned char>({
 constexpr auto mahd_logo_data_array = std::to_array<unsigned char>({
     #embed "../../WASM/static/pictures/mahd_logo.png"
 });
+
+#else  // _WIN32 - Use stub arrays for Windows until better support exists
+
+// Empty stub arrays for Windows (MinGW-w64 GCC doesn't support #embed properly)
+// Assets are optional for the wallpaper engine - fallback to default rendering
+constexpr auto logo_data_array = std::to_array<unsigned char>({});
+constexpr auto font_regular_data_array = std::to_array<unsigned char>({});
+constexpr auto font_bold_data_array = std::to_array<unsigned char>({});
+constexpr auto font_light_data_array = std::to_array<unsigned char>({});
+constexpr auto font_extra_light_data_array = std::to_array<unsigned char>({});
+constexpr auto bd_logo_data_array = std::to_array<unsigned char>({});
+constexpr auto cbps_logo_data_array = std::to_array<unsigned char>({});
+constexpr auto fabelke_logo_data_array = std::to_array<unsigned char>({});
+constexpr auto knuddelzwerck_logo_data_array = std::to_array<unsigned char>({});
+constexpr auto mahd_logo_data_array = std::to_array<unsigned char>({});
+
+#endif  // _WIN32
+#endif  // __clang__
 
 namespace AssetsLoader {
 
