@@ -4,7 +4,10 @@ CC := "clang"
 CXX := "clang++"
 SRC := "core/cbps_wallpaper_engine_core.c"
 BUILD_DIR := "build"
-TOOLCHAIN := "" # Add this line
+
+# Auto-detect vcpkg toolchain if VCPKG_INSTALLATION_ROOT is set
+VCPKG_ROOT := env("VCPKG_INSTALLATION_ROOT", "")
+TOOLCHAIN := if VCPKG_ROOT != "" { "-DCMAKE_TOOLCHAIN_FILE=" + VCPKG_ROOT + "/scripts/buildsystems/vcpkg.cmake" } else { "" }
 
 # --- Ausgabe-Dateien ---
 WASM_OUT     := BUILD_DIR + "/cbps_we_core.wasm"
