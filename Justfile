@@ -188,9 +188,16 @@ default:
 
 # --- Windows ARM64 Vulkan App (cross-compile) ---
 @windows-vulkan-arm: win-static
+    #!/bin/bash
+    set -e
     echo "🪟 Baue Windows Vulkan App (ARM64 cross-compile) mit Clang..."
-    cd Windows && \
-    rm -rf build-arm && \
+    if [ -n "$VCPKG_INSTALLATION_ROOT" ]; then
+        echo "📦 Installing dependencies for arm64-windows triplet..."
+        "$VCPKG_INSTALLATION_ROOT/vcpkg" install --triplet arm64-windows \
+            glfw3 vulkan-headers vulkan-loader vulkan-memory-allocator glslang
+    fi
+    cd Windows
+    rm -rf build-arm
     cmake -B build-arm \
       {{TOOLCHAIN}} \
       -G Ninja \
@@ -199,7 +206,7 @@ default:
       -DCMAKE_SYSTEM_NAME=Windows \
       -DCMAKE_SYSTEM_PROCESSOR=ARM64 \
       -DVCPKG_TARGET_TRIPLET=arm64-windows \
-      -DCMAKE_BUILD_TYPE=Release && \
+      -DCMAKE_BUILD_TYPE=Release
     cmake --build build-arm --config Release --parallel
     echo "✅ Fertig: Windows/build-arm/bin/comboom_punkt_sucht_wallpaper.exe (ARM64)"
 
