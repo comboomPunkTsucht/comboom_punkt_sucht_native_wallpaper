@@ -16,7 +16,7 @@ find_package(Vulkan REQUIRED)
 FetchContent_Declare(
     vk_bootstrap
     GIT_REPOSITORY https://github.com/charles-lunarg/vk-bootstrap
-    GIT_TAG v1.4.0
+    GIT_TAG main
 )
 FetchContent_MakeAvailable(vk_bootstrap)
 
