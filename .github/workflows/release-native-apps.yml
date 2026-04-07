@@ -9,55 +9,46 @@ jobs:
     strategy:
       matrix:
         include:
-          # ========== Linux x86_64 ==========
+          # ========== Linux x86_64 (Raylib Native) ==========
           - os: ubuntu-latest
             platform: linux
             arch: x86_64
-            clang-version: "18"
-            artifact-name: comboom_punkt_sucht_wallpaper
-            artifact-path: Linux/build/bin/comboom_punkt_sucht_wallpaper
-            archive-name: comboom-sucht-linux-x86_64.tar.gz
-            cmake-args: "-DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18 -DGLFW_USE_WAYLAND=ON -DGLFW_USE_X11=ON"
+            justfile-recipe: linux-raylib
+            artifact-name: comboom-sucht-linux-x64
+            archive-name: comboom-sucht-linux-x64.tar.gz
 
-          # ========== Linux ARM64 ==========
+          # ========== Linux ARM64 (Raylib Native, Cross-Compile) ==========
           - os: ubuntu-latest
             platform: linux
             arch: arm64
-            clang-version: "18"
-            artifact-name: comboom_punkt_sucht_wallpaper
-            artifact-path: Linux/build/bin/comboom_punkt_sucht_wallpaper
+            justfile-recipe: linux-raylib-arm64
+            artifact-name: comboom-sucht-linux-arm64
             archive-name: comboom-sucht-linux-arm64.tar.gz
-            cmake-args: "-DCMAKE_C_COMPILER=aarch64-linux-gnu-clang-18 -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-clang++-18 -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DGLFW_USE_WAYLAND=ON -DGLFW_USE_X11=ON"
             cross-compile: true
 
-          # ========== Windows x86_64 ==========
-          # Note: Tempraly disabled
-          #- os: windows-latest
-          #  platform: windows
-          #  arch: x86_64
-          #  artifact-name: comboom_punkt_sucht_wallpaper.exe
-          #  artifact-path: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe
-          #  archive-name: comboom-sucht-windows-x86_64.zip
-          #  cmake-args: "-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
+          # ========== Windows x86_64 (Raylib, cross-compiled from Linux) ==========
+          - os: ubuntu-latest
+            platform: windows
+            arch: x86_64
+            justfile-recipe: windows-raylib
+            artifact-name: comboom-sucht-windows-x64.exe
+            archive-name: comboom-sucht-windows-x64.zip
 
-          # ========== Windows ARM64 ==========
-          # Note: Teporaly disabled due to Windows ARM64 support is still evolving, so this build may require additional tweaks or dependencies (e.g. Windows SDK for ARM64). We will test and iterate on this configuration as needed.
-          #- os: windows-latest
-          #  platform: windows
-          #  arch: arm64
-          #  artifact-name: comboom_punkt_sucht_wallpaper.exe
-          #  artifact-path: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe
-          #  archive-name: comboom-sucht-windows-arm64.zip
-          #  cmake-args: "-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=ARM64"
-          #  cross-compile: true
+          # ========== Windows ARM64 (Raylib, cross-compiled from Linux) ==========
+          - os: ubuntu-latest
+            platform: windows
+            arch: arm64
+            justfile-recipe: windows-raylib-arm64
+            artifact-name: comboom-sucht-windows-arm64.exe
+            archive-name: comboom-sucht-windows-arm64.zip
+            cross-compile: true
 
-          # ========== macOS ARM64 (Apple Silicon) ==========
-          # Note: GitHub-hosted macOS runners are currently not the latest xcode version, so it is teporaly disabled, until they updated to xcode 26.4
+          # ========== macOS ARM64 (Native Metal Build) ==========
+          # Note: Currently requires latest Xcode (26.4+)
           #- os: macos-latest
           #  platform: macos
           #  arch: arm64
           #  artifact-name: comboom.sucht Live Wallpaper.app
-          #  artifact-path: MacOS/build/Release/comboom.sucht Live Wallpaper.app
           #  archive-name: comboom-sucht-macos-arm64.zip
 
     name: "Build ${{ matrix.platform }}-${{ matrix.arch }}"
@@ -68,172 +59,105 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: recursive
 
       - name: Set version from release tag
         id: version
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
         shell: bash
 
-      # ============= Common: Setup Clang++ =============
-      - name: Install Clang on Linux
+      # ============= Common: Setup Build Tools (Ubuntu) =============
+      - name: Install build tools and Clang 18 (Ubuntu)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            clang-${{ matrix.clang-version }} \
-            lld-${{ matrix.clang-version }} \
-            cmake \
-            ninja-build \
+            clang-18 \
+            lld-18 \
+            just \
             pkg-config \
-            just
+            git
 
-          # Set as default
-          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${{ matrix.clang-version }} 100
-          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${{ matrix.clang-version }} 100
+          # Set Clang 18 as default
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100
+          sudo update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-18 100
 
-      - name: Install cross-compile clang tools (ARM64) on Linux
-        if: runner.os == 'Linux' && matrix.arch == 'arm64'
+      # ============= Linux: Graphics & System Tray Libraries =============
+      - name: Install Linux graphics and tray libraries
+        if: runner.os == 'Linux' && matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libx11-dev \
+            libglu1-mesa-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxext-dev \
+            libappindicator3-dev \
+            libgtk-3-dev \
+            libdbus-1-dev
+
+      # ============= Linux ARM64 Cross-Compile: Install aarch64 toolchain =============
+      - name: Install ARM64 cross-compile toolchain (Linux)
+        if: runner.os == 'Linux' && matrix.cross-compile == true && matrix.platform == 'linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             gcc-aarch64-linux-gnu \
+            g++-aarch64-linux-gnu \
             binutils-aarch64-linux-gnu
 
-      - name: Setup Clang on Windows
-        if: runner.os == 'Windows'
-        run: choco install -y llvm cmake ninja vulkan-sdk just
-
-      - name: Setup Clang on macOS
-        if: runner.os == 'macOS'
+      # ============= Windows MinGW Cross-Compile: Install llvm-mingw =============
+      - name: Install LLVM-MinGW for Windows cross-compilation (Ubuntu)
+        if: runner.os == 'Linux' && matrix.platform == 'windows'
         run: |
-          # Use latest Xcode for objectVersion 100 support
-          sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer || echo "Using system Xcode"
-          xcrun xcodebuild -version
-          brew install llvm cmake ninja glslang just
-          # Vulkan SDK on macOS - download from Khronos or use local installation
-          # For now, we focus on Metal rendering for macOS (no Vulkan needed)
-          echo "ℹ️  macOS uses Metal rendering (no Vulkan needed)"
+          # Download LLVM-MinGW (stable release)
+          cd /tmp
+          curl -L https://github.com/mstorsjo/llvm-mingw/releases/download/20250401/llvm-mingw-20250401-ucrt-ubuntu-20.04-x86_64.tar.xz -o llvm-mingw.tar.xz
+          tar -xJ -f llvm-mingw.tar.xz
+          sudo mv llvm-mingw-* /opt/llvm-mingw
 
-      # ============= Linux: Vulkan & Dependencies =============
-      - name: Install Vulkan and graphics libraries (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libglfw3-dev \
-            vulkan-tools \
-            libvulkan-dev \
-            glslang-tools \
-            libappindicator3-dev \
-            libx11-dev \
-            libxrandr-dev \
-            libxi-dev \
-            libxinerama-dev \
-            libxcursor-dev
+          # Add to PATH
+          echo "/opt/llvm-mingw/bin" >> $GITHUB_PATH
 
-      # ============= Windows: Vulkan & Dependencies =============
-      - name: Install Vulkan on Windows
-        if: runner.os == 'Windows'
-        run: choco install -y vulkan-sdk
+          # Verify installation
+          x86_64-w64-mingw32-gcc --version
+          aarch64-w64-mingw32-gcc --version
 
-      # ============= Build C-core Library =============
-      - name: Build C-core library (Linux x86_64)
-        if: matrix.platform == 'linux' && matrix.arch == 'x86_64'
-        run: CC=clang-${{ matrix.clang-version }} just libs_linux
-
-      - name: Build C-core library (Linux ARM64)
-        if: matrix.platform == 'linux' && matrix.arch == 'arm64'
-        run: CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ just libs_linux
-
-      - name: Build C-core library (Windows x86_64)
-        if: matrix.platform == 'windows' && matrix.arch == 'x86_64'
-        run: just libs_windows
+      # ============= Build Apps via Justfile =============
+      - name: "Build ${{ matrix.platform }}-${{ matrix.arch }} (Raylib)"
+        run: just ${{ matrix.justfile-recipe }}
         shell: bash
 
-      - name: Build C-core library (Windows ARM64)
-        if: matrix.platform == 'windows' && matrix.arch == 'arm64'
-        run: just libs_windows
+      # ============= Create Archives =============
+      - name: Create Linux archive
+        if: matrix.platform == 'linux'
+        run: |
+          mkdir -p dist
+          tar -czf dist/${{ matrix.archive-name }} \
+            -C build ${{ matrix.artifact-name }}
+          ls -lh dist/${{ matrix.archive-name }}
         shell: bash
 
-      - name: Build C-core library (macOS)
-        if: matrix.platform == 'macos'
-        run: CC=clang CXX=clang++ just libs_macos
-
-      # ============= Build Vulkan Apps (Linux & Windows) =============
-      # ============= Build Vulkan & Metal Apps via Justfile =============
-      - name: Build Linux Vulkan app (x86_64)
-        if: matrix.platform == 'linux' && matrix.arch == 'x86_64'
-        run: just linux-vulkan
-
-      - name: Build Linux Vulkan app (ARM64)
-        if: matrix.platform == 'linux' && matrix.arch == 'arm64'
-        run: CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ just linux-vulkan-arm
-
-      - name: Build Windows Vulkan app (x86_64)
-        if: matrix.platform == 'windows' && matrix.arch == 'x86_64'
-        run: just windows-vulkan
+      - name: Create Windows archive (ZIP)
+        if: matrix.platform == 'windows'
+        run: |
+          mkdir -p dist
+          cd build
+          zip -j ../dist/${{ matrix.archive-name }} ${{ matrix.artifact-name }}
+          cd ..
+          ls -lh dist/${{ matrix.archive-name }}
         shell: bash
-
-      - name: Build Windows Vulkan app (ARM64)
-        if: matrix.platform == 'windows' && matrix.arch == 'arm64'
-        run: just windows-vulkan-arm
-        shell: bash
-
-      - name: Build macOS Metal app
-        if: matrix.platform == 'macos'
-        run: CC=clang CXX=clang++ just macos-metal
-
-      # ============= Create Archives (with arch-specific paths) =============
-      - name: Create Linux archive (x86_64)
-        if: matrix.platform == 'linux' && matrix.arch == 'x86_64'
-        run: |
-          cd Linux/build/bin
-          tar -czf ../../../${{ matrix.archive-name }} comboom_punkt_sucht_wallpaper
-          cd ../../..
-          ls -lh ${{ matrix.archive-name }}
-
-      - name: Create Linux archive (ARM64)
-        if: matrix.platform == 'linux' && matrix.arch == 'arm64'
-        run: |
-          cd Linux/build-arm/bin
-          tar -czf ../../../${{ matrix.archive-name }} comboom_punkt_sucht_wallpaper
-          cd ../../..
-          ls -lh ${{ matrix.archive-name }}
-
-      - name: Create Windows archive (x86_64)
-        if: matrix.platform == 'windows' && matrix.arch == 'x86_64'
-        run: |
-          powershell -Command "
-            Compress-Archive -Path 'Windows/build/bin/comboom_punkt_sucht_wallpaper.exe' `
-                           -DestinationPath '${{ matrix.archive-name }}'
-          "
-          ls -lh ${{ matrix.archive-name }}
-        shell: bash
-
-      - name: Create Windows archive (ARM64)
-        if: matrix.platform == 'windows' && matrix.arch == 'arm64'
-        run: |
-          powershell -Command "
-            Compress-Archive -Path 'Windows/build-arm/bin/comboom_punkt_sucht_wallpaper.exe' `
-                           -DestinationPath '${{ matrix.archive-name }}'
-          "
-          ls -lh ${{ matrix.archive-name }}
-        shell: bash
-
-      - name: Create macOS archive
-        if: matrix.platform == 'macos'
-        run: |
-          cd MacOS/build
-          zip -r ../../${{ matrix.archive-name }} "Release/comboom.sucht Live Wallpaper.app"
-          cd ../..
-          ls -lh ${{ matrix.archive-name }}
 
       # ============= Upload to Release =============
       - name: Upload release asset
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ matrix.archive-name }}
+          files: dist/${{ matrix.archive-name }}
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -259,141 +183,103 @@ jobs:
           cat > /tmp/release_notes.md << 'EOF'
           # comboom. sucht Native Wallpaper v${{ steps.version.outputs.VERSION }}
 
-          Cross-platform particle wallpaper engine with native apps for Linux, Windows, and macOS.
+          Cross-platform particle wallpaper engine with native C++23 Raylib apps for Linux and Windows.
 
           ## 📦 Downloads by Platform & Architecture
 
-          ### 🐧 Linux (Clang 18 + Vulkan)
-          - **x86-64** (Intel/AMD): `comboom-sucht-linux-x86_64.tar.gz`
-          - **ARM64** (ARMv8, Raspberry Pi, etc.): `comboom-sucht-linux-arm64.tar.gz`
+          ### 🐧 Linux (Raylib + OpenGL 4.3)
+          - **x86-64** (Intel/AMD): `comboom-sucht-linux-x64.tar.gz`
+          - **ARM64** (ARMv8, Raspberry Pi): `comboom-sucht-linux-arm64.tar.gz`
 
-          ### 🪟 Windows (Clang + Vulkan)
-          - **x86-64** (Intel/AMD): `comboom-sucht-windows-x86_64.zip`
-          - **ARM64** (Snapdragon, future ARM laptops): `comboom-sucht-windows-arm64.zip`
-
-          ### 🍎 macOS (Apple Clang + Metal)
-          - **ARM64** (Apple Silicon M1/M2/M3): `comboom-sucht-macos-arm64.zip`
+          ### 🪟 Windows (Raylib + MinGW + OpenGL)
+          - **x86-64** (Intel/AMD): `comboom-sucht-windows-x64.zip`
+          - **ARM64** (Future ARM Windows): `comboom-sucht-windows-arm64.zip`
 
           ## 🚀 Quick Start
 
           ### Linux
-          ```bash
-          # Extract archive (replace x86_64 with your architecture)
-          tar -xzf comboom-sucht-linux-x86_64.tar.gz
+          \`\`\`bash
+          # Extract archive
+          tar -xzf comboom-sucht-linux-x64.tar.gz
 
           # Run wallpaper
-          ./comboom_punkt_sucht_wallpaper --h1 "Hello" --h2 "World"
-          ```
+          ./comboom-sucht-linux-x64
+          \`\`\`
 
           **Requirements**:
           - X11 or Wayland session
-          - Vulkan-capable GPU with drivers
+          - OpenGL 4.3 capable GPU
           - glibc 2.35+ (Ubuntu 22.04+, Debian 12+, Fedora 36+)
 
           ### Windows
-          ```cmd
-          # Extract zip archive
-          tar -xf comboom-sucht-windows-x86_64.zip
+          \`\`\`cmd
+          # Extract zip
+          tar -xf comboom-sucht-windows-x64.zip
 
-          # Run wallpaper
-          comboom_punkt_sucht_wallpaper.exe --h1 "Hello" --h2 "World"
-          ```
+          # Run app
+          comboom-sucht-windows-x64.exe
+          \`\`\`
 
           **Requirements**:
           - Windows 10 or later
-          - Vulkan-capable GPU with drivers
-          - Visual C++ Runtime (vcredist)
-
-          ### macOS
-          ```bash
-          # Extract archive
-          unzip comboom-sucht-macos-arm64.zip
-
-          # Run app
-          open "comboom.sucht Live Wallpaper.app"
-          ```
-
-          **Requirements**:
-          - macOS 12+ (Monterey or later)
-          - Apple Silicon (M1/M2/M3/etc.)
-          - Metal GPU support
+          - OpenGL 4.3 capable GPU
 
           ## ✨ Features
 
-          - 🎨 Particle-based animated wallpaper (100+ particles)
+          - 🎨 Particle-based animated wallpaper
           - 💻 Native applications:
-            - **Linux**: Vulkan renderer with X11 & Wayland support
-            - **Windows**: Vulkan renderer with Win32 integration
-            - **macOS**: Metal renderer with native integration
-          - 🖱️ Real-time mouse interaction tracking
-          - 📝 Custom text overlay (H1 header, H2 subtitle)
-          - 🔧 Command-line configuration
-          - 🎯 System tray integration (AppIndicator on Linux, Windows tray, macOS menu bar)
-          - 📊 Configurable particle count and animation speed
-          - 🌍 Multi-architecture support
+            - **Linux**: Raylib with X11 & Wayland support, AppIndicator3 system tray
+            - **Windows**: Raylib with MinGW, Win32 system tray
+          - 🖱️ Real-time mouse interaction (magnetic particle attraction)
+          - 📝 Custom text overlay (H1 header, H2 subtitle - via system tray)
+          - 🎯 System tray integration
+          - 📊 5000+ particles @ 60 FPS
+          - 🌍 Multi-architecture support (x86-64, ARM64)
+          - 🔗 Fully static linked - no runtime dependencies
 
-          ## 🔄 Architecture Support Matrix
+          ## 🔄 Architecture Support
 
-          | Platform | x86-64 | ARM64 | Status |
-          |----------|--------|-------|--------|
-          | Linux    | ✅     | ✅    | Full   |
-          | Windows  | ✅     | ✅    | Full   |
-          | macOS    | ❌     | ✅    | ARM64  |
+          | Platform | x86-64 | ARM64 | Graphics |
+          |----------|--------|-------|----------|
+          | Linux    | ✅     | ✅    | OpenGL 4.3 (Raylib) |
+          | Windows  | ✅     | ✅    | OpenGL (MinGW) |
 
           ## 🛠️ Technical Stack
 
-          - **Language**: C++23 (C++2b)
-          - **Compiler**: GCC 14 (all platforms)
-          - **Build System**: CMake 3.20+, Justfile task runner
-          - **Graphics**:
-            - **Vulkan 1.2+** (Linux, Windows)
-            - **Metal** (macOS)
-          - **Window Management**: GLFW 3.4+ (auto X11/Wayland/Win32)
-          - **System Integration**:
-            - AppIndicator3 (Linux tray)
-            - Windows Shell API (Windows tray)
-            - AppKit (macOS menu bar)
-          - **Memory**: Vulkan Memory Allocator (VMA)
-          - **Shaders**: GLSL 4.50 (Vulkan), Metal Shading Language (macOS)
+          - **Language**: C++23
+          - **Graphics**: Raylib (OpenGL 4.3)
+          - **Compiler**: Clang 18 (with cross-compilation support)
+          - **Build System**: Justfile
+          - **Asset Embedding**: C++23 \`#embed\` directive
+          - **System Tray**:
+            - Linux: AppIndicator3 + GTK
+            - Windows: Win32 Shell API
+          - **Linking**: Fully static (no external runtime dependencies)
 
           ## 📝 Build Information
 
           - **Release Tag**: v${{ steps.version.outputs.VERSION }}
-          - **Core Engine Version**: 1.0.5
           - **Build Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           - **Primary Compiler**: Clang 18
           - **C++ Standard**: C++23
+          - **Total Builds**: 4 (Linux x64/ARM64, Windows x64/ARM64)
 
-          ## 🐛 Installation & Troubleshooting
+          ## 🚀 Cross-Platform Building
 
-          ### Linux - Vulkan not found
-          ```bash
-          sudo apt install vulkan-tools libvulkan-dev libvulkan1
-          ```
-
-          ### Windows - Missing runtime
-          Download: https://support.microsoft.com/en-us/help/2977003/
-
-          ### macOS - App won't launch
-          ```bash
-          xattr -d com.apple.quarantine "comboom.sucht Live Wallpaper.app"
-          ```
+          All builds (including Windows) are cross-compiled from **Ubuntu Linux** using:
+          - **Linux x86-64**: Native Clang
+          - **Linux ARM64**: Clang with \`--target=aarch64-linux-gnu\`
+          - **Windows x86-64**: LLVM-MinGW with \`--target=x86_64-w64-mingw32\`
+          - **Windows ARM64**: LLVM-MinGW with \`--target=aarch64-w64-mingw32\`
 
           ## 📚 Documentation
 
-          - **Build Guide**: See [BUILD.md](BUILD.md)
-          - **Release Process**: See [RELEASE.md](RELEASE.md)
-          - **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md)
-
-          ## 📄 License
-
-          See [LICENSE](LICENSE) in repository.
+          - **Build Guide**: See [RAYLIB_BUILD.md](RAYLIB_BUILD.md)
+          - **Implementation Summary**: See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)
 
           ---
 
-          **Built with ❤️ using Vulkan (Linux/Windows) and Metal (macOS)**
-
-          Made with C++23 | Cross-platform native rendering | GCC optimized
+          **Built with ❤️ using Raylib (C++23, cross-platform native rendering)**
           EOF
 
           cat /tmp/release_notes.md
@@ -419,17 +305,15 @@ jobs:
           if [ "${{ needs.build-matrix.result }}" == "success" ]; then
             echo "✅ All native builds completed successfully!"
             echo ""
-            echo "📦 Built via Justfile (5 architectures):"
+            echo "📦 Built via Justfile (4 architectures, all cross-compiled from Ubuntu):"
+            echo ""
             echo "  Linux:"
-            echo "    • just linux-vulkan     → comboom-sucht-linux-x86_64.tar.gz"
-            echo "    • just linux-vulkan-arm → comboom-sucht-linux-arm64.tar.gz"
+            echo "    • just linux-raylib     → comboom-sucht-linux-x64.tar.gz"
+            echo "    • just linux-raylib-arm64 → comboom-sucht-linux-arm64.tar.gz"
             echo ""
-            echo "  Windows:"
-            echo "    • just windows-vulkan     → comboom-sucht-windows-x86_64.zip"
-            echo "    • just windows-vulkan-arm → comboom-sucht-windows-arm64.zip"
-            echo ""
-            echo "  macOS:"
-            echo "    • just macos-metal → comboom-sucht-macos-arm64.zip"
+            echo "  Windows (cross-compiled from Ubuntu via LLVM-MinGW):"
+            echo "    • just windows-raylib     → comboom-sucht-windows-x64.zip"
+            echo "    • just windows-raylib-arm64 → comboom-sucht-windows-arm64.zip"
             echo ""
             echo "🚀 Artifacts uploaded to GitHub Release"
           else

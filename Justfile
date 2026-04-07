@@ -1,13 +1,9 @@
 # --- Konfiguration ---
-# Defaults: can be overridden via environment (e.g., CC=clang-18 just libs_linux)
 CC := "clang"
 CXX := "clang++"
 SRC := "core/cbps_wallpaper_engine_core.c"
 BUILD_DIR := "build"
-
-# Auto-detect vcpkg toolchain if VCPKG_INSTALLATION_ROOT is set
-VCPKG_ROOT := env("VCPKG_INSTALLATION_ROOT", "")
-TOOLCHAIN := if VCPKG_ROOT != "" { "-DCMAKE_TOOLCHAIN_FILE=" + VCPKG_ROOT + "/scripts/buildsystems/vcpkg.cmake" } else { "" }
+RAYLIB_DIR := "thirdparty/raylib"
 
 # --- Ausgabe-Dateien ---
 WASM_OUT     := BUILD_DIR + "/cbps_we_core.wasm"
@@ -15,11 +11,23 @@ MAC_STATIC   := BUILD_DIR + "/libcbps_we_core_mac.a"
 WIN_STATIC   := BUILD_DIR + "/libcbps_we_core_win.a"
 LINUX_STATIC := BUILD_DIR + "/libcbps_we_core_linux.a"
 
+# Raylib output paths
+RAYLIB_LINUX_X64  := BUILD_DIR + "/libraylib_linux_x64.a"
+RAYLIB_LINUX_ARM64  := BUILD_DIR + "/libraylib_linux_arm64.a"
+RAYLIB_WIN_X64    := BUILD_DIR + "/libraylib_win_x64.a"
+RAYLIB_WIN_ARM64  := BUILD_DIR + "/libraylib_win_arm64.a"
+
+# App output paths
+APP_LINUX_X64  := BUILD_DIR + "/comboom-sucht-linux-x64"
+APP_LINUX_ARM64  := BUILD_DIR + "/comboom-sucht-linux-arm64"
+APP_WIN_X64    := BUILD_DIR + "/comboom-sucht-windows-x64.exe"
+APP_WIN_ARM64  := BUILD_DIR + "/comboom-sucht-windows-arm64.exe"
+
 # Standard-Task: Zeigt das Hilfe-Menü an
 default:
     @echo ""
     @echo "  ╔════════════════════════════════════════════════════════╗"
-    @echo "  ║        comboom. sucht - Multi-Platform Build          ║"
+    @echo "  ║   comboom. sucht - Native Wallpaper (Raylib Edition)  ║"
     @echo "  ╚════════════════════════════════════════════════════════╝"
     @echo ""
     @echo "  📚 C-Core Libraries (Statisch)"
@@ -28,33 +36,30 @@ default:
     @echo "    just mac-static   - Build macOS Static Library (.a)"
     @echo "    just win-static   - Build Windows Static Library (.a)"
     @echo "    just linux-static - Build Linux Static Library (.a)"
-    @echo "    just libs_all     - Build all libraries"
     @echo ""
-    @echo "  🚀 Native Apps (Vulkan/Metal) - Clang 18"
-    @echo "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    @echo "    just linux-vulkan      - Build Linux Vulkan (x86_64, X11/Wayland)"
-    @echo "    just linux-vulkan-arm  - Build Linux Vulkan (ARM64 cross-compile)"
+    @echo "  🚀 Native Apps (Raylib) - Clang 18"
+    @echo "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    @echo "    just linux-raylib         - Build Linux (x64, X11/Wayland, Raylib)"
+    @echo "    just linux-raylib-arm64   - Build Linux (ARM64 cross-compile, Raylib)"
     @echo ""
-    @echo "    just windows-vulkan    - Build Windows Vulkan (x86_64, Clang/LLVM)"
-    @echo "    just windows-vulkan-arm - Build Windows Vulkan (ARM64 cross-compile)"
-    @echo ""
-    @echo "    just macos-metal   - Build macOS Metal (ARM64 Apple Silicon)"
+    @echo "    just windows-raylib       - Build Windows (x64, MinGW, Raylib)"
+    @echo "    just windows-raylib-arm64 - Build Windows (ARM64 cross-compile, Raylib)"
     @echo ""
     @echo "  🎯 Build Shortcuts"
     @echo "  ━━━━━━━━━━━━━━━━"
-    @echo "    just all           - Build all libraries + macOS app"
-    @echo "    just native        - Build all native apps (recommended)"
+    @echo "    just all          - Build all libraries"
+    @echo "    just apps         - Build all native apps (x64 only)"
+    @echo "    just apps-all     - Build all apps & architectures"
     @echo ""
     @echo "  🧹 Utility"
-    @echo "  ━━━━━━━━"
-    @echo "    just clean         - Delete build artifacts"
-    @echo "    just rebuild       - Clean + rebuild all libraries + macOS"
+    @echo "  ━━━━━━━"
+    @echo "    just clean        - Delete build artifacts"
     @echo ""
 
 @prepare:
     mkdir -p {{BUILD_DIR}}
 
-# --- 1. WebAssembly ---
+# --- 1. WebAssembly (unchanged) ---
 @wasm: prepare
 	echo "🚀 Baue WebAssembly (.wasm)..."
 	{{CC}} --target=wasm32-unknown-unknown -nostdlib -fno-builtin -O3 -flto -Wl,--no-entry -Wl,--export-dynamic -Wl,--export-table -Wl,--growable-table -Wl,--allow-undefined -Wl,--export=cbps_engine_create -Wl,--export=cbps_engine_update -Wl,--export=cbps_engine_destroy -Wl,--export=cbps_engine_set_seed -Wl,--export=__heap_base -o {{WASM_OUT}} {{SRC}}
@@ -62,7 +67,7 @@ default:
 	cp {{WASM_OUT}} ./WASM/static/cbps_we_core.wasm
 	echo "✅ Fertig!"
 
-# --- 2. macOS ---
+# --- 2. macOS Static (unchanged) ---
 @mac-static: prepare
     echo "🍎 Baue macOS Static (.a)..."
     {{CC}} -O3 -c {{SRC}} -o {{BUILD_DIR}}/mac.o
@@ -70,7 +75,7 @@ default:
     rm {{BUILD_DIR}}/mac.o
     echo "✅ Fertig: {{MAC_STATIC}}"
 
-# --- 3. Windows ---
+# --- 3. Windows Static (unchanged) ---
 @win-static: prepare
 	echo "🪟 Baue Windows Static (.a) mit Clang..."
 	{{CC}} -O3 -c {{SRC}} -o {{BUILD_DIR}}/win.o
@@ -78,7 +83,7 @@ default:
 	rm {{BUILD_DIR}}/win.o
 	echo "✅ Fertig: {{WIN_STATIC}}"
 
-# --- 4. Linux (Wayland/X11) ---
+# --- 4. Linux Static (unchanged) ---
 @linux-static: prepare
     echo "🐧 Baue Linux Static (.a)..."
     {{CC}} -O3 -c {{SRC}} -o {{BUILD_DIR}}/linux.o
@@ -86,211 +91,278 @@ default:
     rm {{BUILD_DIR}}/linux.o
     echo "✅ Fertig: {{LINUX_STATIC}}"
 
-# --- Alles bauen ---
-@all: wasm mac-static win-static linux-static
-
-# --- Build all native apps (Linux, Windows, macOS) ---
-@native: linux-vulkan windows-vulkan macos-metal
+# --- Build all static libraries ---
+@libs_all: wasm mac-static win-static linux-static
     echo ""
-    echo "  ✅ All native apps built successfully!"
-    echo ""
-    echo "  📦 Build outputs:"
-    echo "    • Linux   (x86_64): Linux/build/bin/comboom_punkt_sucht_wallpaper"
-    echo "    • Windows (x86_64): Windows/build/bin/comboom_punkt_sucht_wallpaper.exe"
-    echo "    • macOS   (ARM64):  MacOS/build/Release/comboom.sucht Live Wallpaper.app"
+    echo "✅ All C-Core libraries built!"
     echo ""
 
-# --- Rebuild all libraries + macOS app ---
-@rebuild: clean all
+# --- Raylib Compilation via Makefile (Linux x64) ---
+@build-raylib-linux-x64: prepare
+    echo "📦 Compiling Raylib for Linux (x64) via Makefile..."
+    mkdir -p {{BUILD_DIR}}/raylib_linux_x64
+    cd {{RAYLIB_DIR}}/src && \
+    make \
+        CC={{CC}} \
+        PLATFORM=PLATFORM_DESKTOP \
+        GRAPHICS=GRAPHICS_API_OPENGL_43 \
+        LDLIBS="" \
+        -j$(nproc) && \
+    cp libraylib.a ../../../{{RAYLIB_LINUX_X64}} && \
+    make clean
+    echo "✅ Raylib static library: {{RAYLIB_LINUX_X64}}"
+
+# --- Raylib Compilation via Makefile (Linux ARM64 cross-compile) ---
+@build-raylib-linux-arm64: prepare
+    echo "📦 Compiling Raylib for Linux (ARM64) via Makefile (cross-compile)..."
+    mkdir -p {{BUILD_DIR}}/raylib_linux_arm64
+    cd {{RAYLIB_DIR}}/src && \
+    make \
+        CC="clang --target=aarch64-linux-gnu" \
+        PLATFORM=PLATFORM_DESKTOP \
+        GRAPHICS=GRAPHICS_API_OPENGL_43 \
+        LDLIBS="" \
+        -j$(nproc) && \
+    cp libraylib.a ../../../{{RAYLIB_LINUX_ARM64}} && \
+    make clean
+    echo "✅ Raylib static library: {{RAYLIB_LINUX_ARM64}}"
+
+# --- Raylib Compilation via Makefile (Windows x64) ---
+@build-raylib-windows-x64: prepare
+    echo "📦 Compiling Raylib for Windows (x64) via Makefile (MinGW)..."
+    mkdir -p {{BUILD_DIR}}/raylib_win_x64
+    cd {{RAYLIB_DIR}}/src && \
+    make \
+        CC="clang --target=x86_64-w64-mingw32" \
+        PLATFORM=PLATFORM_DESKTOP \
+        GRAPHICS=GRAPHICS_API_OPENGL_43 \
+        LDLIBS="" \
+        -j$(nproc) && \
+    cp libraylib.a ../../../{{RAYLIB_WIN_X64}} && \
+    make clean
+    echo "✅ Raylib static library: {{RAYLIB_WIN_X64}}"
+
+# --- Raylib Compilation via Makefile (Windows ARM64) ---
+@build-raylib-windows-arm64: prepare
+    echo "📦 Compiling Raylib for Windows (ARM64) via Makefile (cross-compile)..."
+    mkdir -p {{BUILD_DIR}}/raylib_win_arm64
+    cd {{RAYLIB_DIR}}/src && \
+    make \
+        CC="clang --target=aarch64-w64-mingw32" \
+        PLATFORM=PLATFORM_DESKTOP \
+        GRAPHICS=GRAPHICS_API_OPENGL_43 \
+        LDLIBS="" \
+        -j$(nproc) && \
+    cp libraylib.a ../../../{{RAYLIB_WIN_ARM64}} && \
+    make clean
+    echo "✅ Raylib static library: {{RAYLIB_WIN_ARM64}}"
+
+# --- Embed Assets with C++23 #embed ---
+@embed-assets: prepare
+    echo "📦 Embedding assets with C++23 #embed..."
+    echo "✅ Assets embedded via #embed in source code (no separate step needed)"
+
+# --- Linux Raylib App (x64) ---
+@linux-raylib: linux-static build-raylib-linux-x64
+    echo "🐧 Compiling Linux Raylib App (x64)..."
+    mkdir -p {{BUILD_DIR}}/app_linux_x64
+    # Compile C core
+    {{CXX}} -std=c++23 -O3 -c {{SRC}} \
+        -o {{BUILD_DIR}}/app_linux_x64/cbps_core.o
+    # Compile C++ app files
+    {{CXX}} -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/main_raylib.cpp \
+        -o {{BUILD_DIR}}/app_linux_x64/main.o
+    {{CXX}} -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/wallpaper_app.cpp \
+        -o {{BUILD_DIR}}/app_linux_x64/wallpaper_app.o
+    {{CXX}} -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/renderer_raylib.cpp \
+        -o {{BUILD_DIR}}/app_linux_x64/renderer.o
+    {{CXX}} -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/assets_loader.cpp \
+        -o {{BUILD_DIR}}/app_linux_x64/assets_loader.o
+    {{CXX}} -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/system_tray_linux.cpp \
+        -o {{BUILD_DIR}}/app_linux_x64/system_tray_linux.o
+    # Link with static Raylib and system libraries
+    {{CXX}} -O3 {{BUILD_DIR}}/app_linux_x64/*.o \
+        {{RAYLIB_LINUX_X64}} {{LINUX_STATIC}} \
+        -lX11 -lGLX -lGL -ldl -lpthread \
+        -lappindicator3 -lgtk-3 -lglib-2.0 -lgobject-2.0 \
+        -static-libstdc++ -static-libgcc \
+        -o {{APP_LINUX_X64}}
+    echo "✅ App built: {{APP_LINUX_X64}}"
+
+# --- Linux Raylib App (ARM64 cross-compile) ---
+@linux-raylib-arm64: linux-static build-raylib-linux-arm64
+    echo "🐧 Compiling Linux Raylib App (ARM64 cross-compile)..."
+    mkdir -p {{BUILD_DIR}}/app_linux_arm64
+    # Compile C core with aarch64 target
+    {{CXX}} --target=aarch64-linux-gnu -std=c++23 -O3 -c {{SRC}} \
+        -o {{BUILD_DIR}}/app_linux_arm64/cbps_core.o
+    # Compile C++ app files
+    {{CXX}} --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/main_raylib.cpp \
+        -o {{BUILD_DIR}}/app_linux_arm64/main.o
+    {{CXX}} --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/wallpaper_app.cpp \
+        -o {{BUILD_DIR}}/app_linux_arm64/wallpaper_app.o
+    {{CXX}} --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/renderer_raylib.cpp \
+        -o {{BUILD_DIR}}/app_linux_arm64/renderer.o
+    {{CXX}} --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/assets_loader.cpp \
+        -o {{BUILD_DIR}}/app_linux_arm64/assets_loader.o
+    {{CXX}} --target=aarch64-linux-gnu -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/system_tray_linux.cpp \
+        -o {{BUILD_DIR}}/app_linux_arm64/system_tray_linux.o
+    # Link with static libraries
+    {{CXX}} --target=aarch64-linux-gnu -O3 {{BUILD_DIR}}/app_linux_arm64/*.o \
+        {{RAYLIB_LINUX_ARM64}} {{LINUX_STATIC}} \
+        --sysroot=/usr/aarch64-linux-gnu \
+        -lX11 -lGLX -lGL -ldl -lpthread \
+        -lappindicator3 -lgtk-3 -lglib-2.0 -lgobject-2.0 \
+        -static-libstdc++ -static-libgcc \
+        -o {{APP_LINUX_ARM64}}
+    echo "✅ App built: {{APP_LINUX_ARM64}}"
+
+# --- Windows Raylib App (x64) ---
+@windows-raylib: win-static build-raylib-windows-x64
+    echo "🪟 Compiling Windows Raylib App (x64 MinGW)..."
+    mkdir -p {{BUILD_DIR}}/app_win_x64
+    # Compile C core
+    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -c {{SRC}} \
+        -o {{BUILD_DIR}}/app_win_x64/cbps_core.o
+    # Compile C++ app files
+    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/main_raylib.cpp \
+        -o {{BUILD_DIR}}/app_win_x64/main.o
+    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/wallpaper_app.cpp \
+        -o {{BUILD_DIR}}/app_win_x64/wallpaper_app.o
+    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/renderer_raylib.cpp \
+        -o {{BUILD_DIR}}/app_win_x64/renderer.o
+    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/assets_loader.cpp \
+        -o {{BUILD_DIR}}/app_win_x64/assets_loader.o
+    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/system_tray_windows.cpp \
+        -o {{BUILD_DIR}}/app_win_x64/system_tray_windows.o
+    # Link with static libraries and Windows API
+    {{CXX}} --target=x86_64-w64-mingw32 -O3 {{BUILD_DIR}}/app_win_x64/*.o \
+        {{RAYLIB_WIN_X64}} {{WIN_STATIC}} \
+        -lopengl32 -lgdi32 -luser32 -lshell32 -lole32 -lwinmm \
+        -static-libstdc++ -static-libgcc \
+        -o {{APP_WIN_X64}}
+    echo "✅ App built: {{APP_WIN_X64}}"
+
+# --- Windows Raylib App (ARM64 cross-compile) ---
+@windows-raylib-arm64: win-static build-raylib-windows-arm64
+    echo "🪟 Compiling Windows Raylib App (ARM64 cross-compile, MinGW)..."
+    mkdir -p {{BUILD_DIR}}/app_win_arm64
+    # Compile C core
+    {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -c {{SRC}} \
+        -o {{BUILD_DIR}}/app_win_arm64/cbps_core.o
+    # Compile C++ app files
+    {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/main_raylib.cpp \
+        -o {{BUILD_DIR}}/app_win_arm64/main.o
+    {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/wallpaper_app.cpp \
+        -o {{BUILD_DIR}}/app_win_arm64/wallpaper_app.o
+    {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/renderer_raylib.cpp \
+        -o {{BUILD_DIR}}/app_win_arm64/renderer.o
+    {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/assets_loader.cpp \
+        -o {{BUILD_DIR}}/app_win_arm64/assets_loader.o
+    {{CXX}} --target=aarch64-w64-mingw32 -std=c++23 -O3 -fPIC \
+        -I{{RAYLIB_DIR}}/src -Icore \
+        -c Linux-Windows-shared/src/system_tray_windows.cpp \
+        -o {{BUILD_DIR}}/app_win_arm64/system_tray_windows.o
+    # Link with static libraries and Windows API
+    {{CXX}} --target=aarch64-w64-mingw32 -O3 {{BUILD_DIR}}/app_win_arm64/*.o \
+        {{RAYLIB_WIN_ARM64}} {{WIN_STATIC}} \
+        -lopengl32 -lgdi32 -luser32 -lshell32 -lole32 -lwinmm \
+        -static-libstdc++ -static-libgcc \
+        -o {{APP_WIN_ARM64}}
+    echo "✅ App built: {{APP_WIN_ARM64}}"
+
+# --- Build all apps ---
+@apps: linux-raylib windows-raylib
     echo ""
-    echo "  ✨ Rebuild complete!"
+    echo "✅ All default apps built (Linux x64, Windows x64)!"
     echo ""
 
-# --- Build all Linux variants (x86_64, ARM64) ---
-@linux-all: linux-vulkan linux-vulkan-arm
+# --- Build all apps and architectures ---
+@apps-all: linux-raylib linux-raylib-arm64 windows-raylib windows-raylib-arm64
     echo ""
-    echo "  ✅ All Linux variants built!"
+    echo "✅ All apps & architectures built!"
     echo ""
-
-# --- Build all Windows variants (x86_64, ARM64) ---
-@windows-all: windows-vulkan windows-vulkan-arm
-    echo ""
-    echo "  ✅ All Windows variants built!"
-    echo ""
-
-# --- Build all architectures (recommended for CI/release) ---
-@all-platforms: linux-all windows-all macos-metal
-    echo ""
-    echo "  ✅ All platforms & architectures built!"
-    echo ""
-    echo "  📦 Available artifacts:"
-    echo "    Linux:"
-    echo "      • Linux/build/bin/comboom_punkt_sucht_wallpaper (x86_64)"
-    echo "      • Linux/build-arm/bin/comboom_punkt_sucht_wallpaper (ARM64)"
-    echo "    Windows:"
-    echo "      • Windows/build/bin/comboom_punkt_sucht_wallpaper.exe (x86_64)"
-    echo "      • Windows/build-arm/bin/comboom_punkt_sucht_wallpaper.exe (ARM64)"
-    echo "    macOS:"
-    echo "      • MacOS/build/Release/comboom.sucht Live Wallpaper.app (ARM64)"
+    echo "📦 Artifacts:"
+    echo "  {{APP_LINUX_X64}}"
+    echo "  {{APP_LINUX_ARM64}}"
+    echo "  {{APP_WIN_X64}}"
+    echo "  {{APP_WIN_ARM64}}"
     echo ""
 
-# --- Linux Vulkan App ---
-@linux-vulkan: linux-static
-    echo "🐧 Baue Linux Vulkan App (X11/Wayland) mit Clang 18..."
-    cd Linux && \
-    cmake -B build \
-      {{TOOLCHAIN}} \
-      -DCMAKE_C_COMPILER={{CC}} \
-      -DCMAKE_CXX_COMPILER={{CXX}} \
-      -DCMAKE_BUILD_TYPE=Release \
-      -DGLFW_USE_WAYLAND=ON \
-      -DGLFW_USE_X11=ON && \
-    cmake --build build --config Release --parallel
-    echo "✅ Fertig: Linux/build/bin/comboom_punkt_sucht_wallpaper"
+# --- Build all (libraries only) ---
+@all: libs_all
+    echo ""
+    echo "✅ All C-Core libraries built!"
+    echo ""
 
-# --- Windows Vulkan App ---
-@windows-vulkan: win-static
-    #!/bin/bash
-    set -e
-    echo "🪟 Baue Windows Vulkan App mit Clang..."
-    if [ -n "$VCPKG_INSTALLATION_ROOT" ]; then
-        echo "📦 Installing dependencies for x64-windows triplet..."
-        "$VCPKG_INSTALLATION_ROOT/vcpkg" install --triplet x64-windows
-    fi
-    cd Windows
-    rm -rf build
-    cmake -B build \
-      {{TOOLCHAIN}} \
-      -G Ninja \
-      -DCMAKE_C_COMPILER={{CC}} \
-      -DCMAKE_CXX_COMPILER={{CXX}} \
-      -DCMAKE_BUILD_TYPE=Release
-    cmake --build build --config Release --parallel
-    echo "✅ Fertig: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe"
-
-# --- macOS Metal App (via Xcode) ---
-@macos-metal: mac-static
-    echo "🍎 Baue macOS Metal App..."
-    cd MacOS && \
-    xcodebuild -project "comboom.sucht Live Wallpaper.xcodeproj" \
-               -scheme "comboom.sucht Live Wallpaper" \
-               -configuration Release
-    echo "✅ Fertig: MacOS/build/Release/comboom.sucht Live Wallpaper.app"
-
-# --- Linux ARM64 Vulkan App (cross-compile) ---
-@linux-vulkan-arm: linux-static
-    echo "🐧 Baue Linux Vulkan App (ARM64 cross-compile)..."
-    cd Linux && \
-    cmake -B build-arm \
-      {{TOOLCHAIN}} \
-      -DCMAKE_C_COMPILER={{CC}} \
-      -DCMAKE_CXX_COMPILER={{CXX}} \
-      -DCMAKE_SYSTEM_NAME=Linux \
-      -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
-      -DCMAKE_BUILD_TYPE=Release \
-      -DGLFW_USE_WAYLAND=ON \
-      -DGLFW_USE_X11=ON && \
-    cmake --build build-arm --config Release --parallel
-    echo "✅ Fertig: Linux/build-arm/bin/comboom_punkt_sucht_wallpaper (ARM64)"
-
-# --- Windows ARM64 Vulkan App (cross-compile) ---
-@windows-vulkan-arm: win-static
-    #!/bin/bash
-    set -e
-    echo "🪟 Baue Windows Vulkan App (ARM64 cross-compile) mit Clang..."
-    if [ -n "$VCPKG_INSTALLATION_ROOT" ]; then
-        echo "📦 Installing dependencies for arm64-windows triplet..."
-        "$VCPKG_INSTALLATION_ROOT/vcpkg" install --triplet arm64-windows
-    fi
-    cd Windows
-    rm -rf build-arm
-    cmake -B build-arm \
-      {{TOOLCHAIN}} \
-      -G Ninja \
-      -DCMAKE_C_COMPILER={{CC}} \
-      -DCMAKE_CXX_COMPILER={{CXX}} \
-      -DCMAKE_SYSTEM_NAME=Windows \
-      -DCMAKE_SYSTEM_PROCESSOR=ARM64 \
-      -DVCPKG_TARGET_TRIPLET=arm64-windows \
-      -DCMAKE_BUILD_TYPE=Release
-    cmake --build build-arm --config Release --parallel
-    echo "✅ Fertig: Windows/build-arm/bin/comboom_punkt_sucht_wallpaper.exe (ARM64)"
-
-# --- Aufräumen ---
+# --- Clean up ---
 @clean:
-    echo "🧹 Deleting build artifacts..."
+    echo "🧹 Cleaning build artifacts..."
     rm -rf {{BUILD_DIR}}
-    rm -rf Linux/build Linux/build-arm
-    rm -rf Windows/build Windows/build-arm
-    rm -rf MacOS/build
+    cd {{RAYLIB_DIR}}/src && make clean 2>/dev/null || true
     echo "✨ Clean!"
 
-# --- Test/Run Linux app (development) ---
-@run-linux: linux-vulkan
-    echo ""
-    echo "  🎮 Running Linux Vulkan app..."
-    ./Linux/build/bin/comboom_punkt_sucht_wallpaper --h1 "Test" --h2 "App"
-
-# --- Test/Run Windows app (if on Windows) ---
-@run-windows: windows-vulkan
-    echo ""
-    echo "  🎮 Running Windows Vulkan app..."
-    .\Windows\build\bin\comboom_punkt_sucht_wallpaper.exe --h1 "Test" --h2 "App"
-
-# --- Open macOS app ---
-@run-macos: macos-metal
-    echo ""
-    echo "  🎮 Opening macOS Metal app..."
-    open "MacOS/build/Release/comboom.sucht Live Wallpaper.app"
-
-# --- Show status/info ---
+# --- Info/status ---
 @info:
     @echo ""
-    @echo "  ℹ️  Project Information"
-    @echo "  ━━━━━━━━━━━━━━━━━━━━━"
+    @echo "  ℹ️  comboom. sucht - Raylib Native Edition"
+    @echo "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     @echo ""
-    @echo "  Project: comboom. sucht Native Wallpaper"
-    @echo "  Version: 1.0.5"
-    @echo "  Compiler: Clang 18 (primary), Apple Clang (macOS)"
-    @echo "  C++ Standard: C++23"
-    @echo "  Build System: CMake 3.20+"
-    @echo ""
-    @echo "  Graphics:"
-    @echo "    • Linux/Windows: Vulkan 1.2+"
-    @echo "    • macOS: Metal"
+    @echo "  Build System: Justfile + Clang (C++23)"
+    @echo "  Graphics: Raylib (OpenGL) - compiled via native Makefile"
+    @echo "  System Tray:"
+    @echo "    • Linux: AppIndicator3 + GTK"
+    @echo "    • Windows: Win32 API"
+    @echo "  Asset Embedding: C++23 #embed"
     @echo ""
     @echo "  Platforms:"
-    @echo "    • Linux: X11 & Wayland"
-    @echo "    • Windows: Win32"
-    @echo "    • macOS: AppKit"
-    @echo ""
-    @echo "  Quick start:"
-    @echo "    just linux-vulkan      # Build Linux app"
-    @echo "    just windows-vulkan    # Build Windows app"
-    @echo "    just macos-metal       # Build macOS app"
-    @echo "    just all-platforms     # Build everything"
+    @echo "    • Linux (x64 & ARM64) - X11/Wayland"
+    @echo "    • Windows (x64 & ARM64) - MinGW"
     @echo ""
 
-# --- Shorthand aliases for convenience ---
-alias l := linux-vulkan
-alias w := windows-vulkan
-alias m := macos-metal
-alias b := native
-alias ba := all-platforms
+# --- Shorthand aliases ---
+alias l := linux-raylib
+alias la := linux-raylib-arm64
+alias w := windows-raylib
+alias wa := windows-raylib-arm64
+alias a := apps
+alias aa := apps-all
 alias c := clean
-
-# --- Convenience recipes (matches package.json scripts style) ---
-@libs_linux:
-    @just linux-static
-
-@libs_windows:
-    @just win-static
-
-@libs_macos:
-    @just mac-static
-
-@libs_wasm:
-    @just wasm
-
-@libs_all:
-    @just all
