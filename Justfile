@@ -137,23 +137,40 @@ default:
     echo "✅ Raylib static library: {{RAYLIB_LINUX_ARM64}}"
 
 # --- Raylib Compilation via Makefile (Windows x64) ---
+# NOTE: Windows builds must be compiled on Linux/Ubuntu (see GitHub Actions workflow)
+# MinGW-w64 on macOS has limited Windows header support, use Linux for Windows cross-compilation
 @build-raylib-windows-x64: prepare
-    echo "📦 Compiling Raylib for Windows (x64) via Makefile (MinGW)..."
-    echo "   Sysroot: {{MINGW_SYSROOT_OVERRIDE}}"
-    mkdir -p {{BUILD_DIR}}/raylib_win_x64
-    cd {{RAYLIB_DIR}}/src && \
-    make \
-        CC="clang --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}}" \
-        PLATFORM=PLATFORM_DESKTOP \
-        GRAPHICS=GRAPHICS_API_OPENGL_43 \
-        GLFW_USE_X11=0 \
-        GLFW_USE_WAYLAND=0 \
-        CFLAGS="-D_GLFW_WIN32 -DGL_SILENCE_DEPRECATION -DUNICODE -D_UNICODE -Wno-error=incompatible-function-pointer-types" \
-        LDLIBS="" \
-        -j$(nproc) && \
-    cp libraylib.a ../../../{{RAYLIB_WIN_X64}} && \
-    make clean
-    echo "✅ Raylib static library: {{RAYLIB_WIN_X64}}"
+    #!/usr/bin/env bash
+    if [[ "$(uname)" == "Darwin" ]]; then
+        echo "❌ ERROR: Windows builds cannot be compiled on macOS"
+        echo ""
+        echo "MinGW-w64 on macOS has incomplete Windows SDK files."
+        echo "This is a known limitation of the macOS MinGW installation."
+        echo ""
+        echo "👉 Windows builds are compiled on Linux (GitHub Actions CI/CD)"
+        echo "   See .github/workflows/release-native-apps.yml"
+        echo ""
+        echo "For local development on macOS:"
+        echo "  • Build Linux apps: just linux-raylib"
+        echo ""
+        exit 1
+    else
+        echo "📦 Compiling Raylib for Windows (x64) via Makefile (MinGW)..."
+        mkdir -p {{BUILD_DIR}}/raylib_win_x64
+        cd {{RAYLIB_DIR}}/src && \
+        make \
+            CC="clang --target=x86_64-w64-mingw32" \
+            PLATFORM=PLATFORM_DESKTOP \
+            GRAPHICS=GRAPHICS_API_OPENGL_43 \
+            GLFW_USE_X11=0 \
+            GLFW_USE_WAYLAND=0 \
+            CFLAGS="-D_GLFW_WIN32 -DGL_SILENCE_DEPRECATION -DUNICODE -D_UNICODE" \
+            LDLIBS="" \
+            -j$(nproc) && \
+        cp libraylib.a ../../../{{RAYLIB_WIN_X64}} && \
+        make clean
+        echo "✅ Raylib static library: {{RAYLIB_WIN_X64}}"
+    fi
 
 # --- Raylib Compilation via Makefile (Windows ARM64) ---
 # NOTE: Temporarily disabled - MinGW-w64 ARM64 support in Ubuntu is limited
