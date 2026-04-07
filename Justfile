@@ -6,10 +6,17 @@ BUILD_DIR := "build"
 RAYLIB_DIR := "thirdparty/raylib"
 
 # MinGW Sysroot auto-detection (macOS vs Linux)
+# On macOS: Homebrew Cellar path
+# On Linux: Common Ubuntu/Debian paths, or empty if not found
 MINGW_SYSROOT := if os() == "macos" {
     "/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64"
 } else {
-    "/usr/x86_64-w64-mingw32"
+    # Try common Linux paths, fallback to empty (no --sysroot needed)
+    if path_exists("/usr/x86_64-w64-mingw32") {
+        "/usr/x86_64-w64-mingw32"
+    } else {
+        ""
+    }
 }
 
 MINGW_SYSROOT_OVERRIDE := env_var_or_default("MINGW_SYSROOT", MINGW_SYSROOT)
@@ -329,31 +336,31 @@ default:
     echo "🪟 Compiling Windows Raylib App (x64 MinGW)..."
     mkdir -p {{BUILD_DIR}}/app_win_x64
     # Compile C core
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -std=c++23 -O3 -c {{SRC}} \
+    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -c {{SRC}} \
         -o {{BUILD_DIR}}/app_win_x64/cbps_core.o
     # Compile C++ app files
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/main_raylib.cpp \
         -o {{BUILD_DIR}}/app_win_x64/main.o
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/wallpaper_app.cpp \
         -o {{BUILD_DIR}}/app_win_x64/wallpaper_app.o
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/renderer_raylib.cpp \
         -o {{BUILD_DIR}}/app_win_x64/renderer.o
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/assets_loader.cpp \
         -o {{BUILD_DIR}}/app_win_x64/assets_loader.o
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/system_tray_windows.cpp \
         -o {{BUILD_DIR}}/app_win_x64/system_tray_windows.o
     # Link with static libraries and Windows API
-    {{CXX}} --target=x86_64-w64-mingw32 --sysroot={{MINGW_SYSROOT_OVERRIDE}} -O3 {{BUILD_DIR}}/app_win_x64/*.o \
+    {{CXX}} --target=x86_64-w64-mingw32 -O3 {{BUILD_DIR}}/app_win_x64/*.o \
         {{RAYLIB_WIN_X64}} {{WIN_STATIC}} \
         -lopengl32 -lgdi32 -luser32 -lshell32 -lole32 -lwinmm \
         -static-libstdc++ -static-libgcc \
