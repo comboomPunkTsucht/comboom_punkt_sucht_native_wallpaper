@@ -150,14 +150,21 @@ default:
 
 # --- Windows Vulkan App ---
 @windows-vulkan: win-static
+    #!/bin/bash
+    set -e
     echo "🪟 Baue Windows Vulkan App mit Clang..."
-    cd Windows && \
+    if [ -n "$VCPKG_INSTALLATION_ROOT" ]; then
+        echo "📦 Installing dependencies for x64-windows triplet..."
+        "$VCPKG_INSTALLATION_ROOT/vcpkg" install --triplet x64-windows
+    fi
+    cd Windows
+    rm -rf build
     cmake -B build \
       {{TOOLCHAIN}} \
       -G Ninja \
       -DCMAKE_C_COMPILER={{CC}} \
       -DCMAKE_CXX_COMPILER={{CXX}} \
-      -DCMAKE_BUILD_TYPE=Release && \
+      -DCMAKE_BUILD_TYPE=Release
     cmake --build build --config Release --parallel
     echo "✅ Fertig: Windows/build/bin/comboom_punkt_sucht_wallpaper.exe"
 
