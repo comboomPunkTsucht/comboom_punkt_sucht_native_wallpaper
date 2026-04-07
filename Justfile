@@ -133,12 +133,12 @@ default:
     mkdir -p {{BUILD_DIR}}/raylib_win_x64
     cd {{RAYLIB_DIR}}/src && \
     make \
-        CC="clang --target=x86_64-w64-mingw32" \
+        CC="clang --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64" \
         PLATFORM=PLATFORM_DESKTOP \
         GRAPHICS=GRAPHICS_API_OPENGL_43 \
         GLFW_USE_X11=0 \
         GLFW_USE_WAYLAND=0 \
-        CFLAGS="-D_GLFW_WIN32 -DGL_SILENCE_DEPRECATION" \
+        CFLAGS="-D_GLFW_WIN32 -DGL_SILENCE_DEPRECATION -DUNICODE -D_UNICODE -Wno-error=incompatible-function-pointer-types" \
         LDLIBS="" \
         -j$(nproc) && \
     cp libraylib.a ../../../{{RAYLIB_WIN_X64}} && \
@@ -286,31 +286,31 @@ default:
     echo "🪟 Compiling Windows Raylib App (x64 MinGW)..."
     mkdir -p {{BUILD_DIR}}/app_win_x64
     # Compile C core
-    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -c {{SRC}} \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -std=c++23 -O3 -c {{SRC}} \
         -o {{BUILD_DIR}}/app_win_x64/cbps_core.o
     # Compile C++ app files
-    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/main_raylib.cpp \
         -o {{BUILD_DIR}}/app_win_x64/main.o
-    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/wallpaper_app.cpp \
         -o {{BUILD_DIR}}/app_win_x64/wallpaper_app.o
-    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/renderer_raylib.cpp \
         -o {{BUILD_DIR}}/app_win_x64/renderer.o
-    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/assets_loader.cpp \
         -o {{BUILD_DIR}}/app_win_x64/assets_loader.o
-    {{CXX}} --target=x86_64-w64-mingw32 -std=c++23 -O3 -fPIC \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -std=c++23 -O3 -fPIC \
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/system_tray_windows.cpp \
         -o {{BUILD_DIR}}/app_win_x64/system_tray_windows.o
     # Link with static libraries and Windows API
-    {{CXX}} --target=x86_64-w64-mingw32 -O3 {{BUILD_DIR}}/app_win_x64/*.o \
+    {{CXX}} --target=x86_64-w64-mingw32 --sysroot=/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64 -O3 {{BUILD_DIR}}/app_win_x64/*.o \
         {{RAYLIB_WIN_X64}} {{WIN_STATIC}} \
         -lopengl32 -lgdi32 -luser32 -lshell32 -lole32 -lwinmm \
         -static-libstdc++ -static-libgcc \
