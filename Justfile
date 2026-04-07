@@ -257,15 +257,31 @@ default:
         -I{{RAYLIB_DIR}}/src -Icore \
         -c Linux-Windows-shared/src/assets_loader.cpp \
         -o {{BUILD_DIR}}/app_linux_x64/assets_loader.o
-    {{CXX}} -std=c++23 -O3 -fPIC \
-        -I{{RAYLIB_DIR}}/src -Icore \
-        -c Linux-Windows-shared/src/system_tray_linux.cpp \
-        -o {{BUILD_DIR}}/app_linux_x64/system_tray_linux.o
-    # Link with static Raylib and system libraries
+    # Platform-specific tray
+    #!/bin/bash
+    set -e
+    if [[ "$OSTYPE" == "darwin"* ]]; then \
+        echo "ℹ️  Compiling with macOS stub system tray (for testing only)..."; \
+        {{CXX}} -std=c++23 -O3 -fPIC \
+            -I{{RAYLIB_DIR}}/src -Icore \
+            -c Linux-Windows-shared/src/system_tray_macos_stub.cpp \
+            -o {{BUILD_DIR}}/app_linux_x64/system_tray.o; \
+    else \
+        {{CXX}} -std=c++23 -O3 -fPIC \
+            -I{{RAYLIB_DIR}}/src -Icore \
+            -c Linux-Windows-shared/src/system_tray_linux.cpp \
+            -o {{BUILD_DIR}}/app_linux_x64/system_tray.o; \
+    fi
+    # Link (try with full dependencies first, fallback to minimal on macOS)
     {{CXX}} -O3 {{BUILD_DIR}}/app_linux_x64/*.o \
         {{RAYLIB_LINUX_X64}} {{LINUX_STATIC}} \
         -lX11 -lGLX -lGL -ldl -lpthread \
         -lappindicator3 -lgtk-3 -lglib-2.0 -lgobject-2.0 \
+        -static-libstdc++ -static-libgcc \
+        -o {{APP_LINUX_X64}} 2>/dev/null || \
+    {{CXX}} -O3 {{BUILD_DIR}}/app_linux_x64/*.o \
+        {{RAYLIB_LINUX_X64}} {{LINUX_STATIC}} \
+        -lX11 -lGLX -lGL -ldl -lpthread \
         -static-libstdc++ -static-libgcc \
         -o {{APP_LINUX_X64}}
     echo "✅ App built: {{APP_LINUX_X64}}"
