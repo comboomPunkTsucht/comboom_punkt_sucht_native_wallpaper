@@ -5,10 +5,20 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# --- FetchContent for dependencies that don't work well with vcpkg cross-compilation ---
+include(FetchContent)
+
 # --- Dependencies (via vcpkg) ---
 find_package(glfw3 3.3 REQUIRED)
 find_package(Vulkan REQUIRED)
-find_package(vulkan-memory-allocator CONFIG REQUIRED)
+
+# --- VulkanMemoryAllocator (via FetchContent for cross-compilation compatibility) ---
+FetchContent_Declare(
+    VulkanMemoryAllocator
+    GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(VulkanMemoryAllocator)
 
 # --- Directories ---
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -91,13 +101,13 @@ target_include_directories(comboom_punkt_sucht_wallpaper PRIVATE
     ${SRC_DIR}
     ${CORE_DIR}
     ${Vulkan_INCLUDE_DIRS}
+    ${VulkanMemoryAllocator_SOURCE_DIR}/include
 )
 
 # --- Link libraries ---
 target_link_libraries(comboom_punkt_sucht_wallpaper
     glfw
     Vulkan::Vulkan
-    vulkan-memory-allocator::vulkan-memory-allocator
 )
 
 # Windows-specific libraries
