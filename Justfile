@@ -323,6 +323,45 @@ default:
     echo "✅ All default apps built (Linux x64, Windows x64)!"
     echo ""
 
+# --- Package Linux app with assets ---
+@package-linux: linux-raylib
+    echo "📦 Packaging Linux app with assets..."
+    mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-x64
+    cp {{APP_LINUX_X64}} {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/
+    cp -r WASM/static/fonts {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/assets/ 2>/dev/null || mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/assets/fonts
+    cp -r WASM/static/pictures {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/assets/ 2>/dev/null || mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/assets/pictures
+    cp ASSETS_README.md {{BUILD_DIR}}/dist/comboom-sucht-linux-x64/
+    cd {{BUILD_DIR}}/dist && tar -czf ../comboom-sucht-linux-x64.tar.gz comboom-sucht-linux-x64/
+    rm -rf {{BUILD_DIR}}/dist
+    echo "✅ Package: {{BUILD_DIR}}/comboom-sucht-linux-x64.tar.gz"
+
+# --- Package Windows app with assets ---
+@package-windows: windows-raylib
+    echo "📦 Packaging Windows app with assets..."
+    mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-windows-x64
+    cp {{APP_WIN_X64}} {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/
+    cp -r WASM/static/fonts {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/assets/ 2>/dev/null || mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/assets/fonts
+    cp -r WASM/static/pictures {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/assets/ 2>/dev/null || mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/assets/pictures
+    cp ASSETS_README.md {{BUILD_DIR}}/dist/comboom-sucht-windows-x64/
+    cd {{BUILD_DIR}}/dist && zip -r ../comboom-sucht-windows-x64.zip comboom-sucht-windows-x64/
+    rm -rf {{BUILD_DIR}}/dist
+    echo "✅ Package: {{BUILD_DIR}}/comboom-sucht-windows-x64.zip"
+
+# --- Package all distributions ---
+@package-all: package-linux linux-raylib-arm64 package-windows
+    echo ""
+    echo "🍎 Preparing Linux ARM64 package..."
+    mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64
+    cp {{APP_LINUX_ARM64}} {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/
+    cp -r WASM/static/fonts {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/assets/ 2>/dev/null || mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/assets/fonts
+    cp -r WASM/static/pictures {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/assets/ 2>/dev/null || mkdir -p {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/assets/pictures
+    cp ASSETS_README.md {{BUILD_DIR}}/dist/comboom-sucht-linux-arm64/
+    cd {{BUILD_DIR}}/dist && tar -czf ../comboom-sucht-linux-arm64.tar.gz comboom-sucht-linux-arm64/
+    rm -rf {{BUILD_DIR}}/dist
+    echo "✅ Package: {{BUILD_DIR}}/comboom-sucht-linux-arm64.tar.gz"
+    echo ""
+    echo "✅ All packages ready in {{BUILD_DIR}}/"
+
 # --- Build all apps and architectures ---
 @apps-all: linux-raylib linux-raylib-arm64 windows-raylib
     echo ""

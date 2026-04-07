@@ -1,27 +1,21 @@
 #pragma once
 
 #include "raylib.h"
-#include <span>
-#include <memory>
+#include <string>
 
 namespace AssetsLoader {
-    // Asset loaders - will load from embedded assets using C++23 #embed
-    Font load_font_from_memory(const std::span<const unsigned char>& font_data, int font_size);
-    Image load_image_from_memory(const std::span<const unsigned char>& image_data);
+    // Asset loading from disk
+    // Assets should be in "assets/" subdirectory relative to executable
 
-    // Logo
-    std::span<const unsigned char> get_logo_data();
+    // Font loading - returns Font with fallback if not found
+    Font load_font(const std::string& font_path, int font_size);
 
-    // Fonts (Caskaydida Cove Nerd Font variants)
-    std::span<const unsigned char> get_font_regular_data();
-    std::span<const unsigned char> get_font_bold_data();
-    std::span<const unsigned char> get_font_light_data();
-    std::span<const unsigned char> get_font_extra_light_data();
+    // Image loading - returns empty Image with fallback if not found
+    Image load_image(const std::string& image_path);
 
-    // Picture Logos
-    std::span<const unsigned char> get_bd_logo_data();
-    std::span<const unsigned char> get_cbps_logo_data();
-    std::span<const unsigned char> get_fabelke_logo_data();
-    std::span<const unsigned char> get_knuddelzwerck_logo_data();
-    std::span<const unsigned char> get_mahd_logo_data();
+    // Get default asset paths (relative to executable's directory)
+    std::string get_assets_dir();
+
+    // Check if assets directory exists
+    bool assets_exist();
 }
