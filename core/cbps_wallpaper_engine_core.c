@@ -7,7 +7,14 @@
   #include <stdlib.h>  // Für malloc, free
   #include <string.h>  // Für strlen, strdup
 
-  #define CBPS_WE_strdup strdup
+  #define _CRT_NONSTDC_NO_DEPRECATE  // Windows: suppress _strdup deprecation warnings
+
+  #ifdef _WIN32
+    #define CBPS_WE_strdup _strdup  // Windows: use _strdup (ISO C++ compliant)
+  #else
+    #define CBPS_WE_strdup strdup   // POSIX: use POSIX strdup
+  #endif
+
   #define CBPS_WE_strlen strlen
   #define CBPS_WE_malloc malloc
   #define CBPS_WE_free free
