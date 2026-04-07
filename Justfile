@@ -7,15 +7,11 @@ RAYLIB_DIR := "thirdparty/raylib"
 
 # MinGW Sysroot auto-detection (macOS vs Linux)
 # On macOS: Homebrew Cellar path
-# On Linux: Common Ubuntu/Debian paths, or empty if not found
+# On Linux: Clang auto-detects from system installation
 MINGW_SYSROOT := if os() == "macos" {
     "/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64"
 } else {
-    if path_exists("/usr/x86_64-w64-mingw32") {
-        "/usr/x86_64-w64-mingw32"
-    } else {
-        ""
-    }
+    ""
 }
 
 MINGW_SYSROOT_OVERRIDE := env_var_or_default("MINGW_SYSROOT", MINGW_SYSROOT)
