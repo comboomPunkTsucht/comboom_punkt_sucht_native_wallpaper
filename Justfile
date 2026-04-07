@@ -197,6 +197,7 @@ default:
       -DCMAKE_CXX_COMPILER={{CXX}} \
       -DCMAKE_SYSTEM_NAME=Windows \
       -DCMAKE_SYSTEM_PROCESSOR=ARM64 \
+      -DVCPKG_TARGET_TRIPLET=arm64-windows \
       -DCMAKE_BUILD_TYPE=Release && \
     cmake --build build-arm --config Release --parallel
     echo "✅ Fertig: Windows/build-arm/bin/comboom_punkt_sucht_wallpaper.exe (ARM64)"
