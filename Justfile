@@ -190,6 +190,7 @@ default:
 @windows-vulkan-arm: win-static
     echo "🪟 Baue Windows Vulkan App (ARM64 cross-compile) mit Clang..."
     cd Windows && \
+    rm -rf build-arm && \
     cmake -B build-arm \
       {{TOOLCHAIN}} \
       -G Ninja \
