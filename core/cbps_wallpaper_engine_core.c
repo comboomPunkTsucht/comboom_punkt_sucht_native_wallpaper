@@ -3,11 +3,14 @@
 #include <stddef.h>
 
 #if !defined (__wasm__)
+  // Windows: suppress _strdup deprecation warnings (must come before <string.h>)
+  #ifdef _WIN32
+    #define _CRT_NONSTDC_NO_DEPRECATE
+  #endif
+
   #include <stdio.h>   // Für printf
   #include <stdlib.h>  // Für malloc, free
   #include <string.h>  // Für strlen, strdup
-
-  #define _CRT_NONSTDC_NO_DEPRECATE  // Windows: suppress _strdup deprecation warnings
 
   #ifdef _WIN32
     #define CBPS_WE_strdup _strdup  // Windows: use _strdup (ISO C++ compliant)
