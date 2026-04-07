@@ -226,9 +226,7 @@ void VulkanRenderer::createInstance()
 
     std::vector<const char*> extensions(glfw_extensions, glfw_extensions + glfw_extension_count);
 
-    vk::InstanceCreateInfo create_info(&app_info,
-                                       static_cast<uint32_t>(extensions.size()),
-                                       extensions.data());
+    vk::InstanceCreateInfo create_info({}, &app_info, {}, extensions);
 
     try {
         instance_ = vk::createInstance(create_info);
@@ -281,12 +279,7 @@ void VulkanRenderer::createLogicalDevice()
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
-    vk::DeviceCreateInfo create_info(
-        1, &queue_create_info,
-        0, nullptr,
-        static_cast<uint32_t>(device_extensions.size()),
-        device_extensions.data(),
-        &device_features);
+    vk::DeviceCreateInfo create_info({}, queue_create_info, {}, device_extensions, &device_features);
 
     device_ = physical_device_.createDevice(create_info);
     graphics_queue_ = device_.getQueue(graphics_queue_family_, 0);
@@ -340,13 +333,11 @@ void VulkanRenderer::createSwapchain()
             ? surface_capabilities.currentExtent
             : vk::Extent2D{surface_width_, surface_height_};
 
-    vk::SwapchainCreateInfoKHR create_info(
-        surface_, image_count,
+    vk::SwapchainCreateInfoKHR create_info({}, surface_, image_count,
         swapchain_format_, surface_formats[0].colorSpace,
         swapchain_extent_, 1,
         vk::ImageUsageFlagBits::eColorAttachment,
-        vk::SharingMode::eExclusive,
-        0, nullptr,
+        vk::SharingMode::eExclusive, {},
         surface_capabilities.currentTransform,
         vk::CompositeAlphaFlagBitsKHR::eOpaque,
         present_mode, VK_TRUE);
@@ -460,14 +451,8 @@ void VulkanRenderer::createFramebuffers()
     framebuffers_.reserve(swapchain_image_views_.size());
 
     for (const auto& image_view : swapchain_image_views_) {
-        vk::FramebufferCreateInfo create_info{
-            .renderPass = render_pass_,
-            .attachmentCount = 1,
-            .pAttachments = &image_view,
-            .width = swapchain_extent_.width,
-            .height = swapchain_extent_.height,
-            .layers = 1
-        };
+        vk::FramebufferCreateInfo create_info({}, render_pass_, image_view,
+            swapchain_extent_.width, swapchain_extent_.height, 1);
 
         framebuffers_.push_back(device_.createFramebuffer(create_info));
     }
@@ -475,10 +460,7 @@ void VulkanRenderer::createFramebuffers()
 
 void VulkanRenderer::createCommandPool()
 {
-    vk::CommandPoolCreateInfo create_info{
-        .flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
-        .queueFamilyIndex = graphics_queue_family_
-    };
+    vk::CommandPoolCreateInfo create_info(vk::CommandPoolCreateFlagBits::eResetCommandBuffer, graphics_queue_family_);
 
     command_pool_ = device_.createCommandPool(create_info);
 }
@@ -488,11 +470,8 @@ void VulkanRenderer::createCommandBuffers()
     command_buffers_.clear();
     command_buffers_.resize(swapchain_images_.size());
 
-    vk::CommandBufferAllocateInfo allocate_info{
-        .commandPool = command_pool_,
-        .level = vk::CommandBufferLevel::ePrimary,
-        .commandBufferCount = static_cast<uint32_t>(command_buffers_.size())
-    };
+    vk::CommandBufferAllocateInfo allocate_info(command_pool_, vk::CommandBufferLevel::ePrimary,
+        static_cast<uint32_t>(command_buffers_.size()));
 
     command_buffers_ = device_.allocateCommandBuffers(allocate_info);
 }
@@ -506,9 +485,7 @@ void VulkanRenderer::createSynchronizationObjects()
     in_flight_fences_.resize(max_frames_in_flight);
 
     vk::SemaphoreCreateInfo semaphore_info{};
-    vk::FenceCreateInfo fence_info{
-        .flags = vk::FenceCreateFlagBits::eSignaled
-    };
+    vk::FenceCreateInfo fence_info(vk::FenceCreateFlagBits::eSignaled);
 
     for (uint32_t i = 0; i < max_frames_in_flight; ++i) {
         image_available_semaphores_[i] = device_.createSemaphore(semaphore_info);
@@ -522,22 +499,22 @@ void VulkanRenderer::createParticleBuffer()
     // Create a GPU buffer large enough for max 10000 particles
     vk::DeviceSize buffer_size = sizeof(Particle) * 10000;
 
-    vk::BufferCreateInfo buffer_info{
-        .size = buffer_size,
-        .usage = vk::BufferUsageFlagBits::eStorageBuffer,
-        .sharingMode = vk::SharingMode::eExclusive
-    };
+    vk::BufferCreateInfo buffer_info({}, buffer_size, vk::BufferUsageFlagBits::eStorageBuffer);
 
-    VmaAllocationCreateInfo alloc_info{
-        .usage = VMA_MEMORY_USAGE_AUTO,
-        .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
-    };
+    VmaAllocationCreateInfo alloc_info = {};
+    alloc_info.usage = VMA_MEMORY_USAGE_AUTO;
+    alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 
-    if (vmaCreateBuffer(allocator_, &static_cast<VkBufferCreateInfo>(buffer_info),
-                        &alloc_info, &static_cast<VkBuffer&>(particle_buffer_),
+    VkBufferCreateInfo vk_buffer_info = static_cast<VkBufferCreateInfo>(buffer_info);
+    VkBuffer vk_particle_buffer = nullptr;
+
+    if (vmaCreateBuffer(allocator_, &vk_buffer_info,
+                        &alloc_info, &vk_particle_buffer,
                         &particle_allocation_, nullptr) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create particle buffer");
     }
+
+    particle_buffer_ = vk_particle_buffer;
 }
 
 void VulkanRenderer::recreateSwapchain()
