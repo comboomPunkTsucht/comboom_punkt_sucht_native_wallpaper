@@ -152,6 +152,8 @@ target_link_libraries(comboom_punkt_sucht_wallpaper
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     target_compile_options(comboom_punkt_sucht_wallpaper PRIVATE
         -Wall -Wextra -Wpedantic
+        -Wno-nullability-completeness
+        -Wno-nullability-extension
         -O3
     )
 endif()

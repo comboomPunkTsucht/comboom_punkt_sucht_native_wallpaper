@@ -132,7 +132,10 @@ if(MSVC)
     )
 else()
     target_compile_options(comboom_punkt_sucht_wallpaper PRIVATE
-        -Wall -Wextra -Wpedantic -O3
+        -Wall -Wextra -Wpedantic
+        -Wno-nullability-completeness
+        -Wno-nullability-extension
+        -O3
     )
 endif()
 
