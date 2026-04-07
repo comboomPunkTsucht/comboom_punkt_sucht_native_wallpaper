@@ -114,12 +114,12 @@ bool SystemTrayWindows::init(const std::string& app_name_str, const std::string&
     WNDCLASS wc = {};
     wc.lpfnWndProc = window_proc;
     wc.hInstance = GetModuleHandle(nullptr);
-    wc.lpszClassName = L"ComboomTrayWindow";
+    wc.lpszClassName = "ComboomTrayWindow";
 
     RegisterClass(&wc);
 
     // Create hidden window
-    hwnd = CreateWindow(L"ComboomTrayWindow", L"Comboom Tray", 0, 0, 0, 0, 0,
+    hwnd = CreateWindow("ComboomTrayWindow", "Comboom Tray", 0, 0, 0, 0, 0,
                        HWND_MESSAGE, nullptr, GetModuleHandle(nullptr), nullptr);
 
     if (!hwnd) return false;
@@ -136,8 +136,10 @@ bool SystemTrayWindows::init(const std::string& app_name_str, const std::string&
     // Load icon - for now use default Windows icon
     nid.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
 
-    wcscpy_s(nid.szTip, sizeof(nid.szTip) / sizeof(wchar_t),
-             L"comboom.sucht Live Wallpaper");
+    // Set tooltip (convert to wide char for Windows)
+    wchar_t tooltip_w[128] = {};
+    MultiByteToWideChar(CP_ACP, 0, "comboom.sucht Live Wallpaper", -1, tooltip_w, 128);
+    wcscpy(nid.szTip, tooltip_w);
 
     if (!Shell_NotifyIcon(NIM_ADD, &nid)) {
         return false;
@@ -148,11 +150,10 @@ bool SystemTrayWindows::init(const std::string& app_name_str, const std::string&
 
 void SystemTrayWindows::set_h1_text(const std::string& text) {
     h1_text = text;
-    // Update tooltip with new text
-    size_t len = h1_text.length();
-    wchar_t tooltip[128];
-    MultiByteToWideChar(CP_UTF8, 0, h1_text.c_str(), -1, tooltip, 128);
-    wcscpy_s(nid.szTip, 128, tooltip);
+    // Update tooltip with new text (convert ANSI to wide char)
+    wchar_t tooltip_w[128] = {};
+    MultiByteToWideChar(CP_ACP, 0, text.c_str(), -1, tooltip_w, 128);
+    wcscpy(nid.szTip, tooltip_w);
     Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
 
