@@ -193,8 +193,7 @@ default:
     echo "🪟 Baue Windows Vulkan App (ARM64 cross-compile) mit Clang..."
     if [ -n "$VCPKG_INSTALLATION_ROOT" ]; then
         echo "📦 Installing dependencies for arm64-windows triplet..."
-        "$VCPKG_INSTALLATION_ROOT/vcpkg" install --triplet arm64-windows \
-            glfw3 vulkan-headers vulkan-loader vulkan-memory-allocator glslang
+        "$VCPKG_INSTALLATION_ROOT/vcpkg" install --triplet arm64-windows
     fi
     cd Windows
     rm -rf build-arm
