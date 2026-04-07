@@ -136,6 +136,9 @@ default:
         CC="clang --target=x86_64-w64-mingw32" \
         PLATFORM=PLATFORM_DESKTOP \
         GRAPHICS=GRAPHICS_API_OPENGL_43 \
+        GLFW_USE_X11=0 \
+        GLFW_USE_WAYLAND=0 \
+        CFLAGS="-D_GLFW_WIN32 -DGL_SILENCE_DEPRECATION" \
         LDLIBS="" \
         -j$(nproc) && \
     cp libraylib.a ../../../{{RAYLIB_WIN_X64}} && \
@@ -151,6 +154,9 @@ default:
         CC="clang --target=aarch64-w64-mingw32" \
         PLATFORM=PLATFORM_DESKTOP \
         GRAPHICS=GRAPHICS_API_OPENGL_43 \
+        GLFW_USE_X11=0 \
+        GLFW_USE_WAYLAND=0 \
+        CFLAGS="-D_GLFW_WIN32 -DGL_SILENCE_DEPRECATION" \
         LDLIBS="" \
         -j$(nproc) && \
     cp libraylib.a ../../../{{RAYLIB_WIN_ARM64}} && \
