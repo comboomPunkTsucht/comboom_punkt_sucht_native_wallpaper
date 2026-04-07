@@ -5,7 +5,7 @@
 #define VMA_IMPLEMENTATION
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 #include <vk_mem_alloc.h>
-#include <vk_bootstrap.h>
+#include <VkBootstrap.h>
 #include <stdexcept>
 #include <iostream>
 #include <fstream>

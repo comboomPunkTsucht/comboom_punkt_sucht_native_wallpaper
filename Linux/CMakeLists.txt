@@ -12,21 +12,13 @@ include(FetchContent)
 find_package(glfw3 3.3 REQUIRED)
 find_package(Vulkan REQUIRED)
 
-# --- vk-bootstrap (via FetchContent + add_subdirectory) ---
+# --- vk-bootstrap (via FetchContent) ---
 FetchContent_Declare(
     vk_bootstrap
     GIT_REPOSITORY https://github.com/charles-lunarg/vk-bootstrap
     GIT_TAG v1.3.295
 )
-FetchContent_GetProperties(vk_bootstrap)
-if(NOT vk_bootstrap_POPULATED)
-    FetchContent_Populate(vk_bootstrap)
-    add_subdirectory(${vk_bootstrap_SOURCE_DIR} ${vk_bootstrap_BINARY_DIR})
-endif()
-# Ensure vk_bootstrap_SOURCE_DIR is available globally
-if(NOT DEFINED vk_bootstrap_SOURCE_DIR)
-    set(vk_bootstrap_SOURCE_DIR "${CMAKE_BINARY_DIR}/_deps/vk_bootstrap-src")
-endif()
+FetchContent_MakeAvailable(vk_bootstrap)
 
 # --- VulkanMemoryAllocator (via FetchContent for cross-compilation compatibility) ---
 FetchContent_Declare(
@@ -133,6 +125,10 @@ add_executable(comboom_punkt_sucht_wallpaper
 target_include_directories(comboom_punkt_sucht_wallpaper PRIVATE
     ${SRC_DIR}
     ${CORE_DIR}
+)
+
+# Nutze SYSTEM, um Compiler-Warnungen aus Drittanbieter-Code zu ignorieren
+target_include_directories(comboom_punkt_sucht_wallpaper SYSTEM PRIVATE
     ${Vulkan_INCLUDE_DIRS}
     ${vulkanmemoryallocator_SOURCE_DIR}/include
     ${vk_bootstrap_SOURCE_DIR}/src
