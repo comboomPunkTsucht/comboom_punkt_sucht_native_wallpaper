@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include "../../../core/cbps_wallpaper_engine_core.h"
 #include <cmath>
+#include <string>
 
 class RendererRaylib {
 private:
