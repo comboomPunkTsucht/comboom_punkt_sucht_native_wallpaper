@@ -11,7 +11,14 @@ include(FetchContent)
 # --- Dependencies (via vcpkg) ---
 find_package(glfw3 3.3 REQUIRED)
 find_package(Vulkan REQUIRED)
-find_package(vk_bootstrap CONFIG REQUIRED)
+
+# --- vk-bootstrap (via FetchContent) ---
+FetchContent_Declare(
+    vk_bootstrap
+    GIT_REPOSITORY https://github.com/charles-lunarg/vk-bootstrap
+    GIT_TAG v1.3.296
+)
+FetchContent_MakeAvailable(vk_bootstrap)
 
 # --- VulkanMemoryAllocator (via FetchContent for cross-compilation compatibility) ---
 FetchContent_Declare(
@@ -120,6 +127,7 @@ target_include_directories(comboom_punkt_sucht_wallpaper PRIVATE
     ${CORE_DIR}
     ${Vulkan_INCLUDE_DIRS}
     ${vulkanmemoryallocator_SOURCE_DIR}/include
+    ${vk_bootstrap_SOURCE_DIR}/src
 )
 
 # --- Link libraries ---
