@@ -142,26 +142,21 @@ bool VulkanRenderer::render(const std::vector<Particle>& particles,
     vmaUnmapMemory(allocator_, particle_allocation_);
 
     // Record command buffer
-    vk::CommandBufferBeginInfo begin_info{
-        .flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit
-    };
+    vk::CommandBufferBeginInfo begin_info(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
     command_buffers_[current_frame_].begin(begin_info);
 
     // Clear color
-    vk::ClearValue clear_color{
-        .color = vk::ClearColorValue{
-            .float32 = {bg_color[0] / 255.0f, bg_color[1] / 255.0f,
-                       bg_color[2] / 255.0f, bg_color[3] / 255.0f}
-        }
-    };
+    vk::ClearColorValue color_value;
+    color_value.float32[0] = bg_color[0] / 255.0f;
+    color_value.float32[1] = bg_color[1] / 255.0f;
+    color_value.float32[2] = bg_color[2] / 255.0f;
+    color_value.float32[3] = bg_color[3] / 255.0f;
+    vk::ClearValue clear_color(color_value);
 
-    vk::RenderPassBeginInfo render_pass_info{
-        .renderPass = render_pass_,
-        .framebuffer = framebuffers_[image_index],
-        .renderArea = vk::Rect2D{{0, 0}, swapchain_extent_},
-        .clearValueCount = 1,
-        .pClearValues = &clear_color
-    };
+    vk::RenderPassBeginInfo render_pass_info(
+        render_pass_, framebuffers_[image_index],
+        vk::Rect2D(vk::Offset2D(0, 0), swapchain_extent_),
+        1, &clear_color);
 
     command_buffers_[current_frame_].beginRenderPass(render_pass_info, vk::SubpassContents::eInline);
     command_buffers_[current_frame_].bindPipeline(vk::PipelineBindPoint::eGraphics, graphics_pipeline_);
@@ -174,26 +169,19 @@ bool VulkanRenderer::render(const std::vector<Particle>& particles,
 
     // Submit
     vk::PipelineStageFlags wait_stages = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-    vk::SubmitInfo submit_info{
-        .waitSemaphoreCount = 1,
-        .pWaitSemaphores = &image_available_semaphores_[current_frame_],
-        .pWaitDstStageMask = &wait_stages,
-        .commandBufferCount = 1,
-        .pCommandBuffers = &command_buffers_[current_frame_],
-        .signalSemaphoreCount = 1,
-        .pSignalSemaphores = &render_finished_semaphores_[current_frame_]
-    };
+    vk::SubmitInfo submit_info(
+        1, &image_available_semaphores_[current_frame_],
+        &wait_stages,
+        1, &command_buffers_[current_frame_],
+        1, &render_finished_semaphores_[current_frame_]);
 
     graphics_queue_.submit({submit_info}, in_flight_fences_[current_frame_]);
 
     // Present
-    vk::PresentInfoKHR present_info{
-        .waitSemaphoreCount = 1,
-        .pWaitSemaphores = &render_finished_semaphores_[current_frame_],
-        .swapchainCount = 1,
-        .pSwapchains = &swapchain_,
-        .pImageIndices = &image_index
-    };
+    vk::PresentInfoKHR present_info(
+        1, &render_finished_semaphores_[current_frame_],
+        1, &swapchain_,
+        &image_index);
 
     auto present_result = graphics_queue_.presentKHR(present_info);
 
@@ -226,13 +214,11 @@ void VulkanRenderer::waitIdle() const
 
 void VulkanRenderer::createInstance()
 {
-    vk::ApplicationInfo app_info{
-        .pApplicationName = "comboom. sucht Wallpaper",
-        .applicationVersion = VK_MAKE_VERSION(1, 0, 5),
-        .pEngineName = "cbps-vulkan",
-        .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-        .apiVersion = VK_API_VERSION_1_2
-    };
+    vk::ApplicationInfo app_info("comboom. sucht Wallpaper",
+                                 VK_MAKE_VERSION(1, 0, 5),
+                                 "cbps-vulkan",
+                                 VK_MAKE_VERSION(1, 0, 0),
+                                 VK_API_VERSION_1_2);
 
     // Get required extensions from GLFW
     uint32_t glfw_extension_count = 0;
@@ -240,11 +226,9 @@ void VulkanRenderer::createInstance()
 
     std::vector<const char*> extensions(glfw_extensions, glfw_extensions + glfw_extension_count);
 
-    vk::InstanceCreateInfo create_info{
-        .pApplicationInfo = &app_info,
-        .enabledExtensionCount = static_cast<uint32_t>(extensions.size()),
-        .ppEnabledExtensionNames = extensions.data()
-    };
+    vk::InstanceCreateInfo create_info(&app_info,
+                                       static_cast<uint32_t>(extensions.size()),
+                                       extensions.data());
 
     try {
         instance_ = vk::createInstance(create_info);
@@ -289,11 +273,7 @@ void VulkanRenderer::createLogicalDevice()
     }
 
     float queue_priority = 1.0f;
-    vk::DeviceQueueCreateInfo queue_create_info{
-        .queueFamilyIndex = graphics_queue_family_,
-        .queueCount = 1,
-        .pQueuePriorities = &queue_priority
-    };
+    vk::DeviceQueueCreateInfo queue_create_info({}, graphics_queue_family_, 1, &queue_priority);
 
     vk::PhysicalDeviceFeatures device_features{};
 
@@ -301,13 +281,12 @@ void VulkanRenderer::createLogicalDevice()
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
-    vk::DeviceCreateInfo create_info{
-        .queueCreateInfoCount = 1,
-        .pQueueCreateInfos = &queue_create_info,
-        .enabledExtensionCount = static_cast<uint32_t>(device_extensions.size()),
-        .ppEnabledExtensionNames = device_extensions.data(),
-        .pEnabledFeatures = &device_features
-    };
+    vk::DeviceCreateInfo create_info(
+        1, &queue_create_info,
+        0, nullptr,
+        static_cast<uint32_t>(device_extensions.size()),
+        device_extensions.data(),
+        &device_features);
 
     device_ = physical_device_.createDevice(create_info);
     graphics_queue_ = device_.getQueue(graphics_queue_family_, 0);
@@ -315,12 +294,11 @@ void VulkanRenderer::createLogicalDevice()
 
 void VulkanRenderer::createMemoryAllocator()
 {
-    VmaAllocatorCreateInfo allocator_info{
-        .physicalDevice = static_cast<VkPhysicalDevice>(physical_device_),
-        .device = static_cast<VkDevice>(device_),
-        .instance = static_cast<VkInstance>(instance_),
-        .vulkanApiVersion = VK_API_VERSION_1_2
-    };
+    VmaAllocatorCreateInfo allocator_info = {};
+    allocator_info.physicalDevice = static_cast<VkPhysicalDevice>(physical_device_);
+    allocator_info.device = static_cast<VkDevice>(device_);
+    allocator_info.instance = static_cast<VkInstance>(instance_);
+    allocator_info.vulkanApiVersion = VK_API_VERSION_1_2;
 
     if (vmaCreateAllocator(&allocator_info, &allocator_) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create VMA allocator");
@@ -362,20 +340,16 @@ void VulkanRenderer::createSwapchain()
             ? surface_capabilities.currentExtent
             : vk::Extent2D{surface_width_, surface_height_};
 
-    vk::SwapchainCreateInfoKHR create_info{
-        .surface = surface_,
-        .minImageCount = image_count,
-        .imageFormat = swapchain_format_,
-        .imageColorSpace = surface_formats[0].colorSpace,
-        .imageExtent = swapchain_extent_,
-        .imageArrayLayers = 1,
-        .imageUsage = vk::ImageUsageFlagBits::eColorAttachment,
-        .imageSharingMode = vk::SharingMode::eExclusive,
-        .preTransform = surface_capabilities.currentTransform,
-        .compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque,
-        .presentMode = present_mode,
-        .clipped = VK_TRUE
-    };
+    vk::SwapchainCreateInfoKHR create_info(
+        surface_, image_count,
+        swapchain_format_, surface_formats[0].colorSpace,
+        swapchain_extent_, 1,
+        vk::ImageUsageFlagBits::eColorAttachment,
+        vk::SharingMode::eExclusive,
+        0, nullptr,
+        surface_capabilities.currentTransform,
+        vk::CompositeAlphaFlagBitsKHR::eOpaque,
+        present_mode, VK_TRUE);
 
     swapchain_ = device_.createSwapchainKHR(create_info);
     swapchain_images_ = device_.getSwapchainImagesKHR(swapchain_);
@@ -387,22 +361,22 @@ void VulkanRenderer::createImageViews()
     swapchain_image_views_.reserve(swapchain_images_.size());
 
     for (const auto& image : swapchain_images_) {
-        vk::ImageViewCreateInfo create_info{
-            .image = image,
-            .viewType = vk::ImageViewType::e2D,
-            .format = swapchain_format_,
-            .components = {
-                .r = vk::ComponentSwizzle::eIdentity,
-                .g = vk::ComponentSwizzle::eIdentity,
-                .b = vk::ComponentSwizzle::eIdentity,
-                .a = vk::ComponentSwizzle::eIdentity},
-            .subresourceRange = {
-                .aspectMask = vk::ImageAspectFlagBits::eColor,
-                .baseMipLevel = 0,
-                .levelCount = 1,
-                .baseArrayLayer = 0,
-                .layerCount = 1}
-        };
+        vk::ComponentMapping components(
+            vk::ComponentSwizzle::eIdentity,
+            vk::ComponentSwizzle::eIdentity,
+            vk::ComponentSwizzle::eIdentity,
+            vk::ComponentSwizzle::eIdentity);
+
+        vk::ImageSubresourceRange subresource_range(
+            vk::ImageAspectFlagBits::eColor,
+            0, 1, 0, 1);
+
+        vk::ImageViewCreateInfo create_info(
+            {}, image,
+            vk::ImageViewType::e2D,
+            swapchain_format_,
+            components,
+            subresource_range);
 
         swapchain_image_views_.push_back(device_.createImageView(create_info));
     }
@@ -410,45 +384,33 @@ void VulkanRenderer::createImageViews()
 
 void VulkanRenderer::createRenderPass()
 {
-    vk::AttachmentDescription color_attachment{
-        .format = swapchain_format_,
-        .samples = vk::SampleCountFlagBits::e1,
-        .loadOp = vk::AttachmentLoadOp::eClear,
-        .storeOp = vk::AttachmentStoreOp::eStore,
-        .stencilLoadOp = vk::AttachmentLoadOp::eDontCare,
-        .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
-        .initialLayout = vk::ImageLayout::eUndefined,
-        .finalLayout = vk::ImageLayout::ePresentSrcKHR
-    };
+    vk::AttachmentDescription color_attachment(
+        {}, swapchain_format_,
+        vk::SampleCountFlagBits::e1,
+        vk::AttachmentLoadOp::eClear,
+        vk::AttachmentStoreOp::eStore,
+        vk::AttachmentLoadOp::eDontCare,
+        vk::AttachmentStoreOp::eDontCare,
+        vk::ImageLayout::eUndefined,
+        vk::ImageLayout::ePresentSrcKHR);
 
-    vk::AttachmentReference color_attachment_ref{
-        .attachment = 0,
-        .layout = vk::ImageLayout::eColorAttachmentOptimal
-    };
+    vk::AttachmentReference color_attachment_ref(0, vk::ImageLayout::eColorAttachmentOptimal);
 
-    vk::SubpassDescription subpass{
-        .pipelineBindPoint = vk::PipelineBindPoint::eGraphics,
-        .colorAttachmentCount = 1,
-        .pColorAttachments = &color_attachment_ref
-    };
+    vk::SubpassDescription subpass(
+        {}, vk::PipelineBindPoint::eGraphics,
+        0, nullptr,
+        1, &color_attachment_ref);
 
-    vk::SubpassDependency dependency{
-        .srcSubpass = VK_SUBPASS_EXTERNAL,
-        .dstSubpass = 0,
-        .srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
-        .dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
-        .srcAccessMask = {},
-        .dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite
-    };
+    vk::SubpassDependency dependency(
+        VK_SUBPASS_EXTERNAL, 0,
+        vk::PipelineStageFlagBits::eColorAttachmentOutput,
+        vk::PipelineStageFlagBits::eColorAttachmentOutput,
+        {}, vk::AccessFlagBits::eColorAttachmentWrite);
 
-    vk::RenderPassCreateInfo create_info{
-        .attachmentCount = 1,
-        .pAttachments = &color_attachment,
-        .subpassCount = 1,
-        .pSubpasses = &subpass,
-        .dependencyCount = 1,
-        .pDependencies = &dependency
-    };
+    vk::RenderPassCreateInfo create_info(
+        {}, 1, &color_attachment,
+        1, &subpass,
+        1, &dependency);
 
     render_pass_ = device_.createRenderPass(create_info);
 }
@@ -470,10 +432,7 @@ std::vector<uint32_t> readShaderFile(const std::string& filename)
 void VulkanRenderer::createDescriptorSetLayout()
 {
     // Placeholder - will be populated when we add descriptors
-    vk::DescriptorSetLayoutCreateInfo create_info{
-        .bindingCount = 0,
-        .pBindings = nullptr
-    };
+    vk::DescriptorSetLayoutCreateInfo create_info({}, 0, nullptr);
     descriptor_set_layout_ = device_.createDescriptorSetLayout(create_info);
 }
 
@@ -484,12 +443,8 @@ void VulkanRenderer::createGraphicsPipeline()
     // auto vert_code = readShaderFile("shaders/particle.vert.spv");
     // auto frag_code = readShaderFile("shaders/particle.frag.spv");
 
-    vk::PipelineLayoutCreateInfo pipeline_layout_info{
-        .setLayoutCount = 0,
-        .pSetLayouts = nullptr,
-        .pushConstantRangeCount = 0,
-        .pPushConstantRanges = nullptr
-    };
+    vk::PipelineLayoutCreateInfo pipeline_layout_info(
+        {}, 0, nullptr, 0, nullptr);
 
     pipeline_layout_ = device_.createPipelineLayout(pipeline_layout_info);
 
