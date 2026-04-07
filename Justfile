@@ -11,7 +11,6 @@ RAYLIB_DIR := "thirdparty/raylib"
 MINGW_SYSROOT := if os() == "macos" {
     "/opt/homebrew/Cellar/mingw-w64/14.0.0/toolchain-x86_64"
 } else {
-    # Try common Linux paths, fallback to empty (no --sysroot needed)
     if path_exists("/usr/x86_64-w64-mingw32") {
         "/usr/x86_64-w64-mingw32"
     } else {
