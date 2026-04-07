@@ -101,7 +101,7 @@ target_include_directories(comboom_punkt_sucht_wallpaper PRIVATE
     ${SRC_DIR}
     ${CORE_DIR}
     ${Vulkan_INCLUDE_DIRS}
-    ${VulkanMemoryAllocator_SOURCE_DIR}/include
+    ${vulkanmemoryallocator_SOURCE_DIR}/include
 )
 
 # --- Link libraries ---
