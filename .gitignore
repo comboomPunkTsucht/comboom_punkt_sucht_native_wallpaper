@@ -21,7 +21,6 @@ cmake_install.cmake
 *.cmake
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
