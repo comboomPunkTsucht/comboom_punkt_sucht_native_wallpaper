@@ -4,8 +4,10 @@ import SwiftUI
 
 class WallpaperWindow: NSWindow {
 
-    // Wir merken uns den Monitor, zu dem dieses Fenster gehört
-  private var assignedScreen: NSScreen
+    private var assignedScreen: NSScreen
+    private weak var metalView: MetalWallpaperView?
+    private weak var engineManager: EngineManager?
+    private weak var overlayHostingView: NSHostingView<TextOverlayView>?
 
   init(screen: NSScreen) {
     self.assignedScreen = screen
@@ -18,10 +20,12 @@ class WallpaperWindow: NSWindow {
     self.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
     self.ignoresMouseEvents = true
 
-
     let metalView = MetalWallpaperView(frame: screenRect)
+    self.metalView = metalView
 
     if let engineShared = EngineManager.shared {
+      self.engineManager = engineShared
+
       if let eginePtr = engineShared.engine {
         self.backgroundColor = NSColor(
           red: CGFloat(eginePtr.pointee.background_color.r)/255.0,
@@ -30,28 +34,54 @@ class WallpaperWindow: NSWindow {
           alpha: CGFloat(eginePtr.pointee.background_color.a)/255.0
         )
       }
-      let overlayView = NSHostingView(rootView: TextOverlayView(engineManager: engineShared))
-      overlayView.frame = screenRect
-      overlayView.wantsLayer = true
-      overlayView.layer?.backgroundColor = NSColor.clear.cgColor
 
-      metalView.addSubview(overlayView)
+      addOverlay(to: metalView, engineManager: engineShared, frame: screenRect)
     }
 
     self.contentView = metalView
     self.setFrame(screenRect, display: true)
 
-      // NEU: Höre live auf Auflösungsänderungen (z.B. Skalierung in den Mac-Einstellungen)
     NotificationCenter.default.addObserver(self, selector: #selector(updateResolution), name: NSApplication.didChangeScreenParametersNotification, object: nil)
   }
 
-    // NEU: Diese Funktion feuert automatisch, sobald sich die Auflösung ändert
+  private func addOverlay(to metalView: MetalWallpaperView, engineManager: EngineManager, frame: CGRect) {
+    let screenOverlay = TextOverlayView(engineManager: engineManager)
+    let overlayView = NSHostingView(rootView: screenOverlay)
+
+    self.overlayHostingView = overlayView
+
+    overlayView.wantsLayer = true
+    overlayView.layer?.backgroundColor = NSColor.clear.cgColor
+
+    // Use frame-based layout, not autolayout
+    overlayView.frame = frame
+    overlayView.autoresizingMask = [.width, .height]
+
+    metalView.addSubview(overlayView)
+  }
+
   @objc func updateResolution() {
-      // Die brandneuen Koordinaten des Bildschirms auslesen
     let newFrame = self.assignedScreen.frame
 
-      // Fenster und alle Views (Metal + SwiftUI) sofort in die neue Form pressen!
+    // Resize the window
     self.setFrame(newFrame, display: true)
-    self.contentView?.frame = newFrame
+
+    // IMPORTANT: Explicitly resize contentView (metalView) to fill the window
+    // The window's contentView doesn't automatically resize
+    if let contentView = self.contentView {
+      contentView.frame = CGRect(x: 0, y: 0, width: newFrame.width, height: newFrame.height)
+    }
+
+    // Update overlay to match contentView bounds
+    if let overlayView = overlayHostingView, let contentView = self.contentView {
+      overlayView.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height)
+      overlayView.needsDisplay = true
+    }
+  }
+
+  deinit {
+    NotificationCenter.default.removeObserver(self)
   }
 }
+
+

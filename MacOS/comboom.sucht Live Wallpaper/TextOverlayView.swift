@@ -1,79 +1,77 @@
 import SwiftUI
 
+// Screen-specific overlay that uses per-monitor dimensions
 struct TextOverlayView: View {
-    // Beobachtet unseren EngineManager live
     @ObservedObject var engineManager: EngineManager
-
-    // Safely computed colors from the C++ engine; provide sensible defaults if engine is unavailable
-    private var backgroundColor: Color {
-        guard let eginePtr = engineManager.engine else { return Color.black }
-        return Color(
-          red: Double(eginePtr.pointee.background_color.r) / 255.0,
-          green: Double(eginePtr.pointee.background_color.g) / 255.0,
-          blue: Double(eginePtr.pointee.background_color.b) / 255.0,
-          opacity: Double(eginePtr.pointee.background_color.a) / 255.0
-        )
-    }
-
-    private var foregroundColor: Color {
-        guard let eginePtr = engineManager.engine else { return Color.white }
-        return Color(
-          red: Double(eginePtr.pointee.foreground_color.r) / 255.0,
-          green: Double(eginePtr.pointee.foreground_color.g) / 255.0,
-          blue: Double(eginePtr.pointee.foreground_color.b) / 255.0,
-          opacity: Double(eginePtr.pointee.foreground_color.a) / 255.0
-        )
-    }
+    @State private var refreshId: UUID = UUID()
 
     var body: some View {
-        GeometryReader { geo in
-            let width = geo.size.width
-            let height = geo.size.height
+        GeometryReader { geometry in
+            let screenWidth = UInt32(geometry.size.width)
+            let screenHeight = UInt32(geometry.size.height)
 
-            // Exakt deine C++ Mathe für die Größen
-            let titleFontSize = max(24, min(160, width / 10))
-            let subFontSize = max(12, min(48, width / 30))
-            let lineWidth = width * 0.85
+            let titleFontSize = CGFloat(max(24, min(160, screenWidth / 10)))
+            let subFontSize = CGFloat(max(12, min(48, screenWidth / 30)))
+            let lineWidth = Double(screenWidth) * 0.85
 
             ZStack {
-
-                // --- 1. Der zentrierte Text und die Linien ---
                 VStack(spacing: 24) {
-
-                    // Obere Gradient-Linie
                     gradientLine(width: lineWidth)
 
-                    // H1 (Titel)
                     Text(engineManager.h1)
                         .font(.custom("CaskaydiaCoveNFP-Regular", size: titleFontSize))
                         .foregroundStyle(foregroundColor)
 
-                    // Untere Gradient-Linie
                     gradientLine(width: lineWidth)
 
-                    // H2 (Untertitel oder cbps Logo)
                     if engineManager.h2.lowercased() == "comboom.sucht".lowercased() {
                         Image("cbps_logo")
                             .resizable()
                             .scaledToFit()
-                            .frame(height: max(48, min(192, height * 0.12)))
+                            .frame(height: max(48, min(192, Double(screenHeight) * 0.12)))
                             .colorMultiply(foregroundColor)
                     } else {
                         Text(engineManager.h2)
                             .font(.custom("CaskaydiaCoveNFP-Regular", size: subFontSize))
                             .foregroundStyle(foregroundColor)
                     }
-
                 }
-                .position(x: width / 2, y: height / 2 - 20)
+                .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 
-                // --- 2. Das kleine Logo unten rechts ---
-                bottomRightLogo(width: width, height: height)
+                bottomRightLogo(
+                    width: geometry.size.width,
+                    height: geometry.size.height
+                )
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .id(refreshId)  // Force redraw when refreshId changes
         }
     }
 
-    // Hilfsfunktion für den Verlauf: foregroundColor in der Mitte, mit Background an den Rändern
+    func triggerRefresh() {
+        refreshId = UUID()
+    }
+
+    private var backgroundColor: Color {
+        guard let enginePtr = engineManager.engine else { return Color.black }
+        return Color(
+          red: Double(enginePtr.pointee.background_color.r) / 255.0,
+          green: Double(enginePtr.pointee.background_color.g) / 255.0,
+          blue: Double(enginePtr.pointee.background_color.b) / 255.0,
+          opacity: Double(enginePtr.pointee.background_color.a) / 255.0
+        )
+    }
+
+    private var foregroundColor: Color {
+        guard let enginePtr = engineManager.engine else { return Color.white }
+        return Color(
+          red: Double(enginePtr.pointee.foreground_color.r) / 255.0,
+          green: Double(enginePtr.pointee.foreground_color.g) / 255.0,
+          blue: Double(enginePtr.pointee.foreground_color.b) / 255.0,
+          opacity: Double(enginePtr.pointee.foreground_color.a) / 255.0
+        )
+    }
+
     @ViewBuilder
     func gradientLine(width: CGFloat) -> some View {
         Rectangle()
@@ -87,7 +85,6 @@ struct TextOverlayView: View {
             .frame(width: width, height: 3)
     }
 
-    // Hilfsfunktion für das Eck-Logo
     @ViewBuilder
     func bottomRightLogo(width: CGFloat, height: CGFloat) -> some View {
         let h1Lower = engineManager.h1.lowercased()

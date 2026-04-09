@@ -41,9 +41,26 @@ class MetalWallpaperView: MTKView {
       // Renderer initialisieren und als Delegate setzen
     renderer = Renderer(device: device, metalKitView: self)
     self.delegate = renderer
+
+    // Wichtig: drawableSize explizit setzen
+    self.drawableSize = self.bounds.size
   }
 
   required init(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+
+  override var frame: CGRect {
+    didSet {
+      // When frame changes, update drawable size too
+      self.drawableSize = self.bounds.size
+    }
+  }
+
+  override var bounds: CGRect {
+    didSet {
+      // When bounds change, update drawable size too
+      self.drawableSize = self.bounds.size
+    }
   }
 }

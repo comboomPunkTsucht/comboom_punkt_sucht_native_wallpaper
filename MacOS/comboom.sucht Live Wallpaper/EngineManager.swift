@@ -31,8 +31,8 @@ class EngineManager: ObservableObject {
       // Hier ggf. deine C-Engine updaten lassen
     }
   }
-  private var sceen_width: UInt32 = 7690
-  private var sceen_height: UInt32 = 4320
+  @Published var sceen_width: UInt32 = 7690
+  @Published var sceen_height: UInt32 = 4320
 
   init() {
       // Wir verzögern den Start um den Bruchteil einer Sekunde,
@@ -46,7 +46,7 @@ class EngineManager: ObservableObject {
 
   func start() {
     Self.shared = self // Singleton setzen
-    var randomSeed: UInt32 = UInt32(
+    let randomSeed: UInt32 = UInt32(
       truncatingIfNeeded: UInt64(Date().timeIntervalSince1970 * 1000) % UInt64(UInt32.max))  // Zufälliger Seed für die C-Engine
     cbps_engine_set_seed(randomSeed) // Zufälligen Seed an die C-Engine übergeben
 
@@ -74,6 +74,17 @@ class EngineManager: ObservableObject {
     if let screen = NSScreen.screens.first {
       displayLink = screen.displayLink(target: self, selector: #selector(updateLoop(link:)))
       displayLink?.add(to: .main, forMode: .common)
+    }
+
+    // Listen for display resolution changes
+    NotificationCenter.default.addObserver(self, selector: #selector(onScreenParametersChanged), name: NSApplication.didChangeScreenParametersNotification, object: nil)
+  }
+
+  @objc func onScreenParametersChanged() {
+    // Update dimensions from the primary screen when displays change
+    if let screen = NSScreen.screens.first {
+      self.sceen_width = UInt32(screen.frame.width)
+      self.sceen_height = UInt32(screen.frame.height)
     }
   }
 
@@ -123,6 +134,8 @@ class EngineManager: ObservableObject {
   func stop() {
     displayLink?.invalidate()
     displayLink = nil
+
+    NotificationCenter.default.removeObserver(self)
 
     if let enginePtr = engine {
       cbps_engine_destroy(enginePtr)
