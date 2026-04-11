@@ -48,7 +48,7 @@
   <div class="shrink-0 rounded-full" style="width: {lineWidth}px; height: 3px; background: linear-gradient(to right, #2e3440, #eceff4, #2e3440);"></div>
 
   {#if h2.toLowerCase() === "comboom.sucht"}
-    <img src="/pictures/cbps_logo.png" alt="comboom.sucht Logo" class="object-contain w-auto" style="height: {CBPSLogoTargetH}px;" />
+    <img src="/pictures/cbps_logo.svg" alt="comboom.sucht Logo" class="object-contain w-auto" style="height: {CBPSLogoTargetH}px;" />
   {:else}
     <h2 class="text-center" style="font-size: {subFontSize}px;">
       {h2}
@@ -57,14 +57,14 @@
 </div>
 
 {#if h1.toLowerCase() === "mcpeaps_hd"}
-  <img src="/pictures/mahd_logo.png" alt="mcpeaps_HD Logo" class="absolute bottom-4 right-4 pointer-events-none object-contain w-auto" style="height: {BRLogoTargetH}px;" />
+  <img src="/pictures/mahd_logo.svg" alt="mcpeaps_HD Logo" class="absolute bottom-4 right-4 pointer-events-none object-contain w-auto" style="height: {BRLogoTargetH}px;" />
 {/if}
 {#if h1.toLowerCase() === "blackdragon"}
-  <img src="/pictures/bd_logo.png" alt="BlackDragon Logo" class="absolute bottom-4 right-4 pointer-events-none object-contain w-auto" style="height: {BRLogoTargetH}px;" />
+  <img src="/pictures/bd_logo.svg" alt="BlackDragon Logo" class="absolute bottom-4 right-4 pointer-events-none object-contain w-auto" style="height: {BRLogoTargetH}px;" />
 {/if}
 {#if h1.toLowerCase() === "knuddelzwerck"}
-  <img src="/pictures/knuddelzwerck_logo.png" alt="Knuddelzwerck Logo" class="absolute bottom-4 right-4 pointer-events-none object-contain w-auto" style="height: {BRLogoTargetH}px;" />
+  <img src="/pictures/knuddelzwerck_logo.svg" alt="Knuddelzwerck Logo" class="absolute bottom-4 right-4 pointer-events-none object-contain w-auto" style="height: {BRLogoTargetH}px;" />
 {/if}
 {#if h1.toLowerCase() === "fabelke"}
-  <img src="/pictures/fabelke_logo.png" alt="Fabelke Logo" class="absolute bottom-4 right-4 pointer-events-none object-contain w-auto" style="height: {BRLogoTargetH}px;" />
+  <img src="/pictures/fabelke_logo.svg" alt="Fabelke Logo" class="absolute bottom-4 right-4 pointer-events-none object-contain w-auto" style="height: {BRLogoTargetH}px;" />
 {/if}
