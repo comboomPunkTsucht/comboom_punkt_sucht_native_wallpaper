@@ -9,7 +9,7 @@ class WallpaperWindow: NSWindow {
 
   init(screen: NSScreen) {
     self.assignedScreen = screen
-    let screenRect = screen.frame
+    let screenRect = screen.visibleFrame
 
     super.init(contentRect: screenRect, styleMask: .borderless, backing: .buffered, defer: false)
 
@@ -49,7 +49,7 @@ class WallpaperWindow: NSWindow {
   // NEU: Diese Funktion feuert automatisch, sobald sich die Auflösung ändert
   @objc func updateResolution() {
     // Die brandneuen Koordinaten des Bildschirms auslesen
-    let newFrame = self.assignedScreen.frame
+    let newFrame = self.assignedScreen.visibleFrame
 
     // Fenster und alle Views (Metal + SwiftUI) sofort in die neue Form pressen!
     self.setFrame(newFrame, display: true)
